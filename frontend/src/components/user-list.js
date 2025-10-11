@@ -1,5 +1,10 @@
 import { LitElement, html, css } from 'lit';
-import { globalStyles } from '../styles/global-styles';
+import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import { faPlay, faStop, faMapMarkerAlt, faUsers } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faPlay, faStop, faMapMarkerAlt, faUsers);
+
+const globalStyles = css``;
 
 export class UserList extends LitElement {
     static properties = {
@@ -17,6 +22,21 @@ export class UserList extends LitElement {
                 flex-direction: column;
                 height: 100%;
                 background: var(--surface);
+            }
+
+            .icon-wrapper {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 1em;
+                height: 1em;
+                vertical-align: middle;
+            }
+
+            .icon-wrapper svg {
+                width: 100%;
+                height: 100%;
+                fill: currentColor;
             }
 
             .map-controls {
@@ -151,7 +171,15 @@ export class UserList extends LitElement {
                 font-size: 1.25rem;
             }
 
-            .user-info h3 i {
+            .user-info h3 .icon-wrapper {
+                color: var(--primary-color);
+                width: 1.25rem;
+                height: 1.25rem;
+            }
+
+            .coordinates-display .icon-wrapper {
+                width: 1rem;
+                height: 1rem;
                 color: var(--primary-color);
             }
 
@@ -269,18 +297,25 @@ export class UserList extends LitElement {
     }
 
     render() {
+        const mapMarkerIcon = icon({ prefix: 'fas', iconName: 'map-marker-alt' }).node[0];
+        const usersIcon = icon({ prefix: 'fas', iconName: 'users' }).node[0];
+        const playIcon = icon({ prefix: 'fas', iconName: 'play' }).node[0];
+        const stopIcon = icon({ prefix: 'fas', iconName: 'stop' }).node[0];
+
         return html`
             <div class="map-controls">
                 <button
                     class="toggle-button ${this.isTracking ? 'stop-state' : 'start-state'}"
                     @click=${this._toggleTracking}
                 >
-                    <i class="fas fa-${this.isTracking ? 'stop' : 'play'}"></i>
+                    <span class="icon-wrapper">
+                        ${this.isTracking ? stopIcon : playIcon}
+                    </span>
                     ${this.isTracking ? 'Stop Tracking' : 'Start Tracking'}
                 </button>
 
                 <div class="coordinates-display">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="icon-wrapper">${mapMarkerIcon}</span>
                     ${this.showLocation
                         ? `${this.currentCoordinates.lat.toFixed(6)}, ${this.currentCoordinates.lng.toFixed(6)}`
                         : 'Location hidden'}
@@ -298,7 +333,7 @@ export class UserList extends LitElement {
 
             <div class="user-info">
                 <h3>
-                    <i class="fas fa-users"></i>
+                    <span class="icon-wrapper">${usersIcon}</span>
                     Connected Users
                 </h3>
 

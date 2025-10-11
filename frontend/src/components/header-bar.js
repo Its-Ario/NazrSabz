@@ -1,4 +1,8 @@
 import { LitElement, html, css } from 'lit';
+import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import { faLocationDot, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faLocationDot, faRightFromBracket);
 
 export class HeaderBar extends LitElement {
     static properties = {
@@ -33,6 +37,11 @@ export class HeaderBar extends LitElement {
             transform: translateY(-1px);
         }
 
+        button .icon-wrapper {
+            width: 1rem;
+            height: 1rem;
+        }
+
         .container {
             background: #334155;
             color: white;
@@ -54,8 +63,21 @@ export class HeaderBar extends LitElement {
             gap: 0.75rem;
         }
 
-        .container h1 i button {
+        .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-wrapper svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .title-icon {
             color: var(--primary-color);
+            width: 1.5rem;
+            height: 1.5rem;
         }
 
         @keyframes spin {
@@ -75,11 +97,18 @@ export class HeaderBar extends LitElement {
     }
 
     render() {
+        const locationDotIcon = icon({ prefix: 'fas', iconName: 'location-dot' }).node[0];
+        const logoutIcon = icon({ prefix: 'fas', iconName: 'right-from-bracket' }).node[0];
+
         return html`
             <div class="container">
                 <div class="username">${this.user?.name ? `Welcome, ${this.user.name}` : ''}</div>
-                <h1><i class="fas fa-map-marker-alt"></i>PortLib Location Map</h1>
-                <button @click=${this._onLogout}>Logout</button>
+                <h1>
+                    <span class="icon-wrapper title-icon">${locationDotIcon}</span>PortLib Map
+                </h1>
+                <button @click=${this._onLogout}>
+                    <span class="icon-wrapper">${logoutIcon}</span>Logout
+                </button>
             </div>
         `;
     }

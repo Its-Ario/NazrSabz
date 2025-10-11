@@ -3,6 +3,11 @@ import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/auth.js';
 import { globalStyles } from '../styles/global-styles.js';
 import { buttonStyles } from '../styles/button-styles.js';
 
+import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import { faLocationDot, faUser, faLock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faLocationDot, faUser, faLock, faSpinner);
+
 export class LoginView extends LitElement {
     static properties = {
         loading: { type: Boolean },
@@ -13,6 +18,26 @@ export class LoginView extends LitElement {
         globalStyles,
         buttonStyles,
         css`
+            .icon-wrapper {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+            }
+
+            .icon-wrapper svg {
+                width: 100%;
+                height: 100%;
+            }
+
+            .spinner-icon {
+                margin-right: 0.5rem;
+            }
+            .spinner-icon svg {
+                animation: spin 1s linear infinite;
+            }
+
             #login-container {
                 display: flex;
                 justify-content: center;
@@ -49,9 +74,10 @@ export class LoginView extends LitElement {
                 gap: 0.75rem;
             }
 
-            .login-card h2 i {
+            .login-card h2 .icon-wrapper {
                 color: var(--primary-color);
-                font-size: 1.5rem;
+                width: 1.5rem;
+                height: 1.5rem;
             }
 
             .input-group {
@@ -69,7 +95,7 @@ export class LoginView extends LitElement {
                 font-size: 0.875rem;
             }
 
-            .input-group label i {
+            .input-group label .icon-wrapper {
                 color: var(--primary-color);
                 width: 16px;
             }
@@ -108,7 +134,7 @@ export class LoginView extends LitElement {
                 padding: 0.75rem 1rem;
                 justify-content: center;
                 margin: 10px 0;
-            }
+    }
 
             @keyframes spin {
                 from {
@@ -176,13 +202,22 @@ export class LoginView extends LitElement {
     }
 
     render() {
+        const locationDotIcon = icon({ prefix: 'fas', iconName: 'location-dot' }).node[0];
+        const userIcon = icon({ prefix: 'fas', iconName: 'user' }).node[0];
+        const lockIcon = icon({ prefix: 'fas', iconName: 'lock' }).node[0];
+        const spinnerIcon = icon({ prefix: 'fas', iconName: 'spinner' }).node[0];
+        
         return html`
             <div id="login-container">
                 <div class="login-card">
-                    <h2><i class="fas fa-map-marker-alt"></i>Login</h2>
+                    <h2>
+                        <span class="icon-wrapper">${locationDotIcon}</span> Login
+                    </h2>
                     <form @submit=${this.handleSubmit}>
                         <div class="input-group">
-                            <label for="username"><i class="fas fa-user"></i> Username:</label>
+                            <label for="username">
+                                <span class="icon-wrapper">${userIcon}</span> Username:
+                            </label>
                             <input
                                 type="text"
                                 id="username"
@@ -192,7 +227,9 @@ export class LoginView extends LitElement {
                             />
                         </div>
                         <div class="input-group">
-                            <label for="password"><i class="fas fa-lock"></i> Password:</label>
+                            <label for="password">
+                                <span class="icon-wrapper">${lockIcon}</span> Password:
+                            </label>
                             <input
                                 type="password"
                                 id="password"
@@ -208,7 +245,7 @@ export class LoginView extends LitElement {
                             id="login-btn"
                         >
                             ${this.loading
-                                ? html`<i class="fas fa-spinner fa-spin"></i> Logging in...`
+                                ? html`<span class="icon-wrapper spinner-icon">${spinnerIcon}</span> Logging in...`
                                 : 'Login'}
                         </button>
                         ${this.error ? html`<div class="error-message">${this.error}</div>` : ''}
