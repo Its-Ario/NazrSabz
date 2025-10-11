@@ -5,6 +5,8 @@ import { generateToken } from '../utils/auth.js';
 
 import { login, register, changepassword, logout } from '../controllers/authController.js';
 
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+
 const router = Router();
 
 router.get('/verify-token', auth, async (req, res) => {
@@ -40,7 +42,8 @@ router.get(
     async (req, res) => {
         const token = generateToken(req.user);
 
-        res.json({ ok: true, token });
+        const redirectUrl = `${CLIENT_URL}/login?googleToken=${token}`;
+        res.redirect(redirectUrl);
     }
 );
 

@@ -4,13 +4,14 @@ import User from '../models/User.js';
 
 import { config } from 'dotenv';
 config({ path: '../.env' });
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 passport.use(
     new GoogleStrategy(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:5173/api/google/callback',
+            callbackURL: `${CLIENT_URL}/api/google/callback`,
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
@@ -21,11 +22,12 @@ passport.use(
                     if (user) {
                         user.googleId = profile.id;
                     } else {
-                        user = new User({
+                        user = await User.create({
                             name: profile.displayName,
-                            username: profile.emails[0].value,
                             email: profile.emails[0].value,
+                            username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
                             googleId: profile.id,
+                            role: 'MEMBER',
                         });
                     }
                     await user.save();

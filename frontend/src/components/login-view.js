@@ -102,6 +102,14 @@ export class LoginView extends LitElement {
                 border: 1px solid rgba(239, 68, 68, 0.2);
             }
 
+            #login-btn {
+                gap: 0.75rem;
+                width: 100%;
+                padding: 0.75rem 1rem;
+                justify-content: center;
+                margin: 10px 0;
+            }
+
             @keyframes spin {
                 from {
                     transform: rotate(0deg);
@@ -171,7 +179,7 @@ export class LoginView extends LitElement {
         return html`
             <div id="login-container">
                 <div class="login-card">
-                    <h2><i class="fas fa-map-marker-alt"></i> Shared Location Map</h2>
+                    <h2><i class="fas fa-map-marker-alt"></i>Login</h2>
                     <form @submit=${this.handleSubmit}>
                         <div class="input-group">
                             <label for="username"><i class="fas fa-user"></i> Username:</label>
@@ -193,17 +201,53 @@ export class LoginView extends LitElement {
                                 autocomplete="current-password"
                             />
                         </div>
-                        <button ?disabled=${this.loading} type="submit" class="btn-primary">
+                        <button
+                            ?disabled=${this.loading}
+                            type="submit"
+                            class="btn-primary"
+                            id="login-btn"
+                        >
                             ${this.loading
                                 ? html`<i class="fas fa-spinner fa-spin"></i> Logging in...`
                                 : 'Login'}
                         </button>
                         ${this.error ? html`<div class="error-message">${this.error}</div>` : ''}
-                        <a class="button google" href="/api/login/google">Sign in with Google</a>
+                        <button
+                            type="button"
+                            class="google-btn"
+                            @click=${() => (window.location.href = '/api/login/google')}
+                            aria-label="Sign in with Google"
+                        >
+                            <img
+                                class="g-icon"
+                                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                                alt=""
+                                aria-hidden="true"
+                            />
+                            <span>Sign in with Google</span>
+                        </button>
                     </form>
                 </div>
             </div>
         `;
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        const params = new URLSearchParams(window.location.search);
+        const googleToken = params.get('googleToken');
+
+        if (googleToken) {
+            saveAuthToken(googleToken);
+            this.dispatchEvent(
+                new CustomEvent('login-success', {
+                    detail: { user: null, via: 'google' },
+                    bubbles: true,
+                    composed: true,
+                })
+            );
+        }
     }
 
     async handleSubmit(e) {

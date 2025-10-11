@@ -36,4 +36,62 @@ export const buttonStyles = css`
     .btn-primary:disabled .fa-spinner {
         animation: spin 1s linear infinite;
     }
+
+    .google-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--border); /* subtle border consistent with inputs */
+        background: #ffffff; /* Google guideline: white background */
+        color: #3c4043; /* Google button text color */
+        box-shadow: var(--shadow); /* reuse your shadow */
+        text-decoration: none;
+        justify-content: center;
+    }
+
+    /* icon sizing */
+    .google-btn .g-icon {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        flex: 0 0 20px;
+    }
+
+    /* Hover/active states aligned with your primary button style */
+    .google-btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(60, 64, 67, 0.15);
+        background: #f7f8f8;
+    }
+
+    .google-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 4px 10px rgba(60, 64, 67, 0.12);
+    }
+
+    /* Disabled */
+    .google-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* Dark mode adjustments — keep contrast and style */
+    @media (prefers-color-scheme: dark) {
+        .google-btn {
+            background: var(--surface-alt);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+        .google-btn:hover:not(:disabled) {
+            background: var(--surface);
+        }
+    }
 `;
