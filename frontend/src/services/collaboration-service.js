@@ -24,15 +24,15 @@ export class CollaborationService extends EventTarget {
             peerOpts: {
                 config: {
                     iceServers: [
-                    { urls: 'stun:itsario.ir:3478' },
-                    {
-                        urls: 'turns:itsario.ir:3478?transport=tcp',
-                        username: 'testuser',
-                        credential: 'testpassword'
-                    }
-                    ]
-                }
-            }
+                        { urls: 'stun:itsario.ir:3478' },
+                        {
+                            urls: 'turns:itsario.ir:3478?transport=tcp',
+                            username: 'testuser',
+                            credential: 'testpassword',
+                        },
+                    ],
+                },
+            },
         });
 
         this.provider.on('status', ({ status }) =>

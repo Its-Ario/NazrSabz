@@ -31,7 +31,7 @@ export const login = async (req, res) => {
         logger.error('Login error:', error);
         res.status(500).json({ message: 'Server error' });
     }
-}
+};
 
 export const register = async (req, res) => {
     try {
@@ -51,7 +51,7 @@ export const register = async (req, res) => {
         logger.error('Register error:', error);
         res.status(500).json({ message: 'Server error' });
     }
-}
+};
 
 export const changepassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
@@ -66,7 +66,7 @@ export const changepassword = async (req, res) => {
     await userService.updateTokenVersion(user._id.toString());
 
     res.json({ message: 'Password updated successfully' });
-}
+};
 
 export const logout = async (req, res) => {
     try {
@@ -81,4 +81,4 @@ export const logout = async (req, res) => {
         logger.error('Logout error:', error);
         res.status(500).json({ message: 'Server error' });
     }
-}
+};

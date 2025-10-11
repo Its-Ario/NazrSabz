@@ -8,13 +8,18 @@ jest.mock('bcrypt', () => ({
     hash: jest.fn(),
 }));
 
-async function createUser() {
-    const user = await User.create({
+async function createUser(overrides = {}) {
+    const defaultData = {
         username: 'u',
         balance: 20,
         passwordHash: '1',
         email: 'a@b.com',
         type: 'user',
+    };
+
+    const user = await User.create({
+        ...defaultData,
+        ...overrides,
     });
 
     return user;
@@ -96,14 +101,18 @@ describe('userService', () => {
 
     describe('getAllUsers', () => {
         it('should return a list of users', async () => {
-            const user = await createUser();
-            await createUser();
+            const user1 = await createUser();
+            await createUser({ username: 'u2', email: 'a2@b.com' });
+
             const result = await userService.getAllUsers();
 
-            expect(result).not.toHaveProperty('passwordHash');
-            expect(result).not.toHaveProperty('tokenVersion');
             expect(result.length).toBe(2);
-            expect(result[0].username).toBe(user.username);
+            expect(result[0].username).toBe(user1.username);
+
+            result.forEach((user) => {
+                expect(user).not.toHaveProperty('passwordHash');
+                expect(user).not.toHaveProperty('tokenVersion');
+            });
         });
     });
 
