@@ -9,7 +9,7 @@ async function createUser(overrides = {}) {
         passwordHash: '1',
         email: 'a@b.com',
         type: 'user',
-        walletId: new Types.ObjectId()
+        walletId: new Types.ObjectId(),
     };
 
     const user = await User.create({
@@ -27,7 +27,7 @@ describe('WalletService', () => {
             user.balance = 100;
             await user.save();
 
-            const result = await walletService.updateUserFunds(user.id.toString(), 50);
+            const result = await walletService.addUserFunds(user.id.toString(), 50);
 
             expect(result.balance).toBe(150);
         });
@@ -35,7 +35,7 @@ describe('WalletService', () => {
         it('should throw an error if the user is not found', async () => {
             const userId = new Types.ObjectId();
 
-            await expect(walletService.updateUserFunds(userId.toString(), 50)).rejects.toThrow(
+            await expect(walletService.addUserFunds(userId.toString(), 50)).rejects.toThrow(
                 'User not found'
             );
         });

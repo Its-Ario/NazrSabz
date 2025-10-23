@@ -1,6 +1,6 @@
-import { Types } from "mongoose";
-import authService from "../src/services/authService";
-import User from "../src/models/User";
+import { Types } from 'mongoose';
+import authService from '../src/services/authService';
+import User from '../src/models/User';
 
 async function createUser(overrides = {}) {
     const defaultData = {
@@ -9,7 +9,7 @@ async function createUser(overrides = {}) {
         passwordHash: '1',
         email: 'a@b.com',
         type: 'user',
-        walletId: new Types.ObjectId()
+        walletId: new Types.ObjectId(),
     };
 
     const user = await User.create({
@@ -23,10 +23,11 @@ async function createUser(overrides = {}) {
 describe('RequestService', () => {
     describe('createRequest', () => {
         const userData = {
-            name: 'n',
             username: 'u',
-            password: 'p',
+            passwordHash: '1',
             email: 'a@b.com',
+            type: 'user',
+            walletId: new Types.ObjectId(),
         };
         const requestData = {};
         it('should create and save a new request successfully', async () => {
