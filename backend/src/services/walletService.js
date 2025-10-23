@@ -27,7 +27,7 @@ class WalletService {
 
             wallet.balance += amount;
 
-            return user;
+            return wallet;
         } catch (error) {
             logger.error(`Failed to update user funds: ${error.message}`, error);
             throw error;

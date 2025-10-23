@@ -24,7 +24,7 @@ describe('RequestService', () => {
     describe('createRequest', () => {
         const userData = {
             username: 'u',
-            passwordHash: '1',
+            password: '1',
             email: 'a@b.com',
             type: 'user',
             walletId: new Types.ObjectId(),
