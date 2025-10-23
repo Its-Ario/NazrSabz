@@ -1,30 +1,17 @@
 import { compare, hash } from 'bcrypt';
-import userService from '../services/userService.js';
+import authService from '../services/authService.js';
 import logger from '../logger.js';
-import { generateToken } from '../utils/auth.js';
 
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        const user = await userService.getUserProfileBy('username', username);
+        if (!username || !password) return res.status(403).json({ message: 'Invalid Credentials' });
+        if (typeof username !== String || typeof password !== String)
+            return res.status(403).json({ message: 'Invalid input' });
 
-        if (!user) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-        const isMatch = await compare(password, user.passwordHash);
-
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-        const token = generateToken(user);
-
-        const userData = {
-            id: user._id.toString(),
-            name: user.name,
-        };
+        const result = await authService.loginWithUsername(username, password);
+        if (!result) return res.status(403).json({ message: 'Invalid Credentials' });
 
         res.json({ token, user: userData });
     } catch (error) {
@@ -36,9 +23,20 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
     try {
         const { name, email, username, password } = req.body;
+
+        if (!name || !email || !username || !password)
+            return res.status(400).json({ message: 'Please fill out the form' });
+        if (
+            typeof name !== String ||
+            typeof email !== String ||
+            typeof username !== String ||
+            typeof password !== String
+        )
+            return res.status(403).json({ message: 'Invalid input' });
+
         const hashedPassword = await hash(password, 10);
 
-        const newUser = await userService.registerUser({
+        const newUser = await authService.registerUser({
             name,
             email,
             username,
@@ -55,15 +53,15 @@ export const register = async (req, res) => {
 
 export const changepassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
+
+    if (typeof currentPassword !== String || typeof password !== String)
+        return res.status(403).json({ message: 'Invalid input' });
+
     const user = req.user;
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const isMatch = await compare(currentPassword, user.passwordHash);
-    if (!isMatch) return res.status(403).json({ error: 'Current password incorrect' });
-
-    user.passwordHash = await hash(newPassword, 10);
-    user.tokenVersion += 1;
-    await userService.updateTokenVersion(user._id.toString());
+    if (!isMatch) return res.status(403).json({ error: 'Password incorrect' });
 
     res.json({ message: 'Password updated successfully' });
 };

@@ -308,9 +308,7 @@ export class UserList extends LitElement {
                     class="toggle-button ${this.isTracking ? 'stop-state' : 'start-state'}"
                     @click=${this._toggleTracking}
                 >
-                    <span class="icon-wrapper">
-                        ${this.isTracking ? stopIcon : playIcon}
-                    </span>
+                    <span class="icon-wrapper"> ${this.isTracking ? stopIcon : playIcon} </span>
                     ${this.isTracking ? 'Stop Tracking' : 'Start Tracking'}
                 </button>
 

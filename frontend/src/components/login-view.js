@@ -134,7 +134,7 @@ export class LoginView extends LitElement {
                 padding: 0.75rem 1rem;
                 justify-content: center;
                 margin: 10px 0;
-    }
+            }
 
             @keyframes spin {
                 from {
@@ -206,13 +206,11 @@ export class LoginView extends LitElement {
         const userIcon = icon({ prefix: 'fas', iconName: 'user' }).node[0];
         const lockIcon = icon({ prefix: 'fas', iconName: 'lock' }).node[0];
         const spinnerIcon = icon({ prefix: 'fas', iconName: 'spinner' }).node[0];
-        
+
         return html`
             <div id="login-container">
                 <div class="login-card">
-                    <h2>
-                        <span class="icon-wrapper">${locationDotIcon}</span> Login
-                    </h2>
+                    <h2><span class="icon-wrapper">${locationDotIcon}</span> Login</h2>
                     <form @submit=${this.handleSubmit}>
                         <div class="input-group">
                             <label for="username">
@@ -245,7 +243,8 @@ export class LoginView extends LitElement {
                             id="login-btn"
                         >
                             ${this.loading
-                                ? html`<span class="icon-wrapper spinner-icon">${spinnerIcon}</span> Logging in...`
+                                ? html`<span class="icon-wrapper spinner-icon">${spinnerIcon}</span>
+                                      Logging in...`
                                 : 'Login'}
                         </button>
                         ${this.error ? html`<div class="error-message">${this.error}</div>` : ''}
