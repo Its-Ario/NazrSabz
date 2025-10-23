@@ -50,7 +50,7 @@ class UserService {
         }
     }
 
-    static async getAllUsers({ limit = 50, skip = 0 } = {}) {
+    async getAllUsers({ limit = 50, skip = 0 } = {}) {
         try {
             const safeLimit = Math.min(Math.max(1, limit), 100);
             logger.info(`Fetching all users: limit=${safeLimit}, skip=${skip}`);

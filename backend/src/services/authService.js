@@ -1,48 +1,59 @@
-import User from '../models/User';
-import logger from '../logger';
+import User from '../models/User.js';
+import logger from '../logger.js';
 import { generateToken } from '../utils/auth.js';
 import bcrypt from 'bcrypt';
+import walletService from './walletService.js';
+import userService from './userService.js';
 
 class AuthService {
-    async registerUser(userData) {
+    async registerUser({ name, username, email, password }) {
         try {
-            const { name, username, email, password } = userData;
             logger.info(`Registering user: ${username} (${email})`);
 
-            const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+            const normalizedEmail = email.trim().toLowerCase();
+            const normalizedUsername = username.trim();
+
+            const existingUser = await User.findOne({
+                $or: [{ email: normalizedEmail }, { username: normalizedUsername }],
+            });
+
             if (existingUser) {
-                logger.warn(`User already exists: ${username} or ${email}`);
+                logger.warn(`Duplicate user: ${normalizedUsername} or ${normalizedEmail}`);
                 throw new Error('User with this email or username already exists.');
             }
 
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
+            const hashedPassword = await bcrypt.hash(password, 10);
 
             const newUser = new User({
-                name,
-                username,
-                email,
+                name: name.trim(),
+                username: normalizedUsername,
+                email: normalizedEmail,
                 passwordHash: hashedPassword,
             });
 
             await newUser.save();
-            logger.info(`User created: ${newUser._id}`);
 
-            const userObject = newUser.toObject();
-            delete userObject.passwordHash;
-            return userObject;
+            const wallet = await walletService.createWallet(newUser.id);
+            newUser.walletId = wallet.id;
+
+            await newUser.save();
+
+            logger.info(`User registered successfully: ${newUser._id}`);
+
+            const { passwordHash, ...userSafe } = newUser.toObject();
+            return userSafe;
         } catch (error) {
-            logger.error(`Failed to register user: ${error.message}`, error);
+            logger.error(`Failed to register user: ${error.message}`, { stack: error.stack });
             throw error;
         }
     }
     async loginWithUsername(username, password) {
         const user = await userService.getUserProfileBy('username', username);
         if (!user) return false;
-        const isMatch = await compare(password, user.passwordHash);
+        const isMatch = await bcrypt.compare(password, user.passwordHash);
 
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return false;
         }
 
         const token = generateToken(user);
@@ -58,7 +69,7 @@ class AuthService {
     }
 
     async changePassword(user, newPassword) {
-        user.passwordHash = await hash(newPassword, 10);
+        user.passwordHash = await bcrypt.hash(newPassword, 10);
         return await userService.updateTokenVersion(user._id.toString());
     }
 

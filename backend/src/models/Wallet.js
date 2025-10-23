@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const walletSchema = Schema(
+const walletSchema = new Schema(
     {
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         balance: { type: Number, default: 0, min: 0 },

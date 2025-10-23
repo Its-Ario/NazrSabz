@@ -11,8 +11,7 @@ import passport from './config/passport.js';
 import mainRoutes from './routes/mainRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import bookRoutes from './routes/bookRoutes.js';
-import transactionRoutes from './routes/transactionRoutes.js';
+// import transactionRoutes from './routes/transactionRoutes.js';
 
 const app = express();
 
@@ -34,7 +33,6 @@ app.use(express.static('public'));
 app.use('/api', mainRoutes);
 app.use('/api', authRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/book', bookRoutes);
-app.use('/api/transaction', transactionRoutes);
+// app.use('/api/transaction', transactionRoutes);
 
 export default app;

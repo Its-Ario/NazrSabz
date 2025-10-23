@@ -1,8 +1,19 @@
-import logger from '../logger';
-import User from '../models/User';
-import Wallet from '../models/Wallet';
+import logger from '../logger.js';
+import User from '../models/User.js';
+import Wallet from '../models/Wallet.js';
 
 class WalletService {
+    async createWallet(userId) {
+        logger.info(`Creating wallet for ${userId}`);
+
+        const wallet = new Wallet({
+            userId,
+        });
+
+        await wallet.save();
+
+        return wallet;
+    }
     async addUserFunds(userId, amount) {
         try {
             logger.info(`Updating funds for user ${userId} by ${amount}`);
@@ -13,7 +24,7 @@ class WalletService {
                 throw new Error('User not found');
             }
 
-            const wallet = Wallet.findById(user.walletId);
+            const wallet = await Wallet.findById(user.walletId);
 
             if (!wallet) {
                 logger.warn(`Wallet not found for funds update: ${userId}`);
@@ -26,6 +37,7 @@ class WalletService {
             }
 
             wallet.balance += amount;
+            await wallet.save();
 
             return wallet;
         } catch (error) {

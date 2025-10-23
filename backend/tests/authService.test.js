@@ -4,12 +4,11 @@ import User from '../src/models/User.js';
 
 async function createUser(overrides = {}) {
     const defaultData = {
+        name: 'n',
         username: 'u',
         balance: 20,
         passwordHash: '1',
         email: 'a@b.com',
-        type: 'user',
-        walletId: new Types.ObjectId(),
     };
 
     const user = await User.create({

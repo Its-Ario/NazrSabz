@@ -4,6 +4,7 @@ import User from '../src/models/User';
 
 async function createUser(overrides = {}) {
     const defaultData = {
+        name: 'n',
         username: 'u',
         balance: 20,
         passwordHash: '1',
@@ -23,6 +24,7 @@ async function createUser(overrides = {}) {
 describe('RequestService', () => {
     describe('createRequest', () => {
         const userData = {
+            name: 'n',
             username: 'u',
             password: '1',
             email: 'a@b.com',
