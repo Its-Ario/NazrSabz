@@ -15,7 +15,7 @@ async function createUser(overrides = {}) {
         passwordHash: '1',
         email: 'a@b.com',
         type: 'user',
-        walletId: Types.ObjectId(1)
+        walletId: new Types.ObjectId()
     };
 
     const user = await User.create({

@@ -1,5 +1,6 @@
 import authService from '../src/services/authService.js';
 import { Types } from 'mongoose';
+import User from '../src/models/User.js';
 
 async function createUser(overrides = {}) {
     const defaultData = {

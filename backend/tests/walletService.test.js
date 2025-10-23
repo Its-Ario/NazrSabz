@@ -1,5 +1,24 @@
 import walletService from '../src/services/walletService.js';
 import { Types } from 'mongoose';
+import User from '../src/models/User.js';
+
+async function createUser(overrides = {}) {
+    const defaultData = {
+        username: 'u',
+        balance: 20,
+        passwordHash: '1',
+        email: 'a@b.com',
+        type: 'user',
+        walletId: new Types.ObjectId()
+    };
+
+    const user = await User.create({
+        ...defaultData,
+        ...overrides,
+    });
+
+    return user;
+}
 
 describe('WalletService', () => {
     describe('addUserFunds', () => {
@@ -16,7 +35,7 @@ describe('WalletService', () => {
         it('should throw an error if the user is not found', async () => {
             const userId = new Types.ObjectId();
 
-            await expect(userService.updateUserFunds(userId.toString(), 50)).rejects.toThrow(
+            await expect(walletService.updateUserFunds(userId.toString(), 50)).rejects.toThrow(
                 'User not found'
             );
         });

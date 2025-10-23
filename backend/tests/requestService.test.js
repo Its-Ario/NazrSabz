@@ -1,4 +1,6 @@
+import { Types } from "mongoose";
 import authService from "../src/services/authService";
+import User from "../src/models/User";
 
 async function createUser(overrides = {}) {
     const defaultData = {
@@ -7,7 +9,7 @@ async function createUser(overrides = {}) {
         passwordHash: '1',
         email: 'a@b.com',
         type: 'user',
-        walletId: Types.ObjectId(1)
+        walletId: new Types.ObjectId()
     };
 
     const user = await User.create({
