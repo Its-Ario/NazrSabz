@@ -1,6 +1,7 @@
 import User from '../models/User';
 import logger from '../logger';
 import { generateToken } from '../utils/auth.js';
+import bcrypt from 'bcrypt'
 
 class AuthService {
     async registerUser(userData) {

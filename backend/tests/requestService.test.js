@@ -1,3 +1,23 @@
+import authService from "../src/services/authService";
+
+async function createUser(overrides = {}) {
+    const defaultData = {
+        username: 'u',
+        balance: 20,
+        passwordHash: '1',
+        email: 'a@b.com',
+        type: 'user',
+        walletId: Types.ObjectId(1)
+    };
+
+    const user = await User.create({
+        ...defaultData,
+        ...overrides,
+    });
+
+    return user;
+}
+
 describe('RequestService', () => {
     describe('createRequest', () => {
         const userData = {

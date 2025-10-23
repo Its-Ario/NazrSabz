@@ -1,4 +1,5 @@
 import walletService from '../src/services/walletService.js';
+import { Types } from 'mongoose';
 
 describe('WalletService', () => {
     describe('addUserFunds', () => {

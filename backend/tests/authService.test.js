@@ -1,4 +1,23 @@
 import authService from '../src/services/authService.js';
+import { Types } from 'mongoose';
+
+async function createUser(overrides = {}) {
+    const defaultData = {
+        username: 'u',
+        balance: 20,
+        passwordHash: '1',
+        email: 'a@b.com',
+        type: 'user',
+        walletId: new Types.ObjectId()
+    };
+
+    const user = await User.create({
+        ...defaultData,
+        ...overrides,
+    });
+
+    return user;
+}
 
 describe('authService', () => {
     describe('registerUser', () => {

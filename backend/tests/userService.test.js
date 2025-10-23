@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
 import userService from '../src/services/userService.js';
 import User from '../src/models/User.js';
+import { Types } from 'mongoose';
 
 jest.mock('bcrypt', () => ({
     genSalt: jest.fn(),
@@ -14,6 +15,7 @@ async function createUser(overrides = {}) {
         passwordHash: '1',
         email: 'a@b.com',
         type: 'user',
+        walletId: Types.ObjectId(1)
     };
 
     const user = await User.create({
