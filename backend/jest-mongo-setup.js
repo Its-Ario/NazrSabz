@@ -5,6 +5,7 @@ let mongoServer;
 
 export const connect = async () => {
     mongoServer = await MongoMemoryServer.create();
+    console.log(mongoServer.getUri());
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
 };

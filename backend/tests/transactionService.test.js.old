@@ -2,6 +2,7 @@ import transactionService from '../src/services/transactionService.js';
 import Transaction from '../src/models/Transaction.js';
 import Book from '../src/models/Book.js';
 import User from '../src/models/User.js';
+import CollectionRequest from '../src/models/CollectionRequest.js';
 
 async function createObjects() {
     const user = await User.create({
@@ -11,12 +12,8 @@ async function createObjects() {
         email: 'a@b.com',
         type: 'user',
     });
-    const book = await Book.create({
-        copiesAvailable: 2,
-        submittedBy: user._id,
-        author: 'a',
-        title: 't',
-        isbn: 'i',
+    const request = await CollectionRequest.create({
+        requester: user
     });
 
     const transaction = await Transaction.create({

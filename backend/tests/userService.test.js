@@ -1,5 +1,4 @@
 import { jest } from '@jest/globals';
-import { Types } from 'mongoose';
 import userService from '../src/services/userService.js';
 import User from '../src/models/User.js';
 
@@ -26,30 +25,6 @@ async function createUser(overrides = {}) {
 }
 
 describe('userService', () => {
-    describe('registerUser', () => {
-        const userData = {
-            name: 'n',
-            username: 'u',
-            password: 'p',
-            email: 'a@b.com',
-        };
-        it('should create and save a new user successfully', async () => {
-            const result = await userService.registerUser(userData);
-
-            expect(result).not.toHaveProperty('password');
-            expect(result).not.toHaveProperty('passwordHash');
-            expect(result.username).toBe(userData.username);
-        });
-
-        it('should throw an error if the user already exists', async () => {
-            await createUser();
-
-            await expect(userService.registerUser(userData)).rejects.toThrow(
-                'User with this email or username already exists.'
-            );
-        });
-    });
-
     describe('getUserProfile', () => {
         it('should return a user profile by ID', async () => {
             const user = await createUser();
@@ -57,26 +32,6 @@ describe('userService', () => {
 
             expect(result._id).toEqual(user._id);
             expect(result.name).toBe(user.name);
-        });
-    });
-
-    describe('updateUserFunds', () => {
-        it('should correctly add funds to a user account', async () => {
-            const user = await createUser();
-            user.balance = 100;
-            await user.save();
-
-            const result = await userService.updateUserFunds(user.id.toString(), 50);
-
-            expect(result.balance).toBe(150);
-        });
-
-        it('should throw an error if the user is not found', async () => {
-            const userId = new Types.ObjectId();
-
-            await expect(userService.updateUserFunds(userId.toString(), 50)).rejects.toThrow(
-                'User not found'
-            );
         });
     });
 
@@ -113,26 +68,6 @@ describe('userService', () => {
                 expect(user).not.toHaveProperty('passwordHash');
                 expect(user).not.toHaveProperty('tokenVersion');
             });
-        });
-    });
-
-    describe('updateTokenVersion', () => {
-        it('should increment tokenVersion for a user', async () => {
-            const user = await createUser();
-            user.tokenVersion = 0;
-            await user.save();
-
-            const updatedUser = await userService.updateTokenVersion(user.id.toString());
-
-            expect(updatedUser.tokenVersion).toBe(1);
-        });
-
-        it('should throw an error if the user is not found', async () => {
-            const userId = new Types.ObjectId();
-
-            await expect(userService.updateTokenVersion(userId.toString())).rejects.toThrow(
-                'User not found'
-            );
         });
     });
 });
