@@ -47,6 +47,8 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Generate Prisma client
+              env:
+                  DATABASE_URL_PROD: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
               run: pnpm exec prisma generate
 
             - name: Apply Prisma migrations to test DB
