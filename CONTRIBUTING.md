@@ -1,6 +1,6 @@
-# Contributing to PortLib
+# Contributing to NazrSabz
 
-First off, thank you for considering contributing to PortLib! 🎉 We're excited to have you join us. Every contribution, whether it's a bug report, a new feature, or a typo fix, is valuable.
+First off, thank you for considering contributing to NazrSabz! 🎉 We're excited to have you join us. Every contribution, whether it's a bug report, a new feature, or a typo fix, is valuable.
 
 This document provides a set of guidelines to help you contribute effectively.
 
@@ -45,5 +45,5 @@ First, you'll need to **fork** the main PortLib repository. A fork is your own p
 Next, clone your forked repository to your local machine.
 
 ```bash
-git clone https://github.com/Its-Ario/PortLib.git
+git clone https://github.com/Its-Ario/NazrSabz.git
 cd PortLib
