@@ -22,8 +22,6 @@
         "helmet": "^8.1.0",
         "jsonwebtoken": "^9.0.2",
         "lib0": "^0.2.114",
-        "mongodb-memory-server": "^10.2.3",
-        "mongoose": "^8.13.2",
         "morgan": "^1.10.1",
         "passport": "^0.7.0",
         "passport-google-oauth20": "^2.0.0",

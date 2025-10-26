@@ -51,7 +51,7 @@ jobs:
 
             - name: Apply Prisma migrations to test DB
               env:
-                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
+                  DATABASE_URL_PROD: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
               run: pnpm exec prisma migrate deploy
 
             - name: Run backend tests
