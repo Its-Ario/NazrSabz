@@ -1,11 +1,29 @@
-import User from '../models/User.js';
 import logger from '../logger.js';
+import prisma from '../utils/prisma.js';
 
 class UserService {
     async getUserProfile(userId) {
         try {
             logger.info(`Fetching profile for user: ${userId}`);
-            return User.findById(userId).select('-passwordHash').lean();
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+                select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    email: true,
+                    tokenVersion: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
+
+            if (!user) {
+                logger.warn(`User not found: ${userId}`);
+                throw new Error('User not found');
+            }
+
+            return user;
         } catch (error) {
             logger.error(`Failed to get user profile: ${error.message}`, error);
             throw error;
@@ -16,8 +34,19 @@ class UserService {
         try {
             if (!field) throw new Error('Field name is required');
             logger.info(`Fetching user by ${field}: ${value}`);
-            const query = { [field]: value };
-            return User.findOne(query).lean();
+
+            const user = await prisma.user.findFirst({
+                where: { [field]: value },
+                select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    email: true,
+                    tokenVersion: true,
+                },
+            });
+
+            return user;
         } catch (error) {
             logger.error(`Failed to get user by ${field}: ${error.message}`, error);
             throw error;
@@ -26,25 +55,35 @@ class UserService {
 
     async updateRole(userId, newRole) {
         try {
-            const validRoles = ['ADMIN', 'MEMBER'];
+            const validRoles = ['ADMIN', 'USER'];
             if (!validRoles.includes(newRole)) {
                 throw new Error(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
             }
 
             logger.info(`Updating role for user ${userId} to ${newRole}`);
-            const updatedUser = await User.findByIdAndUpdate(
-                userId,
-                { role: newRole },
-                { new: true, runValidators: true }
-            ).select('-passwordHash');
 
-            if (!updatedUser) {
+            const updatedUser = await prisma.user.update({
+                where: { id: userId },
+                data: { role: newRole },
+                select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    email: true,
+                    tokenVersion: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    role: true,
+                },
+            });
+
+            return updatedUser;
+        } catch (error) {
+            if (error.code === 'P2025') {
                 logger.warn(`User not found for role update: ${userId}`);
                 throw new Error('User not found');
             }
 
-            return updatedUser;
-        } catch (error) {
             logger.error(`Failed to update user role: ${error.message}`, error);
             throw error;
         }
@@ -54,12 +93,22 @@ class UserService {
         try {
             const safeLimit = Math.min(Math.max(1, limit), 100);
             logger.info(`Fetching all users: limit=${safeLimit}, skip=${skip}`);
-            return User.find()
-                .select('-passwordHash -tokenVersion -__v')
-                .sort({ createdAt: -1 })
-                .skip(skip)
-                .limit(safeLimit)
-                .lean();
+
+            const users = await prisma.user.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    username: true,
+                    email: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: safeLimit,
+            });
+
+            return users;
         } catch (error) {
             logger.error(`Failed to fetch users: ${error.message}`, error);
             throw error;

@@ -1,7 +1,5 @@
 import { createServer } from 'http';
 import { config } from 'dotenv';
-import pkg from 'mongoose';
-const { connect, connection } = pkg;
 import app from './app.js';
 import SignalingServer from './signalingServer.js';
 import logger from './logger.js';
@@ -14,9 +12,6 @@ const PORT = process.env.BACKEND_PORT || 3000;
 
 async function startServer() {
     try {
-        await connect(process.env.MONGO_URI);
-        logger.info('✅ MongoDB connected');
-
         const server = createServer(app);
 
         const wsServer = new SignalingServer(server, {
@@ -32,7 +27,6 @@ async function startServer() {
         app.get('/health', (req, res) => {
             res.status(200).json({
                 status: 'ok',
-                mongodb: connection.readyState === 1 ? 'connected' : 'disconnected',
                 websocket: wsServer.getStatus(),
                 uptime: process.uptime(),
             });

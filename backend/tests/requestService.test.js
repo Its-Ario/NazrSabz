@@ -1,51 +1,55 @@
-import { Types } from 'mongoose';
-import authService from '../src/services/authService';
-import User from '../src/models/User';
+import prisma from '../src/utils/prisma.js';
+import requestService from '../src/services/requestService.js';
+import walletService from '../src/services/walletService.js';
 
 async function createUser(overrides = {}) {
     const defaultData = {
         name: 'n',
-        username: 'u',
-        balance: 20,
-        passwordHash: '1',
-        email: 'a@b.com',
-        type: 'user',
-        walletId: new Types.ObjectId(),
+        username: `u_${Date.now()}`,
+        email: `e_${Date.now()}@b.com`,
+        passwordHash: 'hashed_password',
+        tokenVersion: 0,
     };
 
-    const user = await User.create({
-        ...defaultData,
-        ...overrides,
+    const user = await prisma.user.create({
+        data: { ...defaultData, ...overrides },
     });
+
+    await walletService.createWallet(user.id);
 
     return user;
 }
 
 describe('RequestService', () => {
     describe('createRequest', () => {
-        const userData = {
-            name: 'n',
-            username: 'u',
-            password: '1',
-            email: 'a@b.com',
-            type: 'user',
-            walletId: new Types.ObjectId(),
-        };
-        const requestData = {};
         it('should create and save a new request successfully', async () => {
-            const result = await authService.registerUser(userData);
+            const user = await createUser();
 
-            expect(result).not.toHaveProperty('password');
-            expect(result).not.toHaveProperty('passwordHash');
-            expect(result.username).toBe(userData.username);
-        });
+            const requestData = {
+                requesterId: user.id,
+                items: [
+                    { name: 'Plastic Bottles', weight: 5, notes: 'Only clear bottles, no caps' },
+                    { name: 'Cardboard Boxes', weight: 3 },
+                ],
+                address: {
+                    street: '123 Green Street',
+                    city: 'EcoCity',
+                    postalCode: '12345',
+                    location: { type: 'Point', coordinates: [12.345678, 98.765432] },
+                },
+                status: 'pending',
+                scheduledAt: new Date('2025-10-30T09:00:00.000Z'),
+                completedAt: null,
+                priority: 'high',
+                metadata: { weight: 8, category: 'recyclable' },
+            };
 
-        it('should throw an error if the user already exists', async () => {
-            await createUser();
+            const result = await requestService.createRequest(requestData);
 
-            await expect(authService.registerUser(userData)).rejects.toThrow(
-                'User with this email or username already exists.'
-            );
+            expect(result).toBeDefined();
+            expect(result.requesterId).toBe(user.id);
+            expect(result.items.length).toBe(2);
+            expect(result.status).toBe('pending');
         });
     });
 });

@@ -1,4 +1,4 @@
-import { connect, clearDatabase, closeDatabase } from './jest-mongo-setup.js';
+import { connect, clearDatabase, closeDatabase } from './jest-prisma-setup.js';
 
 beforeAll(async () => {
     await connect();

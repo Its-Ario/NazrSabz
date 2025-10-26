@@ -1,39 +1,29 @@
-import { jest } from '@jest/globals';
-import userService from '../src/services/userService.js';
-import User from '../src/models/User.js';
-import { Types } from 'mongoose';
-
-jest.mock('bcrypt', () => ({
-    genSalt: jest.fn(),
-    hash: jest.fn(),
-}));
+import userService from '../src/services/userService';
+import prisma from '../src/utils/prisma.js';
 
 async function createUser(overrides = {}) {
     const defaultData = {
-        username: 'u',
-        balance: 20,
-        passwordHash: '1',
-        email: 'a@b.com',
-        type: 'user',
-        walletId: new Types.ObjectId(),
+        name: 'n',
+        username: `u_${Date.now()}`,
+        email: `e_${Date.now()}@b.com`,
+        passwordHash: 'hashed_password',
+        tokenVersion: 0,
     };
 
-    const user = await User.create({
-        ...defaultData,
-        ...overrides,
+    return prisma.user.create({
+        data: { ...defaultData, ...overrides },
     });
-
-    return user;
 }
 
 describe('userService', () => {
     describe('getUserProfile', () => {
         it('should return a user profile by ID', async () => {
             const user = await createUser();
-            const result = await userService.getUserProfile(user.id.toString());
+            const result = await userService.getUserProfile(user.id);
 
-            expect(result._id).toEqual(user._id);
+            expect(result.id).toBe(user.id);
             expect(result.name).toBe(user.name);
+            expect(result).not.toHaveProperty('passwordHash');
         });
     });
 
@@ -43,32 +33,34 @@ describe('userService', () => {
         beforeEach(async () => {
             user = await createUser();
         });
-        it('should update the user role successfully', async () => {
-            const result = await userService.updateRole(user.id.toString(), 'ADMIN');
 
+        it('should update the user role successfully', async () => {
+            const result = await userService.updateRole(user.id, 'ADMIN');
             expect(result.role).toBe('ADMIN');
         });
 
         it('should throw an error for an invalid role', async () => {
-            await expect(
-                userService.updateRole(user.id.toString(), 'INVALID_ROLE')
-            ).rejects.toThrow('Invalid role. Must be one of: ADMIN, MEMBER');
+            await expect(userService.updateRole(user.id, 'INVALID_ROLE')).rejects.toThrow(
+                'Invalid role. Must be one of: ADMIN, USER'
+            );
         });
     });
 
     describe('getAllUsers', () => {
         it('should return a list of users', async () => {
-            const user1 = await createUser();
-            await createUser({ username: 'u2', email: 'a2@b.com' });
+            await createUser();
+            await createUser({
+                username: `u2_${Date.now()}`,
+                email: `e2_${Date.now()}@b.com`,
+            });
 
             const result = await userService.getAllUsers();
 
             expect(result.length).toBe(2);
-            expect(result[0].username).toBe(user1.username);
 
-            result.forEach((user) => {
-                expect(user).not.toHaveProperty('passwordHash');
-                expect(user).not.toHaveProperty('tokenVersion');
+            result.forEach((u) => {
+                expect(u).not.toHaveProperty('passwordHash');
+                expect(u).not.toHaveProperty('tokenVersion');
             });
         });
     });

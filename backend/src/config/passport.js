@@ -1,7 +1,6 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import User from '../models/User.js';
-
+import { prisma } from '../utils/prisma.js';
 import { config } from 'dotenv';
 config({ path: '../.env' });
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -15,22 +14,31 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
-                let user = await User.findOne({ googleId: profile.id });
+                let user = await prisma.user.findUnique({
+                    where: { googleId: profile.id },
+                });
 
                 if (!user) {
-                    user = await User.findOne({ email: profile.emails[0].value });
+                    user = await prisma.user.findUnique({
+                        where: { email: profile.emails[0].value },
+                    });
+
                     if (user) {
-                        user.googleId = profile.id;
+                        user = await prisma.user.update({
+                            where: { id: user.id },
+                            data: { googleId: profile.id },
+                        });
                     } else {
-                        user = await User.create({
-                            name: profile.displayName,
-                            email: profile.emails[0].value,
-                            username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
-                            googleId: profile.id,
-                            role: 'MEMBER',
+                        user = await prisma.user.create({
+                            data: {
+                                name: profile.displayName,
+                                email: profile.emails[0].value,
+                                username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
+                                googleId: profile.id,
+                                role: 'MEMBER',
+                            },
                         });
                     }
-                    await user.save();
                 }
 
                 return done(null, user);
