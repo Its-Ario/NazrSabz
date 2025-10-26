@@ -58,6 +58,7 @@ jobs:
 
             - name: Run backend tests
               env:
+                  DATABASE_URL_PROD: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
                   DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
               run: pnpm test
 
