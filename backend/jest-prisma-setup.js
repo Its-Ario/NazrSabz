@@ -1,5 +1,6 @@
 import prisma from './src/utils/prisma.js';
 
+process.env.DATABASE_URL = process.env.DATABASE_URL_TEST;
 export const connect = async () => {
     await prisma.$connect();
 };

@@ -12,9 +12,25 @@ jobs:
         defaults:
             run:
                 working-directory: ./backend
+
+        services:
+            postgres:
+                image: postgres:16
+                ports:
+                    - 5432:5432
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: nazrsabz_test
+                options: >-
+                    --health-cmd="pg_isready -U postgres"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
         steps:
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup pnpm
               uses: pnpm/action-setup@v2
@@ -22,24 +38,27 @@ jobs:
                   version: 10
 
             - name: Setup Node.js
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: 20
                   cache: 'pnpm'
 
-            - name: Cache MongoDB binaries
-              uses: actions/cache@v3
-              with:
-                  path: ~/.cache/mongodb-binaries
-                  key: mongo-binaries-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      mongo-binaries-${{ runner.os }}-
-
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Generate Prisma client
+              run: pnpm exec prisma generate
+
+            - name: Apply Prisma migrations to test DB
+              env:
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
+              run: pnpm exec prisma migrate deploy
+
             - name: Run backend tests
-              run: MONGOMS_DOWNLOAD_DIR=$HOME/.cache/mongodb-binaries pnpm exec npm test
+              env:
+                  DATABASE_URL_TEST: postgresql://postgres:postgres@localhost:5432/nazrsabz_test
+              run: pnpm test
+
     frontend:
         runs-on: ubuntu-latest
         defaults:
