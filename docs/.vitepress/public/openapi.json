@@ -1,8 +1,8 @@
 {
     "openapi": "3.1.1",
     "info": {
-        "title": "PortLib API",
-        "description": "REST API for the PortLib SPA",
+        "title": "NazrSabz API",
+        "description": "REST API for the NazrSabz SPA",
         "version": "1.0.0"
     },
     "paths": {
@@ -45,49 +45,6 @@
                     }
                 }
             }
-        },
-        "/api/books": {
-            "get": {
-                "summary": "Get all approved books",
-                "responses": {
-                    "200": {
-                        "description": "List of books",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Book"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "summary": "Submit a new book",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Book"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Book submitted successfully"
-                    }
-                }
-            }
         }
     },
     "components": {
@@ -99,36 +56,80 @@
             }
         },
         "schemas": {
+            "User": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "name": { "type": "string", "nullable": true },
+                    "username": { "type": "string" },
+                    "email": { "type": "string", "format": "email" },
+                    "passwordHash": { "type": "string" },
+                    "role": {
+                        "type": "string",
+                        "enum": ["ADMIN", "MANAGER", "DRIVER", "USER"],
+                        "default": "USER"
+                    },
+                    "googleId": { "type": "string", "nullable": true },
+                    "tokenVersion": { "type": "integer", "default": 0 },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                }
+            },
+
+            "Request": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "requesterId": { "type": "string" },
+                    "collectorId": { "type": "string", "nullable": true },
+                    "items": { "type": "object", "additionalProperties": true },
+                    "address": { "type": "object", "additionalProperties": true },
+                    "metadata": {
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": true
+                    },
+                    "status": { "type": "string", "default": "pending" },
+                    "scheduledAt": { "type": "string", "format": "date-time", "nullable": true },
+                    "completedAt": { "type": "string", "format": "date-time", "nullable": true },
+                    "priority": { "type": "string", "default": "normal" },
+                    "createdAt": { "type": "string", "format": "date-time" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                }
+            },
+
+            "Transaction": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "userId": { "type": "string" },
+                    "requestId": { "type": "string", "nullable": true },
+                    "action": { "type": "string", "enum": ["WITHDRAWL", "ADDITION"] },
+                    "amount": { "type": "number", "nullable": true },
+                    "createdAt": { "type": "string", "format": "date-time" }
+                }
+            },
+
+            "Wallet": {
+                "type": "object",
+                "properties": {
+                    "id": { "type": "string", "format": "uuid" },
+                    "userId": { "type": "string" },
+                    "balance": { "type": "number", "default": 0 }
+                }
+            },
+
             "Book": {
                 "type": "object",
                 "properties": {
-                    "title": {
-                        "type": "string"
-                    },
-                    "author": {
-                        "type": "string"
-                    },
-                    "isbn": {
-                        "type": "string"
-                    },
-                    "publicationYear": {
-                        "type": "integer"
-                    },
-                    "copiesAvailable": {
-                        "type": "integer",
-                        "default": 1
-                    },
-                    "approved": {
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "forSale": {
-                        "type": "boolean",
-                        "default": false
-                    },
-                    "price": {
-                        "type": "number"
-                    }
+                    "title": { "type": "string" },
+                    "author": { "type": "string" },
+                    "isbn": { "type": "string" },
+                    "publicationYear": { "type": "integer" },
+                    "copiesAvailable": { "type": "integer", "default": 1 },
+                    "approved": { "type": "boolean", "default": false },
+                    "forSale": { "type": "boolean", "default": false },
+                    "price": { "type": "number" }
                 }
             }
         }

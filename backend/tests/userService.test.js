@@ -41,7 +41,7 @@ describe('userService', () => {
 
         it('should throw an error for an invalid role', async () => {
             await expect(userService.updateRole(user.id, 'INVALID_ROLE')).rejects.toThrow(
-                'Invalid role. Must be one of: ADMIN, USER'
+                'Invalid role. Must be one of: ADMIN, MANAGER, DRIVER, USER'
             );
         });
     });

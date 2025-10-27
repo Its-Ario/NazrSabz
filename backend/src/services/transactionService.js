@@ -3,11 +3,16 @@ import logger from '../logger.js';
 
 class TransactionService {
     async createTransaction({ userId, requestId, action, amount }) {
+        const validActions = ['WITHDRAWL', 'ADDITION'];
+        if (!validActions.includes(action)) {
+            throw new Error('Invalid action');
+        }
+
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) throw new Error('User not found');
 
         let request = null;
-        if (requestId) {
+        if (action === 'ADDITION') {
             request = await prisma.request.findUnique({ where: { id: requestId } });
             if (!request) throw new Error('Request not found');
         }

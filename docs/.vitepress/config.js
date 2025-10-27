@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-    title: 'PortLib',
+    title: 'NazrSabz',
     base: '/docs/',
     description: 'A Portable Library SPA',
     themeConfig: {
@@ -39,6 +39,6 @@ export default defineConfig({
             },
         ],
 
-        socialLinks: [{ icon: 'github', link: 'https://github.com/Its-Ario/PortLib' }],
+        socialLinks: [{ icon: 'github', link: 'https://github.com/Its-Ario/NazrSabz' }],
     },
 });

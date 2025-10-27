@@ -16,23 +16,22 @@ async function createObjects() {
     });
 
     const transaction = await prisma.transaction.create({
-        data: { userId: user.id, requestId: request.id, action: 'withdraw', amount: 20 },
+        data: { userId: user.id, requestId: request.id, action: 'WITHDRAWL', amount: 20 },
     });
 
     return { user, request, transaction };
 }
 
 describe('transactionService', () => {
-    afterEach(async () => {
-        await prisma.transaction.deleteMany({});
-        await prisma.request.deleteMany({});
-        await prisma.user.deleteMany({});
-    });
-
     describe('createTransaction', () => {
         it('should create a transaction successfully', async () => {
             const { user, request } = await createObjects();
-            const data = { userId: user.id, requestId: request.id, action: 'withdraw', amount: 20 };
+            const data = {
+                userId: user.id,
+                requestId: request.id,
+                action: 'WITHDRAWL',
+                amount: 20,
+            };
 
             const transaction = await transactionService.createTransaction(data);
 
@@ -49,7 +48,7 @@ describe('transactionService', () => {
             const data = {
                 userId: 'nonexistent',
                 requestId: request.id,
-                action: 'withdraw',
+                action: 'WITHDRAWL',
                 amount: 20,
             };
 
@@ -65,7 +64,7 @@ describe('transactionService', () => {
             const data = {
                 userId: user.id,
                 requestId: 'nonexistent',
-                action: 'withdraw',
+                action: 'WITHDRAWL',
                 amount: 20,
             };
 

@@ -35,7 +35,7 @@ passport.use(
                                 email: profile.emails[0].value,
                                 username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
                                 googleId: profile.id,
-                                role: 'MEMBER',
+                                role: 'USER',
                             },
                         });
                     }

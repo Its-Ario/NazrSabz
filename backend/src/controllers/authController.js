@@ -13,7 +13,7 @@ export const login = async (req, res) => {
         const result = await authService.loginWithUsername(username, password);
         if (!result) return res.status(403).json({ message: 'Invalid Credentials' });
 
-        res.json({ token, user: userData });
+        res.json({ token: result.token, user: result.userData });
     } catch (error) {
         logger.error('Login error:', error);
         res.status(500).json({ message: 'Server error' });
@@ -41,7 +41,7 @@ export const register = async (req, res) => {
             email,
             username,
             passwordHash: hashedPassword,
-            role: 'MEMBER',
+            role: 'USER',
         });
 
         res.status(201).json(newUser);
@@ -63,6 +63,8 @@ export const changepassword = async (req, res) => {
     const isMatch = await compare(currentPassword, user.passwordHash);
     if (!isMatch) return res.status(403).json({ error: 'Password incorrect' });
 
+    await authService.changePassword(user.id, newPassword);
+
     res.json({ message: 'Password updated successfully' });
 };
 
@@ -71,8 +73,7 @@ export const logout = async (req, res) => {
         const user = req.user;
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        user.tokenVersion += 1;
-        await userService.updateTokenVersion(user._id.toString());
+        await authService.updateTokenVersion(user.id);
 
         res.json({ message: 'Logged out successfully' });
     } catch (error) {

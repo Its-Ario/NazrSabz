@@ -20,7 +20,7 @@ model User {
   username     String   @unique
   email        String   @unique
   passwordHash String
-  role         String   @default("USER")
+  role         UserRole @default(USER)
   googleId     String?  @unique
   tokenVersion Int      @default(0)
   createdAt    DateTime @default(now())
@@ -79,6 +79,13 @@ model Wallet {
 }
 
 enum TransactionAction {
-  withdraw
-  addition
+  WITHDRAWL
+  ADDITION
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  DRIVER
+  USER
 }

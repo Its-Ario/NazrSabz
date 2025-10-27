@@ -55,7 +55,7 @@ class UserService {
 
     async updateRole(userId, newRole) {
         try {
-            const validRoles = ['ADMIN', 'USER'];
+            const validRoles = ['ADMIN', 'MANAGER', 'DRIVER', 'USER'];
             if (!validRoles.includes(newRole)) {
                 throw new Error(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
             }
