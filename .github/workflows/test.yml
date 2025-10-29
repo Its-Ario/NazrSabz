@@ -141,16 +141,12 @@ jobs:
                   chmod 600 ~/.ssh/id_rsa
                   ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
-                  scp -r -i ~/.ssh/id_rsa ./docs-dist/* ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/portlib/docs
+                  scp -r -i ~/.ssh/id_rsa ./docs-dist/* ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/nazrsabz/docs
 
                   ssh -i ~/.ssh/id_rsa ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-                    cd ~/portlib
+                    cd ~/nazrsabz
                     git fetch origin main
                     git reset --hard origin/main
-
-                    if [ ! -f .env ]; then
-                      echo "${ENV_FILE}" > .env
-                    fi
 
                     docker compose up --build -d
                   EOF

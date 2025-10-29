@@ -3,9 +3,9 @@ services:
         build:
             context: .
             dockerfile: backend/Dockerfile
-        container_name: portlib-backend
+        container_name: nazrsabz-backend
         ports:
-            - '${BACKEND_PORT}:3000'
+            - "${BACKEND_PORT}:3000"
         env_file:
             - .env
         volumes:
@@ -16,9 +16,9 @@ services:
         build:
             context: .
             dockerfile: frontend/Dockerfile
-        container_name: portlib-frontend
+        container_name: nazrsabz-frontend
         ports:
-            - '${FRONTEND_PORT}:80'
+            - "${FRONTEND_PORT}:80"
         env_file:
             - .env
         volumes:
