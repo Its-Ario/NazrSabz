@@ -103,7 +103,7 @@ export class HeaderBar extends LitElement {
         return html`
             <div class="container">
                 <div class="username">${this.user?.name ? `Welcome, ${this.user.name}` : ''}</div>
-                <h1><span class="icon-wrapper title-icon">${locationDotIcon}</span>PortLib Map</h1>
+                <h1><span class="icon-wrapper title-icon">${locationDotIcon}</span>NazrSabz</h1>
                 <button @click=${this._onLogout}>
                     <span class="icon-wrapper">${logoutIcon}</span>Logout
                 </button>

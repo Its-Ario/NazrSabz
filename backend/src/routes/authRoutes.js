@@ -11,7 +11,7 @@ const router = Router();
 
 router.get('/verify-token', auth, async (req, res) => {
     const userData = {
-        id: req.user._id.toString(),
+        id: req.user.id.toString(),
         name: req.user.name,
     };
 
@@ -40,6 +40,7 @@ router.get(
     '/google/callback',
     passport.authenticate('google', { failureRedirect: '/', session: false }),
     async (req, res) => {
+        console.log(req.user);
         const token = generateToken(req.user);
 
         const redirectUrl = `${CLIENT_URL}/login?googleToken=${token}`;

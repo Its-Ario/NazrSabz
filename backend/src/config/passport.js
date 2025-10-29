@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { prisma } from '../utils/prisma.js';
+import prisma from '../utils/prisma.js';
+import crypto from 'crypto';
 import { config } from 'dotenv';
 config({ path: '../.env' });
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -35,6 +36,7 @@ passport.use(
                                 email: profile.emails[0].value,
                                 username: profile.displayName.replace(/\s+/g, '').toLowerCase(),
                                 googleId: profile.id,
+                                passwordHash: crypto.randomBytes(32).toString('hex'),
                                 role: 'USER',
                             },
                         });
