@@ -11,6 +11,8 @@ RUN npm install -g pnpm \
 
 COPY backend ./backend/
 
+RUN pnpm --filter backend run generate
+
 EXPOSE 3000
 
 CMD ["pnpm", "run", "start:backend"]
