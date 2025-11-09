@@ -8,7 +8,7 @@
         "dev": "nodemon src/server.js",
         "migrate:test": "npx cross-env DATABASE_URL=$DATABASE_URL_TEST npx prisma migrate deploy",
         "migrate:dev": "npx prisma migrate dev",
-        "generate": "npx prisma generate"
+        "postinstall": "npx prisma generate"
     },
     "keywords": [],
     "author": "",

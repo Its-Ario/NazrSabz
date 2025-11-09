@@ -30,7 +30,7 @@ class UserService {
         }
     }
 
-    async getUserProfileBy(field, value) {
+    async getUserProfileBy(field, value, includePassword = false) {
         try {
             if (!field) throw new Error('Field name is required');
             logger.info(`Fetching user by ${field}: ${value}`);
@@ -43,6 +43,7 @@ class UserService {
                     username: true,
                     email: true,
                     tokenVersion: true,
+                    passwordHash: includePassword
                 },
             });
 

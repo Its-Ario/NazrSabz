@@ -1,4 +1,4 @@
-import { compare, hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import authService from '../services/authService.js';
 import logger from '../logger.js';
 
@@ -7,7 +7,7 @@ export const login = async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password) return res.status(403).json({ message: 'Invalid Credentials' });
-        if (typeof username !== String || typeof password !== String)
+        if (typeof username !== "string" || typeof password !== "string")
             return res.status(403).json({ message: 'Invalid input' });
 
         const result = await authService.loginWithUsername(username, password);
@@ -27,20 +27,19 @@ export const register = async (req, res) => {
         if (!name || !email || !username || !password)
             return res.status(400).json({ message: 'Please fill out the form' });
         if (
-            typeof name !== String ||
-            typeof email !== String ||
-            typeof username !== String ||
-            typeof password !== String
+            typeof name !== "string" ||
+            typeof email !== "string" ||
+            typeof username !== "string" ||
+            typeof password !== "string" || !password
         )
             return res.status(403).json({ message: 'Invalid input' });
 
-        const hashedPassword = await hash(password, 10);
 
         const newUser = await authService.registerUser({
             name,
             email,
             username,
-            passwordHash: hashedPassword,
+            password,
             role: 'USER',
         });
 

@@ -18,15 +18,15 @@ export class CollaborationService extends EventTarget {
         this.awareness.on('change', () => this.emitUsersChange());
 
         this.provider = new WebrtcProvider(room, this.doc, {
-            signaling: ['wss://lib.itsario.ir/api/'],
+            signaling: ['wss://nazrsabz.itsario.ir/api/'],
             awareness: this.awareness,
             filterBcConns: true,
             peerOpts: {
                 config: {
-                    iceServers: [
+                    iceServers: [   
                         { urls: 'stun:itsario.ir:3478' },
                         {
-                            urls: 'turns:itsario.ir:3478?transport=tcp',
+                            urls: 'turn:itsario.ir:3478?transport=tcp',
                             username: 'testuser',
                             credential: 'testpassword',
                         },

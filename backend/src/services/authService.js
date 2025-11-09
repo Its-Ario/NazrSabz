@@ -42,7 +42,7 @@ class AuthService {
     }
 
     async loginWithUsername(username, password) {
-        const user = await userService.getUserProfileBy('username', username);
+        const user = await userService.getUserProfileBy('username', username, true);
         if (!user) return false;
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
