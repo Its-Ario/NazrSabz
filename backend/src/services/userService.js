@@ -43,7 +43,7 @@ class UserService {
                     username: true,
                     email: true,
                     tokenVersion: true,
-                    passwordHash: includePassword
+                    passwordHash: includePassword,
                 },
             });
 

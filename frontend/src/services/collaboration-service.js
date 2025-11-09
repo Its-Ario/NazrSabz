@@ -23,7 +23,7 @@ export class CollaborationService extends EventTarget {
             filterBcConns: true,
             peerOpts: {
                 config: {
-                    iceServers: [   
+                    iceServers: [
                         { urls: 'stun:itsario.ir:3478' },
                         {
                             urls: 'turn:itsario.ir:3478?transport=tcp',
