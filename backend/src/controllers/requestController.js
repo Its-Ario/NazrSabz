@@ -63,8 +63,8 @@ export const createRequest = async (req, res) => {
 export const updateStatus = async (req, res) => {
     const { requestId, status } = req.body;
 
-    if(typeof requestId !== "string" || typeof status !== "string") {
-        return res.status(400).json({ok: false, message: "Invalid Input"});
+    if (typeof requestId !== 'string' || typeof status !== 'string') {
+        return res.status(400).json({ ok: false, message: 'Invalid Input' });
     }
 
     const result = await requestService.updateStatus(requestId, status);

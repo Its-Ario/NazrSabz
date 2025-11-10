@@ -33,7 +33,11 @@ router.patch('/changerole/:id', async (req, res) => {
 
     const updatedUser = await userService.updateRole(req.params.id, newRole);
 
-    res.json({ success: true, message: 'Role updated successfuly', username: updatedUser.username });
+    res.json({
+        success: true,
+        message: 'Role updated successfuly',
+        username: updatedUser.username,
+    });
 });
 
 export default router;

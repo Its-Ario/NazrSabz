@@ -48,10 +48,10 @@ class RequestService {
     }
 
     async updateStatus(requestId, status) {
-        const ALLOWED_STATUSES = ["PENDING", "COMPLETED", "CANCELED"];
+        const ALLOWED_STATUSES = ['PENDING', 'COMPLETED', 'CANCELED'];
         try {
-            if(!ALLOWED_STATUSES.includes(status)) {
-                return {ok: false, message: "Invalid status"}
+            if (!ALLOWED_STATUSES.includes(status)) {
+                return { ok: false, message: 'Invalid status' };
             }
 
             return await prisma.request.update({
@@ -62,8 +62,8 @@ class RequestService {
                 select: {
                     status: true,
                     requesterId: true,
-                    collectorId: true
-                }
+                    collectorId: true,
+                },
             });
         } catch (e) {
             logger.error('Error updating request status');

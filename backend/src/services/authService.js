@@ -61,11 +61,10 @@ class AuthService {
 
     async changePassword(userId, newPassword) {
         const hashedPassword = await bcrypt.hash(newPassword, 10);
-        const newUser =  this.updateTokenVersion(userId, hashedPassword);
+        const newUser = this.updateTokenVersion(userId, hashedPassword);
         const token = generateToken(newUser);
 
-        return {user: newUser, token}
-
+        return { user: newUser, token };
     }
 
     async updateTokenVersion(userId, newPasswordHash) {

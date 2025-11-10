@@ -56,7 +56,7 @@ export const register = async (req, res) => {
 export const changepassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
-    if (typeof currentPassword !== "string" || typeof newPassword !== "string")
+    if (typeof currentPassword !== 'string' || typeof newPassword !== 'string')
         return res.status(403).json({ message: 'Invalid input' });
 
     const user = req.user;
@@ -65,7 +65,7 @@ export const changepassword = async (req, res) => {
     const isMatch = await compare(currentPassword, user.passwordHash);
     if (!isMatch) return res.status(403).json({ error: 'Password incorrect' });
 
-    const {token} = await authService.changePassword(user.id, newPassword);
+    const { token } = await authService.changePassword(user.id, newPassword);
 
     res.json({ message: 'Password updated successfully', token });
 };
