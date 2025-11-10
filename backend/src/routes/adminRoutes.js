@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { hash } from 'bcrypt';
 import userService from '../services/userService.js';
 import auth, { isAdmin } from '../middleware/authMiddleware.js';
+import authService from '../services/authService.js';
 
 const router = Router();
 router.use(auth, isAdmin);
@@ -11,14 +11,11 @@ router.get('/', (req, res) => {
 });
 
 router.post('/adduser', async (req, res) => {
-    const { password, ...rest } = req.body;
-    const hashedPassword = await hash(password, 10);
-    const newUser = new userService.registerUser({
-        ...rest,
-        passwordHash: hashedPassword,
+    const { ...data } = req.body;
+    const newUser = await authService.registerUser({
+        ...data,
     });
-    const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    res.status(201).json(newUser);
 });
 
 router.patch('/changerole/:id', async (req, res) => {
@@ -36,7 +33,7 @@ router.patch('/changerole/:id', async (req, res) => {
 
     const updatedUser = await userService.updateRole(req.params.id, newRole);
 
-    res.json({ success: true, message: 'Role updated successfuly', role: updatedUser.role });
+    res.json({ success: true, message: 'Role updated successfuly', username: updatedUser.username });
 });
 
 export default router;

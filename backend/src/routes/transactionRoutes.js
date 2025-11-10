@@ -16,7 +16,7 @@ router.post('/create', createTransaction);
 router.get('/my-transactions', getUserTransactions);
 router.get('/:id', getTransactionById);
 
-router.post('/add-funds', addFunds);
+router.post('/add-funds', isAdmin, addFunds);
 
 router.get('/all', isAdmin, getAllTransactions);
 

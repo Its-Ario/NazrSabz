@@ -6,7 +6,7 @@ import { createRequest, updateStatus, getRequestById } from '../controllers/requ
 router.use(auth);
 
 router.post('/create', createRequest);
-router.post('/update', isAdmin, updateStatus);
+router.post('/update-status', isAdmin, updateStatus);
 router.get('/get', isAdmin, getRequestById);
 
 export default router;

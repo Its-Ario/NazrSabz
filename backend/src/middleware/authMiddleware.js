@@ -13,7 +13,7 @@ async function verifyToken(req, res, next) {
     try {
         const decoded = verify(token, process.env.JWT_SECRET);
 
-        const user = await userService.getUserProfile(decoded.id);
+        const user = await userService.getFullUserProfile(decoded.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

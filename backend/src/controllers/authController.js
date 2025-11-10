@@ -49,14 +49,14 @@ export const register = async (req, res) => {
         res.status(201).json(newUser);
     } catch (error) {
         logger.error('Register error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: `${error}` });
     }
 };
 
 export const changepassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;
 
-    if (typeof currentPassword !== String || typeof password !== String)
+    if (typeof currentPassword !== "string" || typeof newPassword !== "string")
         return res.status(403).json({ message: 'Invalid input' });
 
     const user = req.user;
@@ -65,9 +65,9 @@ export const changepassword = async (req, res) => {
     const isMatch = await compare(currentPassword, user.passwordHash);
     if (!isMatch) return res.status(403).json({ error: 'Password incorrect' });
 
-    await authService.changePassword(user.id, newPassword);
+    const {token} = await authService.changePassword(user.id, newPassword);
 
-    res.json({ message: 'Password updated successfully' });
+    res.json({ message: 'Password updated successfully', token });
 };
 
 export const logout = async (req, res) => {

@@ -30,6 +30,25 @@ class UserService {
         }
     }
 
+    async getFullUserProfile(userId) {
+        try {
+            logger.info(`Fetching profile for user: ${userId}`);
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+
+            if (!user) {
+                logger.warn(`User not found: ${userId}`);
+                throw new Error('User not found');
+            }
+
+            return user;
+        } catch (error) {
+            logger.error(`Failed to get user profile: ${error.message}`, error);
+            throw error;
+        }
+    }
+
     async getUserProfileBy(field, value, includePassword = false) {
         try {
             if (!field) throw new Error('Field name is required');

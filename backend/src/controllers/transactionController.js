@@ -41,8 +41,7 @@ export const getUserTransactions = asyncHandler(async (req, res) => {
 });
 
 export const addFunds = asyncHandler(async (req, res) => {
-    const { amount } = req.body;
-    const userId = req.user.id;
+    const { amount, userId } = req.body;
 
     const wallet = await walletService.addUserFunds(userId, amount);
 

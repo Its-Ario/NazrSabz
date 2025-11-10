@@ -10,7 +10,7 @@ import {
     googleCallback,
 } from '../controllers/authController.js';
 
-const router = Router();
+const router = new Router();
 
 router.post('/login', login);
 router.post('/register', register);
