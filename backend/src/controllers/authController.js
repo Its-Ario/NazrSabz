@@ -2,6 +2,9 @@ import { compare } from 'bcrypt';
 import authService from '../services/authService.js';
 import logger from '../logger.js';
 
+import { generateToken } from '../utils/auth.js';
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -79,4 +82,20 @@ export const logout = async (req, res) => {
         logger.error('Logout error:', error);
         res.status(500).json({ message: 'Server error' });
     }
+};
+
+export const verify = async (req, res) => {
+    const userData = {
+        id: req.user.id.toString(),
+        name: req.user.name,
+    };
+
+    res.status(200).json({ ok: true, user: userData });
+};
+
+export const googleCallback = async (req, res) => {
+    const token = generateToken(req.user);
+
+    const redirectUrl = `${CLIENT_URL}?googleToken=${token}`;
+    res.redirect(redirectUrl);
 };

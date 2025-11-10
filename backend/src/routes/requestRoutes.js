@@ -1,14 +1,12 @@
 import { Router } from 'express';
-import requestService from '../services/requestService.js';
 const router = Router();
-import auth from '../middleware/authMiddleware.js';
+import auth, { isAdmin } from '../middleware/authMiddleware.js';
+import { createRequest, updateStatus, getRequestById } from '../controllers/requestController.js';
 
 router.use(auth);
 
-router.post('/create', async (req, res) => {
-    const result = await requestService.createRequest(req.body);
-
-    res.json(result);
-});
+router.post('/create', createRequest);
+router.post('/update', isAdmin, updateStatus);
+router.get('/get', isAdmin, getRequestById);
 
 export default router;

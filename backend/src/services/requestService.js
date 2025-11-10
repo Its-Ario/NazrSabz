@@ -1,5 +1,6 @@
 import logger from '../logger.js';
 import prisma from '../utils/prisma.js';
+import userService from './userService.js';
 
 class RequestService {
     async createRequest(requestData) {
@@ -36,13 +37,57 @@ class RequestService {
     }
 
     async getRequestById(requestId) {
-        return prisma.request.findUnique({
-            where: { id: requestId },
-            include: {
-                requester: true,
-                collector: true,
-            },
-        });
+        try {
+            return await prisma.request.findUnique({
+                where: { id: requestId },
+            });
+        } catch (e) {
+            logger.error('Error fetching request: ', requestId);
+            throw e;
+        }
+    }
+
+    async updateStatus(requestId, status) {
+        try {
+            return await prisma.request.update({
+                where: { id: requestId },
+                data: {
+                    status: status,
+                },
+                include: {
+                    status: true,
+                    requester: true,
+                    collector: true,
+                },
+            });
+        } catch (e) {
+            logger.error('Error updating request status');
+            throw e;
+        }
+    }
+
+    async updateCollector(requestId, collectorId) {
+        try {
+            const collector = await userService.getUserProfile(collectorId);
+
+            await prisma.request.update({
+                where: {
+                    id: requestId,
+                },
+                data: {
+                    collector: collector,
+                    collectorId: collectorId,
+                },
+                select: {
+                    requester: true,
+                    collector: true,
+                    status: true,
+                },
+            });
+        } catch (e) {
+            logger.error('Error updating request collector');
+            throw e;
+        }
     }
 }
 

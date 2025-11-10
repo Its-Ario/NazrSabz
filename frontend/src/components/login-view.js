@@ -283,6 +283,12 @@ export class LoginView extends LitElement {
                     composed: true,
                 })
             );
+
+            const url = new URL(window.location.href);
+            url.search = '';
+            window.history.replaceState({}, '', url);
+
+            this.attemptAutoLogin();
         }
     }
 

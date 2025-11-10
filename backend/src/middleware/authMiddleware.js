@@ -35,5 +35,19 @@ function isAdmin(req, res, next) {
     next();
 }
 
+function isManager(req, res, next) {
+    if (req.user?.role !== 'MANAGER') {
+        return res.status(403).json({ message: 'Unauthorized' });
+    }
+    next();
+}
+
+function isDriver(req, res, next) {
+    if (req.user?.role !== 'DRIVER') {
+        return res.status(403).json({ message: 'Unauthorized' });
+    }
+    next();
+}
+
 export default verifyToken;
-export { isAdmin };
+export { isAdmin, isDriver, isManager };

@@ -133,6 +133,38 @@ export class UserMap extends LitElement {
                 color: black;
             }
         `,
+        css`
+            .leaflet-control-zoom {
+                border: none !important;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+            }
+
+            .leaflet-control-zoom a {
+                background-color: var(--surface, #ffffff);
+                color: var(--primary-color, #4f46e5);
+                font-weight: bold;
+                border: none;
+                width: 32px;
+                height: 32px;
+                line-height: 32px;
+                text-align: center;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+
+            .leaflet-control-zoom a:hover,
+            .leaflet-control-zoom a:focus {
+                background-color: var(--primary-color, #4f46e5);
+                color: #ffffff;
+                transform: scale(1.05);
+            }
+
+            .leaflet-control-zoom-in {
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+        `,
     ];
 
     constructor() {
@@ -177,8 +209,6 @@ export class UserMap extends LitElement {
             }).setView([35.7, 51.4], 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution:
-                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 maxZoom: 19,
                 tileSize: 256,
                 zoomOffset: 0,
@@ -220,6 +250,17 @@ export class UserMap extends LitElement {
         if (this.markers.has(userDetails.id)) {
             const { marker, circle } = this.markers.get(userDetails.id);
             marker.setLatLng([lat, lng]);
+
+            marker.bindPopup(`
+                <div style="text-align:center;">
+                    <strong>${userDetails.name}</strong>
+                    ${isCurrentUser ? '<br><small>(You)</small>' : ''}
+                    <br><small>Lat: ${lat.toFixed(6)}</small>
+                    <br><small>Lng: ${lng.toFixed(6)}</small>
+                    <br><small>Last updated: ${lastUpdated}</small>
+                </div>
+            `);
+
             if (circle) circle.setLatLng([lat, lng]).setRadius(accuracy);
         } else {
             const dotIcon = L.divIcon({

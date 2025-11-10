@@ -4,7 +4,7 @@ import { faPlay, faStop, faMapMarkerAlt, faUsers } from '@fortawesome/free-solid
 
 library.add(faPlay, faStop, faMapMarkerAlt, faUsers);
 
-const globalStyles = css``;
+import { globalStyles } from '../styles/global-styles';
 
 export class UserList extends LitElement {
     static properties = {
@@ -314,9 +314,9 @@ export class UserList extends LitElement {
 
                 <div class="coordinates-display">
                     <span class="icon-wrapper">${mapMarkerIcon}</span>
-                    ${this.showLocation
-                        ? `${this.currentCoordinates.lat.toFixed(6)}, ${this.currentCoordinates.lng.toFixed(6)}`
-                        : 'Location hidden'}
+                    ${this.currentCoordinates.lat && this.currentCoordinates.lng && this.isTracking
+                        ? `${this.currentCoordinates.lat.toFixed(6)}, ${this.currentCoordinates.lng.toFixed(6)} ${!this.showLocation ? '(Hidden)' : ''}`
+                        : 'Location not tracked'}
                 </div>
 
                 <label class="show-location-label">
