@@ -262,6 +262,7 @@ describe('UserList Component', () => {
 
     it('should show coordinates when location is visible', async () => {
         element.showLocation = true;
+        element.isTracking = true;
         element.currentCoordinates = { lat: 35.123456, lng: 51.654321 };
         await element.updateComplete;
 
@@ -271,10 +272,12 @@ describe('UserList Component', () => {
 
     it('should hide coordinates when location is hidden', async () => {
         element.showLocation = false;
+        element.isTracking = true;
+        element.currentCoordinates = { lat: 35.123456, lng: 51.654321 };
         await element.updateComplete;
 
         const coords = element.shadowRoot.querySelector('.coordinates-display');
-        expect(coords.textContent).toContain('Location hidden');
+        expect(coords.textContent).toContain('35.123456, 51.654321 (Hidden)');
     });
 });
 
