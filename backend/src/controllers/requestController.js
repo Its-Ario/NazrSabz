@@ -1,4 +1,5 @@
 import requestService from '../services/requestService.js';
+import logger from '../logger.js';
 
 function isSafeObject(obj) {
     if (!obj || typeof obj !== 'object' || obj.constructor !== Object) return false;
@@ -48,16 +49,20 @@ export const createRequest = async (req, res) => {
         return res.status(400).json({ ok: false, message: 'Invalid Address' });
     }
 
-    const result = await requestService.createRequest({
-        requesterId,
-        items,
-        scheduledAt,
-        priority,
-        metadata,
-        address,
-    });
-
-    res.json(result);
+    try {
+        const result = await requestService.createRequest({
+            requesterId,
+            items,
+            scheduledAt,
+            priority,
+            metadata,
+            address,
+        });
+        res.status(200).json({ ok: true, result });
+    } catch (e) {
+        logger.warn(`Failed to create request: ${e.message}`);
+        res.status(400).json({ ok: false, message: e.message });
+    }
 };
 
 export const updateStatus = async (req, res) => {
@@ -67,23 +72,43 @@ export const updateStatus = async (req, res) => {
         return res.status(400).json({ ok: false, message: 'Invalid Input' });
     }
 
-    const result = await requestService.updateStatus(requestId, status);
-
-    res.json(result);
+    try {
+        const result = await requestService.updateStatus(requestId, status);
+        res.status(200).json({ ok: true, result });
+    } catch (e) {
+        logger.warn(`Failed to update request status: ${e.message}`);
+        res.status(400).json({ ok: false, message: e.message });
+    }
 };
 
 export const updateCollector = async (req, res) => {
     const { requestId, collectorId } = req.body;
 
-    const result = await requestService.updateCollector(requestId, collectorId);
+    if (typeof requestId !== 'string' || typeof collectorId !== 'string') {
+        return res.status(400).json({ ok: false, message: 'Invalid Input' });
+    }
 
-    res.json(result);
+    try {
+        const result = await requestService.updateCollector(requestId, collectorId);
+        res.status(200).json({ ok: true, result });
+    } catch (e) {
+        logger.warn(`Failed to update request collectr: ${e.message}`);
+        res.status(400).json({ ok: false, message: e.message });
+    }
 };
 
 export const getRequestById = async (req, res) => {
     const { id } = req.query;
 
-    const result = await requestService.getRequestById(id);
+    if (typeof id !== 'string') {
+        return res.status(400).json({ ok: false, message: 'Invalid Input' });
+    }
 
-    res.json(result);
+    try {
+        const result = await requestService.getRequestById(id);
+        res.status(200).json({ ok: true, result });
+    } catch (e) {
+        logger.warn(`Failed to fetch request: ${e.message}`);
+        res.status(400).json({ ok: false, message: e.message });
+    }
 };

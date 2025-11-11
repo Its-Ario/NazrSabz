@@ -21,12 +21,12 @@ router.post('/adduser', async (req, res) => {
 router.patch('/changerole/:id', async (req, res) => {
     const user = await userService.getUserProfile(req.params.id);
     const newRole = req.body.role;
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user) return res.status(404).json({ ok: false, message: 'User not found' });
 
     const validRoles = ['ADMIN', 'USER', 'MANAGER, DRIVER'];
     if (!validRoles.includes(newRole)) {
         return res.status('400').json({
-            success: false,
+            ok: false,
             message: `Invalid role. Must be one of: ${validRoles.join(', ')}`,
         });
     }
@@ -34,7 +34,7 @@ router.patch('/changerole/:id', async (req, res) => {
     const updatedUser = await userService.updateRole(req.params.id, newRole);
 
     res.json({
-        success: true,
+        ok: true,
         message: 'Role updated successfuly',
         username: updatedUser.username,
     });

@@ -51,7 +51,7 @@ class RequestService {
         const ALLOWED_STATUSES = ['PENDING', 'COMPLETED', 'CANCELED'];
         try {
             if (!ALLOWED_STATUSES.includes(status)) {
-                return { ok: false, message: 'Invalid status' };
+                throw new Error('Invalid Status');
             }
 
             return await prisma.request.update({
