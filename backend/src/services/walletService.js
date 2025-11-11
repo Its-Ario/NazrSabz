@@ -1,4 +1,5 @@
 import logger from '../logger.js';
+import { throwError } from '../utils/AppError.js';
 import prisma from '../utils/prisma.js';
 
 class WalletService {
@@ -18,7 +19,7 @@ class WalletService {
     async addUserFunds(userId, amount) {
         if (amount <= 0) {
             logger.warn(`Invalid amount for funds update: ${amount}`);
-            throw new Error('Invalid amount');
+            throwError('Invalid amount', 400, { code: 'ERROR_INVALID_AMOUNT' });
         }
 
         try {
@@ -33,7 +34,7 @@ class WalletService {
         } catch (error) {
             if (error.code === 'P2025') {
                 logger.warn(`User not found ${userId}`);
-                throw new Error('User not found');
+                throwError('User not found', 404, { code: 'ERR_USER_NOT_FOUND' });
             }
 
             logger.error(`Failed to update user funds: ${error.message}`, error);

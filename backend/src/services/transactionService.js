@@ -1,20 +1,21 @@
 import prisma from '../utils/prisma.js';
 import logger from '../logger.js';
+import { throwError } from '../utils/AppError.js';
 
 class TransactionService {
     async createTransaction({ userId, requestId, action, amount }) {
         const validActions = ['WITHDRAWL', 'ADDITION'];
         if (!validActions.includes(action)) {
-            throw new Error('Invalid action');
+            throwError('Invalid action', 400, { code: 'ERR_INVALID_ACTION' });
         }
 
         const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (!user) throw new Error('User not found');
+        if (!user) throwError('User not found', 404, { code: 'ERR_USER_NOT_FOUND' });
 
         let request = null;
         if (action === 'ADDITION') {
             request = await prisma.request.findUnique({ where: { id: requestId } });
-            if (!request) throw new Error('Request not found');
+            if (!request) throwError('Request not found', 404, { code: 'ERR_REQ_NOT_FOUND' });
         }
 
         const transaction = await prisma.transaction.create({
@@ -39,7 +40,8 @@ class TransactionService {
             },
         });
 
-        if (!transaction) throw new Error('Transaction not found');
+        if (!transaction)
+            throwError('Transaction not found', 404, { code: 'ERR_TRANSACTION_NOT_FOUND' });
         return transaction;
     }
 

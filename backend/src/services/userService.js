@@ -1,4 +1,5 @@
 import logger from '../logger.js';
+import { throwError } from '../utils/AppError.js';
 import prisma from '../utils/prisma.js';
 
 class UserService {
@@ -20,7 +21,7 @@ class UserService {
 
             if (!user) {
                 logger.warn(`User not found: ${userId}`);
-                throw new Error('User not found');
+                throwError('User not found', 404, { code: 'ERR_USER_NOT_FOUND' });
             }
 
             return user;
@@ -39,7 +40,7 @@ class UserService {
 
             if (!user) {
                 logger.warn(`User not found: ${userId}`);
-                throw new Error('User not found');
+                throwError('User not found', 404, { code: 'ERR_USER_NOT_FOUND' });
             }
 
             return user;
@@ -51,7 +52,7 @@ class UserService {
 
     async getUserProfileBy(field, value, includePassword = false) {
         try {
-            if (!field) throw new Error('Field name is required');
+            if (!field) throwError('Field name is required', 400, { code: 'ERR_FIELD_REQUIRED' });
             logger.info(`Fetching user by ${field}: ${value}`);
 
             const user = await prisma.user.findFirst({
@@ -77,7 +78,9 @@ class UserService {
         try {
             const validRoles = ['ADMIN', 'MANAGER', 'DRIVER', 'USER'];
             if (!validRoles.includes(newRole)) {
-                throw new Error(`Invalid role. Must be one of: ${validRoles.join(', ')}`);
+                throwError(`Invalid role. Must be one of: ${validRoles.join(', ')}`, 400, {
+                    code: 'ERR_INVALID_ROLE',
+                });
             }
 
             logger.info(`Updating role for user ${userId} to ${newRole}`);
@@ -101,10 +104,9 @@ class UserService {
         } catch (error) {
             if (error.code === 'P2025') {
                 logger.warn(`User not found for role update: ${userId}`);
-                throw new Error('User not found');
+            } else {
+                logger.error(`Failed to update user role: ${error.message}`, error);
             }
-
-            logger.error(`Failed to update user role: ${error.message}`, error);
             throw error;
         }
     }

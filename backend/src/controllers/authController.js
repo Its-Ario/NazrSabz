@@ -1,56 +1,45 @@
 import { compare } from 'bcrypt';
 import authService from '../services/authService.js';
-import logger from '../logger.js';
 
 import { generateToken } from '../utils/auth.js';
 const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 export const login = async (req, res) => {
-    try {
-        const { username, password } = req.body;
+    const { username, password } = req.body;
 
-        if (!username || !password) return res.status(403).json({ message: 'Invalid Credentials' });
-        if (typeof username !== 'string' || typeof password !== 'string')
-            return res.status(403).json({ message: 'Invalid input' });
+    if (!username || !password) return res.status(403).json({ message: 'Invalid Credentials' });
+    if (typeof username !== 'string' || typeof password !== 'string')
+        return res.status(403).json({ message: 'Invalid input' });
 
-        const result = await authService.loginWithUsername(username, password);
-        if (!result) return res.status(403).json({ message: 'Invalid Credentials' });
+    const result = await authService.loginWithUsername(username, password);
+    if (!result) return res.status(403).json({ message: 'Invalid Credentials' });
 
-        res.json({ token: result.token, user: result.userData });
-    } catch (error) {
-        logger.error('Login error:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
+    res.json({ token: result.token, user: result.userData });
 };
 
 export const register = async (req, res) => {
-    try {
-        const { name, email, username, password } = req.body;
+    const { name, email, username, password } = req.body;
 
-        if (!name || !email || !username || !password)
-            return res.status(400).json({ message: 'Please fill out the form' });
-        if (
-            typeof name !== 'string' ||
-            typeof email !== 'string' ||
-            typeof username !== 'string' ||
-            typeof password !== 'string' ||
-            !password
-        )
-            return res.status(403).json({ message: 'Invalid input' });
+    if (!name || !email || !username || !password)
+        return res.status(400).json({ message: 'Please fill out the form' });
+    if (
+        typeof name !== 'string' ||
+        typeof email !== 'string' ||
+        typeof username !== 'string' ||
+        typeof password !== 'string' ||
+        !password
+    )
+        return res.status(403).json({ message: 'Invalid input' });
 
-        const newUser = await authService.registerUser({
-            name,
-            email,
-            username,
-            password,
-            role: 'USER',
-        });
+    const newUser = await authService.registerUser({
+        name,
+        email,
+        username,
+        password,
+        role: 'USER',
+    });
 
-        res.status(201).json(newUser);
-    } catch (error) {
-        logger.error('Register error:', error);
-        res.status(500).json({ message: 'Server error', error: `${error}` });
-    }
+    res.status(201).json(newUser);
 };
 
 export const changepassword = async (req, res) => {
@@ -71,17 +60,12 @@ export const changepassword = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-    try {
-        const user = req.user;
-        if (!user) return res.status(404).json({ error: 'User not found' });
+    const user = req.user;
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-        await authService.updateTokenVersion(user.id);
+    await authService.updateTokenVersion(user.id);
 
-        res.json({ message: 'Logged out successfully' });
-    } catch (error) {
-        logger.error('Logout error:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
+    res.json({ message: 'Logged out successfully' });
 };
 
 export const verify = async (req, res) => {

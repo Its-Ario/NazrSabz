@@ -3,6 +3,7 @@ import { generateToken } from '../utils/auth.js';
 import bcrypt from 'bcrypt';
 import userService from './userService.js';
 import prisma from '../utils/prisma.js';
+import { throwError } from '../utils/AppError.js';
 
 class AuthService {
     async registerUser({ name, username, email, password }) {
@@ -16,7 +17,9 @@ class AuthService {
         });
 
         if (existingUser) {
-            throw new Error('User with this email or username already exists.');
+            throwError('User with this email or username already exists.', 409, {
+                code: 'ERR_ALREADY_EXISTS',
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);

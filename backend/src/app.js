@@ -13,6 +13,7 @@ import adminRoutes from './routes/adminRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
+import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -36,5 +37,7 @@ app.use('/api', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/transaction', transactionRoutes);
 app.use('/api/requests', requestRoutes);
+
+app.use(errorHandler);
 
 export default app;
