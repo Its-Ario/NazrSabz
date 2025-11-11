@@ -18,7 +18,8 @@
     "format": "prettier --write \"backend/**/*.{js,ts,json,md}\" \"frontend/**/*.{js,ts,css,html,json,md}\" \"docs/**/*.{js,ts,css,html,json,md}\" \".github/**/*.yml\"",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "prepare": "husky"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -28,6 +29,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-node": "^11.1.0",
+    "husky": "^9.1.7",
     "prettier": "^3.6.2",
     "vitepress": "2.0.0-alpha.12"
   },

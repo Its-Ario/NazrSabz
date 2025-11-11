@@ -1,2 +1,5 @@
 pnpm -w run lint
 pnpm -w run format
+
+pnpm -w run test:backend
+pnpm -w run test:frontend
