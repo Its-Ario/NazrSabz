@@ -6,14 +6,27 @@ import prisma from '../utils/prisma.js';
 import { throwError } from '../utils/AppError.js';
 
 class AuthService {
-    async registerUser({ name, username, email, password }) {
+    async registerUser({ name, username, email, phoneNumber, password }) {
+        if (!email && !phoneNumber) {
+            throwError('User must have at least one of email or phone number', 400, {
+                code: 'ERR_INVALID_INPUT',
+            });
+        }
+
         const normalizedEmail = email.trim().toLowerCase();
         const normalizedUsername = username.trim();
 
+        const conditions = [{ username: normalizedUsername }];
+
+        if (normalizedEmail) {
+            conditions.push({ email: normalizedEmail });
+        }
+        if (phoneNumber) {
+            conditions.push({ phoneNumber });
+        }
+
         const existingUser = await prisma.user.findFirst({
-            where: {
-                OR: [{ email: normalizedEmail }, { username: normalizedUsername }],
-            },
+            where: { OR: conditions },
         });
 
         if (existingUser) {
