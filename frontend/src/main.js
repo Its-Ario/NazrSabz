@@ -2,6 +2,7 @@ import { GeolocationService } from './services/geolocation-service.js';
 import { CollaborationService } from './services/collaboration-service.js';
 import { saveAuthToken } from './utils/auth.js';
 import './components/app-view.js';
+import './styles/global.css';
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.querySelector('#app');

@@ -77,7 +77,6 @@ export class UserList extends LitElement {
             .show-location-label input[type='checkbox'] {
                 width: 18px;
                 height: 18px;
-                accent-color: var(--primary-color);
                 cursor: pointer;
             }
 
