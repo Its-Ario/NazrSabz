@@ -111,12 +111,20 @@ class UserService {
         }
     }
 
-    async getAllUsers({ limit = 50, skip = 0 } = {}) {
+    async getUsers({ limit = 50, skip = 0, role = null } = {}) {
         try {
+            const validRoles = ['ADMIN', 'MANAGER', 'DRIVER', 'USER'];
+            if (role !== null && !validRoles.includes(role.toUpperCase())) {
+                throwError(`Invalid role. Must be one of: ${validRoles.join(', ')}`, 400, {
+                    code: 'ERR_INVALID_ROLE',
+                });
+            }
+
             const safeLimit = Math.min(Math.max(1, limit), 100);
             logger.info(`Fetching all users: limit=${safeLimit}, skip=${skip}`);
 
             const users = await prisma.user.findMany({
+                where: role ? { role: role.toUpperCase() } : {},
                 select: {
                     id: true,
                     name: true,

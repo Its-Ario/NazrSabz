@@ -46,7 +46,7 @@ describe('userService', () => {
         });
     });
 
-    describe('getAllUsers', () => {
+    describe('getUsers', () => {
         it('should return a list of users', async () => {
             await createUser();
             await createUser({
@@ -54,7 +54,7 @@ describe('userService', () => {
                 email: `e2_${Date.now()}@b.com`,
             });
 
-            const result = await userService.getAllUsers();
+            const result = await userService.getUsers();
 
             expect(result.length).toBe(2);
 
