@@ -1,5 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { fixture, html } from '@open-wc/testing';
+import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('leaflet', () => {
     const mockMarker = {
@@ -88,13 +87,13 @@ vi.mock('../src/styles/global-styles', () => ({
 
 import '../src/components/user-map.js';
 import '../src/components/user-list.js';
-import '../src/components/app-view.js';
+import '../src/app-view.js';
 
 describe('pass', () => {
     it('pass', () => {
         expect(true).toBeTruthy();
-    })
-})
+    });
+});
 
 // describe('UserMap Component', () => {
 //     let element;

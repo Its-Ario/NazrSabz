@@ -1,7 +1,7 @@
 import { GeolocationService } from './services/geolocation-service.js';
 import { CollaborationService } from './services/collaboration-service.js';
 import { saveAuthToken } from './utils/auth.js';
-import './components/app-view.js';
+import './app-view.js';
 import './styles/global.css';
 
 document.addEventListener('DOMContentLoaded', () => {

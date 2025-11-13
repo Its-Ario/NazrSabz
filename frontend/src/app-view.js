@@ -1,10 +1,11 @@
 import { LitElement, html, css } from 'lit';
-import './login-view.js';
-import './header-bar.js';
-import './user-map.js';
-import './user-list.js';
-import './login-page.js';
-import { removeAuthToken } from '../utils/auth.js';
+import './components/login-view.js';
+import './components/header-bar.js';
+import './components/user-map.js';
+import './components/user-list.js';
+import './components/login-page.js';
+import { removeAuthToken } from './utils/auth.js';
+import { Router } from '@vaadin/router';
 
 export class AppView extends LitElement {
     static properties = {
@@ -94,8 +95,19 @@ export class AppView extends LitElement {
         this.connectionStatus = 'disconnected';
     }
 
+  firstUpdated() {
+    const outlet = this.renderRoot.querySelector('#outlet');
+    const router = new Router(outlet);
+
+    router.setRoutes([
+      { path: '/', component: 'login-page' },
+      { path: '/about', component: 'header-bar' },
+      { path: '(.*)', redirect: '/' }, // fallback
+    ]);
+  }
+
     render() {
-        return html` <login-page></login-page> `;
+        return html`<div id="outlet"></div>`;
         // return html`
         //     ${!this.currentUser
         //         ? html`<login-page @login-success=${this._onLogin}></login-page>`

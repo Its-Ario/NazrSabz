@@ -267,11 +267,11 @@ class LoginPage extends LitElement {
                     </div>
 
                     <!-- Form Fields -->
-                    <form class="auth-form">
+                    <form class="auth-form" @submit=${this.handleSubmit}>
                         <div class="form-group">
-                            <label>شماره موبایل</label>
+                            <label>نام کاربری</label>
                             <div class="input-wrapper">
-                                <input type="tel" placeholder="09123456789" />
+                                <input type="text" placeholder="test" id="username" />
                                 <span class="icon-wrapper">${phoneIcon}</span>
                             </div>
                         </div>
@@ -279,7 +279,7 @@ class LoginPage extends LitElement {
                         <div class="form-group">
                             <label>رمز عبور</label>
                             <div class="input-wrapper">
-                                <input type="password" placeholder="••••••••" />
+                                <input type="password" id="password" placeholder="••••••••" />
                                 <span class="icon-wrapper">${lockIcon}</span>
                             </div>
                         </div>
@@ -321,5 +321,44 @@ class LoginPage extends LitElement {
             </div>
         `;
     }
+
+        async handleSubmit(e) {
+            e.preventDefault();
+            this.loading = true;
+            this.error = '';
+    
+            const username = this.renderRoot.querySelector('#username')?.value.trim();
+            const password = this.renderRoot.querySelector('#password')?.value.trim();
+
+            console.log(username)
+            console.log(password)
+    
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+    
+                if (!res.ok) throw new Error('Invalid username or password');
+    
+                const data = await res.json();
+    
+                if (data.token) saveAuthToken(data.token);
+    
+                this.dispatchEvent(
+                    new CustomEvent('login-success', {
+                        detail: { user: data.user },
+                        bubbles: true,
+                        composed: true,
+                    })
+                );
+            } catch (err) {
+                this.error = err.message;
+                console.error(err);
+            } finally {
+                this.loading = false;
+            }
+        }
 }
 customElements.define('login-page', LoginPage);
