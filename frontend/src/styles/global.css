@@ -1,10 +1,41 @@
 @import 'tailwindcss';
 
+@font-face {
+    font-family: 'Shabnam FD';
+    src: url('../fonts/Shabnam-FD.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Shabnam FD', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: var(--background, #fff);
+    color: var(--text-primary, #000);
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface-alt);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
 }
 
 :root {

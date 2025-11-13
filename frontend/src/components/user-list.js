@@ -4,8 +4,6 @@ import { faPlay, faStop, faMapMarkerAlt, faUsers } from '@fortawesome/free-solid
 
 library.add(faPlay, faStop, faMapMarkerAlt, faUsers);
 
-import { globalStyles } from '../styles/global-styles';
-
 export class UserList extends LitElement {
     static properties = {
         users: { type: Array },
@@ -15,7 +13,6 @@ export class UserList extends LitElement {
     };
 
     static styles = [
-        globalStyles,
         css`
             :host {
                 display: flex;

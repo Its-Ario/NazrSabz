@@ -1,7 +1,6 @@
 import { LitElement, html, css, unsafeCSS } from 'lit';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { globalStyles } from '../styles/global-styles';
 import leafletStyles from 'leaflet/dist/leaflet.css?inline';
 
 export class UserMap extends LitElement {
@@ -11,7 +10,6 @@ export class UserMap extends LitElement {
     };
 
     static styles = [
-        globalStyles,
         css`
             ${unsafeCSS(leafletStyles)}
         `,

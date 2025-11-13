@@ -1,160 +1,325 @@
-import { LitElement, html } from 'lit';
+import { LitElement, css, html } from 'lit';
+import { globalStyles } from '../styles/global-styles.js';
 
+import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import { faMobile, faLock } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faMobile, faLock);
 class LoginPage extends LitElement {
+    static styles = [
+        globalStyles,
+        css`
+            .auth-page {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                align-items: center;
+                justify-content: center;
+                background-color: #f8fafc;
+            }
+
+            .auth-container {
+                width: 100%;
+                max-width: 400px;
+                background-color: transparent;
+                padding: 1rem;
+            }
+
+            .auth-image {
+                display: flex;
+                justify-content: center;
+                padding-bottom: 1.5rem;
+            }
+
+            .auth-image img {
+                width: 96px;
+                height: 96px;
+                object-fit: contain;
+            }
+
+            .auth-title {
+                font-size: 28px;
+                font-weight: 700;
+                text-align: center;
+                margin-bottom: 0.5rem;
+                color: #1e293b;
+            }
+
+            .auth-subtitle {
+                text-align: center;
+                color: #64748b;
+                font-size: 16px;
+                margin-bottom: 1.5rem;
+            }
+
+            .toggle-container {
+                display: flex;
+                background-color: rgba(0, 0, 0, 0.05);
+                border-radius: 9999px;
+                height: 48px;
+                padding: 4px;
+                margin-bottom: 1rem;
+            }
+
+            .toggle-option {
+                flex: 1;
+                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 9999px;
+                cursor: pointer;
+                font-size: 14px;
+                color: #6b7280;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+
+            .toggle-option input {
+                display: none;
+            }
+
+            .toggle-option input:checked + span {
+                background-color: #fff;
+                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+                color: #0f172a;
+                padding: 0.25rem 1rem;
+                border-radius: 9999px;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .form-group label {
+                font-size: 14px;
+                color: #334155;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+
+            .input-wrapper {
+                position: relative;
+            }
+
+            .input-wrapper input {
+                width: 100%;
+                height: 56px;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                padding: 0 3rem 0 1rem;
+                font-size: 16px;
+                color: #1e293b;
+                background-color: #fff;
+                outline: none;
+                transition:
+                    border-color 0.2s,
+                    box-shadow 0.2s;
+            }
+
+            .input-wrapper input:focus {
+                border-color: #22c55e;
+                box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            }
+
+            .input-wrapper span {
+                position: absolute;
+                right: 1rem;
+                color: #9ca3af;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .forgot-password {
+                text-align: left;
+                margin-top: -0.5rem;
+            }
+
+            .forgot-password a {
+                font-size: 14px;
+                color: #16a34a;
+                text-decoration: none;
+            }
+
+            .forgot-password a:hover {
+                text-decoration: underline;
+            }
+
+            .primary-btn {
+                width: 100%;
+                height: 56px;
+                background-color: #22c55e;
+                color: #fff;
+                font-size: 16px;
+                font-weight: 700;
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+                cursor: pointer;
+                transition: background-color 0.2s;
+                margin-top: 1rem;
+            }
+
+            .primary-btn:hover {
+                background-color: #16a34a;
+            }
+
+            .divider {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 1.5rem 0;
+            }
+
+            .divider hr {
+                flex-grow: 1;
+                border: none;
+                border-top: 1px solid #d1d5db;
+            }
+
+            .divider p {
+                font-size: 14px;
+                color: #6b7280;
+            }
+
+            .google-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.75rem;
+                width: 100%;
+                height: 56px;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                background-color: #fff;
+                color: #1e293b;
+                font-size: 16px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+            .google-btn:hover {
+                background-color: #f9fafb;
+            }
+
+            .google-btn img {
+                width: 24px;
+                height: 24px;
+            }
+
+            .footer-text {
+                font-size: 12px;
+                color: #9ca3af;
+                text-align: center;
+                margin-top: 2rem;
+            }
+
+            .footer-text a {
+                color: #16a34a;
+                font-weight: 500;
+                text-decoration: none;
+            }
+
+            .footer-text a:hover {
+                text-decoration: underline;
+            }
+
+            .icon-wrapper {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 16px;
+                height: 16px;
+            }
+
+            .icon-wrapper svg {
+                width: 100%;
+                height: 100%;
+            }
+        `,
+    ];
+
     render() {
+        const phoneIcon = icon({ prefix: 'fas', iconName: 'mobile' }).node[0];
+        const lockIcon = icon({ prefix: 'fas', iconName: 'lock' }).node[0];
+
         return html`
-            <div
-                class="relative flex min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden"
-                style="font-family: 'Work Sans', 'Noto Sans', sans-serif;"
-            >
-                <div class="flex w-full flex-col p-4 pt-8">
-                    <!-- 1. Image/Illustration -->
-                    <div class="flex w-full justify-center pb-6">
-                        <img
-                            alt="A stylized graphic of a plant sprouting from recycled materials, symbolizing growth and sustainability."
-                            class="h-24 w-24 object-contain"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkzi5HdVYgTQrdyPtnTCsHrB0AynTbLmVFSJAsdD6t1cVJDKfNz2Bv3CvY9McQuT-n5tuzU34NwUAo0hDn5iqcLjq7FXg8LU86zYiIV5LqyhuhzESVinPh6weSyF0QZzqHpdt_z_6BgApI9i0P24wZddz4EZNXbps9li3g2iG2hSw6w6VmjCJvX_TBr_1DusFnYRGyscz8uRmnKQ4PdwC-zBnDFy6vPO4wPUTs5UQZhFdcWGo4sBElXBJoa8x0s711fWuDUhYUdlc"
-                        />
-                    </div>
-                    <!-- 2. Headline and Body Text -->
-                    <h1
-                        class="text-secondary dark:text-gray-200 tracking-tight text-[28px] font-bold leading-tight px-4 text-center pb-2"
-                    >
-                        به دنیای پاک خوش آمدید
-                    </h1>
-                    <p
-                        class="text-secondary/70 dark:text-gray-400 text-base font-normal leading-normal pb-6 px-4 text-center"
-                    >
+            <div class="auth-page">
+                <div class="auth-container">
+                    <!-- Headline -->
+                    <h1 class="auth-title">به <strong>نذر سبز</strong> خوش آمدید!</h1>
+                    <p class="auth-subtitle">
                         برای مشارکت در بازیافت، وارد شوید یا حساب کاربری جدید بسازید.
                     </p>
-                    <!-- 3. Segmented Buttons for Login/Signup -->
-                    <div class="flex px-4 py-3">
-                        <div
-                            class="flex h-12 flex-1 items-center justify-center rounded-full bg-black/5 dark:bg-white/5 p-1"
-                        >
-                            <label
-                                class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-full px-2 has-checked:bg-white dark:has-checked:bg-zinc-700shas-checked:shadow-smshas-checked:text-secondaryrk:has-[:checked]:text-white text-secondary/60 dark:text-gray-400 text-sm font-medium leading-normal transition-all"
-                            >
-                                <span class="truncate">ورود</span>
-                                <input
-                                    checked
-                                    class="invisible w-0"
-                                    name="auth-toggle"
-                                    type="radio"
-                                    value="ورود"
-                                />
-                            </label>
-                            <label
-                                class="flex cursor-pointer h-full grow items-center justify-center overflow-hidden rounded-full px-2 has-checked:bg-whiterdark:has-checked:bg-zinc-700shas-checked:shadow-smshas-checked:text-secondaryrk:has-[:checked]:text-white text-secondary/60 dark:text-gray-400 text-sm font-medium leading-normal transition-all"
-                            >
-                                <span class="truncate">ثبت‌نام</span>
-                                <input
-                                    class="invisible w-0"
-                                    name="auth-toggle"
-                                    type="radio"
-                                    value="ثبت‌نام"
-                                />
-                            </label>
-                        </div>
-                    </div>
-                    <!-- 4. Form Fields -->
-                    <div class="w-full space-y-4 px-4 py-3">
-                        <!-- Name Field (for signup) -->
-                        <!-- This field would be conditionally shown -->
-                        <!-- <label class="flex flex-col min-w-40 flex-1">
-                <p class="text-secondary dark:text-gray-300 text-sm font-medium leading-normal pb-2">نام و نام خانوادگی</p>
-                <div class="relative flex w-full items-center">
-                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-secondary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 h-14 placeholder:text-gray-400 dark:placeholder:text-zinc-500 p-4 pr-12 text-base font-normal leading-normal" placeholder="نام خود را وارد کنید" type="text" value=""/>
-                    <span class="material-symbols-outlined absolute right-4 text-gray-400 dark:text-zinc-500">person</span>
-                </div>
-            </label> -->
-                        <!-- Mobile Number Field -->
-                        <label class="flex flex-col min-w-40 flex-1">
-                            <p
-                                class="text-secondary dark:text-gray-300 text-sm font-medium leading-normal pb-2"
-                            >
-                                شماره موبایل
-                            </p>
-                            <div class="relative flex w-full items-center">
-                                <input
-                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-secondary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 h-14 placeholder:text-gray-400 dark:placeholder:text-zinc-500 p-4 pr-12 text-base font-normal leading-normal"
-                                    placeholder="09123456789"
-                                    type="tel"
-                                />
-                                <span
-                                    class="material-symbols-outlined absolute right-4 text-gray-400 dark:text-zinc-500"
-                                    >phone_iphone</span
-                                >
-                            </div>
+
+                    <!-- Toggle Buttons -->
+                    <div class="toggle-container">
+                        <label class="toggle-option">
+                            <input type="radio" name="auth-toggle" value="ورود" checked />
+                            <span>ورود</span>
                         </label>
-                        <!-- Password Field -->
-                        <label class="flex flex-col min-w-40 flex-1">
-                            <p
-                                class="text-secondary dark:text-gray-300 text-sm font-medium leading-normal pb-2"
-                            >
-                                رمز عبور
-                            </p>
-                            <div class="relative flex w-full items-center">
-                                <input
-                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-secondary dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 h-14 placeholder:text-gray-400 dark:placeholder:text-zinc-500 p-4 pr-12 text-base font-normal leading-normal"
-                                    placeholder="••••••••"
-                                    type="password"
-                                />
-                                <span
-                                    class="material-symbols-outlined absolute right-4 text-gray-400 dark:text-zinc-500"
-                                    >lock</span
-                                >
-                            </div>
+                        <label class="toggle-option">
+                            <input type="radio" name="auth-toggle" value="ثبت‌نام" />
+                            <span>ثبت‌نام</span>
                         </label>
-                        <!-- Forgot Password Link -->
-                        <div class="flex justify-end pt-1">
-                            <a class="text-accent text-sm font-medium hover:underline" href="#"
-                                >فراموشی رمز عبور؟</a
-                            >
+                    </div>
+
+                    <!-- Form Fields -->
+                    <form class="auth-form">
+                        <div class="form-group">
+                            <label>شماره موبایل</label>
+                            <div class="input-wrapper">
+                                <input type="tel" placeholder="09123456789" />
+                                <span class="icon-wrapper">${phoneIcon}</span>
+                            </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>رمز عبور</label>
+                            <div class="input-wrapper">
+                                <input type="password" placeholder="••••••••" />
+                                <span class="icon-wrapper">${lockIcon}</span>
+                            </div>
+                        </div>
+
+                        <div class="forgot-password">
+                            <a href="#">فراموشی رمز عبور؟</a>
+                        </div>
+
+                        <button type="submit" class="primary-btn">ورود به حساب کاربری</button>
+                    </form>
+
+                    <!-- Social login -->
+                    <div class="divider">
+                        <hr />
+                        <p>یا ورود از طریق</p>
+                        <hr />
                     </div>
-                    <!-- 5. Primary Action Button -->
-                    <div class="px-4 pt-4 pb-6">
-                        <button
-                            class="flex h-14 w-full items-center justify-center rounded-lg bg-primary text-white text-base font-bold leading-normal shadow-md hover:bg-primary/90 transition-colors"
-                        >
-                            ورود به حساب کاربری
-                        </button>
-                    </div>
-                    <!-- 6. Social Login Section -->
-                    <div class="flex items-center gap-4 px-4 py-2">
-                        <hr class="grow border-t border-gray-300 dark:border-zinc-600" />
-                        <p class="text-secondary/70 dark:text-gray-400 text-sm">یا ورود از طریق</p>
-                        <hr class="grow border-t border-gray-300 dark:border-zinc-600" />
-                    </div>
-                    <div class="flex justify-center px-4 py-4">
-                        <button
-                            class="flex h-14 w-full items-center justify-center gap-3 rounded-lg border border-gray-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-secondary dark:text-gray-200 text-base font-medium leading-normal hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
-                        >
-                            <img
-                                alt="Google logo"
-                                class="h-6 w-6"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEEuAog0xo8uaRhv_ltHUAGY1EZxOBa88liMmCa7myBF-O2ryMUdJL_V63ryPYCAffPG07JKtGxBxWgHB1wePViml9OrRqJg4CALdjxwprFsxNRwImPkojZTiODKbr2awevfNfeWr4UBd7ZG0u0rpQkUtowO9d9dHBC00YahetsfOPFoC48kTyLmzkaYhgabdN2bsM2j9Kd2FWkNT7St-msbK_elsINH8MTvHbz3oljDqRiE3oGiC9CWuTIVtvDVso6uR4lNWSoFY"
-                            />
-                            <span>ورود با گوگل</span>
-                        </button>
-                    </div>
-                    <!-- 7. Footer Text -->
-                    <div class="px-4 pt-8 text-center">
-                        <p class="text-secondary/60 dark:text-gray-500 text-xs">
-                            با ورود یا ثبت‌نام، شما با
-                            <a class="font-medium text-accent hover:underline" href="#"
-                                >شرایط و قوانین</a
-                            >
-                            ما موافقت می‌کنید.
-                        </p>
-                    </div>
+                    <button
+                        type="button"
+                        class="google-btn"
+                        @click=${() => (window.location.href = '/api/login/google')}
+                        aria-label="ورود با گوگل"
+                    >
+                        <img
+                            class="g-icon"
+                            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                            alt=""
+                            aria-hidden="true"
+                        />
+                        <span>ورود با گوگل</span>
+                    </button>
+
+                    <p class="footer-text">
+                        با ورود یا ثبت‌نام، شما با
+                        <a href="#">شرایط و قوانین</a>
+                        ما موافقت می‌کنید.
+                    </p>
                 </div>
             </div>
         `;
-    }
-    createRenderRoot() {
-        return this;
     }
 }
 customElements.define('login-page', LoginPage);

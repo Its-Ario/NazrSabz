@@ -3,6 +3,7 @@ import './login-view.js';
 import './header-bar.js';
 import './user-map.js';
 import './user-list.js';
+import './login-page.js';
 import { removeAuthToken } from '../utils/auth.js';
 
 export class AppView extends LitElement {
@@ -94,36 +95,37 @@ export class AppView extends LitElement {
     }
 
     render() {
-        return html`
-            ${!this.currentUser
-                ? html`<login-view @login-success=${this._onLogin}></login-view>`
-                : html`
-                      <div class="app-container">
-                          <header-bar
-                              .user=${this.currentUser}
-                              @logout=${this._onLogout}
-                          ></header-bar>
-                          <div class="content">
-                              <div class="map-container">
-                                  <user-map id="map" @map-click=${this._onMapClick}></user-map>
-                              </div>
-                              <div class="user-list-container">
-                                  <user-list
-                                      id="user-list"
-                                      .users=${this.users}
-                                      .isTracking=${this.isTracking}
-                                      .showLocation=${this.showLocation}
-                                      .currentCoordinates=${this.currentCoordinates}
-                                      .connectionStatus=${this.connectionStatus}
-                                      @toggle-tracking=${this._onToggleTracking}
-                                      @toggle-show-location=${this._onToggleShowLocation}
-                                      @focus-user=${this._onFocusUser}
-                                  ></user-list>
-                              </div>
-                          </div>
-                      </div>
-                  `}
-        `;
+        return html` <login-page></login-page> `;
+        // return html`
+        //     ${!this.currentUser
+        //         ? html`<login-page @login-success=${this._onLogin}></login-page>`
+        //         : html`
+        //               <div class="app-container">
+        //                   <header-bar
+        //                       .user=${this.currentUser}
+        //                       @logout=${this._onLogout}
+        //                   ></header-bar>
+        //                   <div class="content">
+        //                       <div class="map-container">
+        //                           <user-map id="map" @map-click=${this._onMapClick}></user-map>
+        //                       </div>
+        //                       <div class="user-list-container">
+        //                           <user-list
+        //                               id="user-list"
+        //                               .users=${this.users}
+        //                               .isTracking=${this.isTracking}
+        //                               .showLocation=${this.showLocation}
+        //                               .currentCoordinates=${this.currentCoordinates}
+        //                               .connectionStatus=${this.connectionStatus}
+        //                               @toggle-tracking=${this._onToggleTracking}
+        //                               @toggle-show-location=${this._onToggleShowLocation}
+        //                               @focus-user=${this._onFocusUser}
+        //                           ></user-list>
+        //                       </div>
+        //                   </div>
+        //               </div>
+        //           `}
+        // `;
     }
 
     _onLogin(e) {

@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/auth.js';
-import { globalStyles } from '../styles/global-styles.js';
 import { buttonStyles } from '../styles/button-styles.js';
 
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
@@ -15,7 +14,6 @@ export class LoginView extends LitElement {
     };
 
     static styles = [
-        globalStyles,
         buttonStyles,
         css`
             .icon-wrapper {
