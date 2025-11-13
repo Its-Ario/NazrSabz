@@ -322,43 +322,41 @@ class LoginPage extends LitElement {
         `;
     }
 
-        async handleSubmit(e) {
-            e.preventDefault();
-            this.loading = true;
-            this.error = '';
-    
-            const username = this.renderRoot.querySelector('#username')?.value.trim();
-            const password = this.renderRoot.querySelector('#password')?.value.trim();
+    async handleSubmit(e) {
+        e.preventDefault();
+        this.loading = true;
+        this.error = '';
 
-            console.log(username)
-            console.log(password)
-    
-            try {
-                const res = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password }),
-                });
-    
-                if (!res.ok) throw new Error('Invalid username or password');
-    
-                const data = await res.json();
-    
-                if (data.token) saveAuthToken(data.token);
-    
-                this.dispatchEvent(
-                    new CustomEvent('login-success', {
-                        detail: { user: data.user },
-                        bubbles: true,
-                        composed: true,
-                    })
-                );
-            } catch (err) {
-                this.error = err.message;
-                console.error(err);
-            } finally {
-                this.loading = false;
-            }
+        const username = this.renderRoot.querySelector('#username')?.value.trim();
+        const password = this.renderRoot.querySelector('#password')?.value.trim();
+
+        console.log(username);
+        console.log(password);
+
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!res.ok) throw new Error('Invalid username or password');
+
+            const data = await res.json();
+
+            this.dispatchEvent(
+                new CustomEvent('login-success', {
+                    detail: { user: data.user },
+                    bubbles: true,
+                    composed: true,
+                })
+            );
+        } catch (err) {
+            this.error = err.message;
+            console.error(err);
+        } finally {
+            this.loading = false;
         }
+    }
 }
 customElements.define('login-page', LoginPage);

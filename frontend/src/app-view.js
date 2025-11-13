@@ -95,16 +95,16 @@ export class AppView extends LitElement {
         this.connectionStatus = 'disconnected';
     }
 
-  firstUpdated() {
-    const outlet = this.renderRoot.querySelector('#outlet');
-    const router = new Router(outlet);
+    firstUpdated() {
+        const outlet = this.renderRoot.querySelector('#outlet');
+        const router = new Router(outlet);
 
-    router.setRoutes([
-      { path: '/', component: 'login-page' },
-      { path: '/about', component: 'header-bar' },
-      { path: '(.*)', redirect: '/' }, // fallback
-    ]);
-  }
+        router.setRoutes([
+            { path: '/', component: 'login-page' },
+            { path: '/about', component: 'header-bar' },
+            { path: '(.*)', redirect: '/' }, // fallback
+        ]);
+    }
 
     render() {
         return html`<div id="outlet"></div>`;
