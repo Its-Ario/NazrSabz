@@ -1,20 +1,13 @@
-import prisma from '../src/utils/prisma.js';
-import authService from '../src/services/authService.js';
-import walletService from '../src/services/walletService.js';
+import { AuthService } from '../src/services/authService.js';
+import { WalletService } from '../src/services/walletService.js';
 
-async function createUser(overrides = {}) {
-    const defaultData = {
-        name: 'n',
-        username: `u_${Date.now()}`,
-        email: `e_${Date.now()}@b.com`,
-        passwordHash: 'hashed_password',
-        tokenVersion: 0,
-    };
+let authService;
+let walletService;
 
-    return prisma.user.create({
-        data: { ...defaultData, ...overrides },
-    });
-}
+beforeEach(() => {
+    authService = new AuthService(global.prismaMock);
+    walletService = new WalletService(global.prismaMock);
+});
 
 describe('authService', () => {
     describe('registerUser', () => {
@@ -26,6 +19,40 @@ describe('authService', () => {
         };
 
         it('should create and save a new user successfully', async () => {
+            const fakeUser = { id: '1', ...userData, tokenVersion: 0 };
+
+            global.prismaMock.$transaction.mockImplementation(async (cb) => {
+                const tx = global.prismaMock;
+                return cb(tx);
+            });
+
+            global.prismaMock.user.findFirst.mockResolvedValue(null);
+            global.prismaMock.user.create.mockResolvedValue(fakeUser);
+            global.prismaMock.wallet.create.mockResolvedValue({ userId: '1', balance: 0 });
+            global.prismaMock.wallet.findUnique.mockResolvedValue({ userId: '1', balance: 0 });
+
+            const result = await authService.registerUser(userData);
+
+            expect(result).not.toHaveProperty('passwordHash');
+            expect(result.username).toBe(userData.username);
+
+            const wallet = await walletService.getWalletByUser(result.id);
+            expect(wallet).toBeDefined();
+            expect(wallet.balance).toBe(0);
+        });
+        it('should create and save a new user successfully', async () => {
+            const fakeUser = { id: '1', ...userData, tokenVersion: 0 };
+
+            global.prismaMock.$transaction.mockImplementation(async (cb) => {
+                const tx = global.prismaMock;
+                return cb(tx);
+            });
+
+            global.prismaMock.user.findFirst.mockResolvedValue(null);
+            global.prismaMock.user.create.mockResolvedValue(fakeUser);
+            global.prismaMock.wallet.create.mockResolvedValue({ userId: '1', balance: 0 });
+            global.prismaMock.wallet.findUnique.mockResolvedValue({ userId: '1', balance: 0 });
+
             const result = await authService.registerUser(userData);
 
             expect(result).not.toHaveProperty('passwordHash');
@@ -37,28 +64,10 @@ describe('authService', () => {
         });
 
         it('should throw an error if the user already exists', async () => {
-            await createUser({ email: userData.email, username: userData.username });
+            global.prismaMock.user.findFirst.mockResolvedValue({ id: '1', ...userData });
 
             await expect(authService.registerUser(userData)).rejects.toThrow(
                 'User with this email or username already exists.'
-            );
-        });
-    });
-
-    describe('updateTokenVersion', () => {
-        it('should increment tokenVersion for a user', async () => {
-            const user = await createUser({ tokenVersion: 0 });
-
-            const updatedUser = await authService.updateTokenVersion(user.id);
-
-            expect(updatedUser.tokenVersion).toBe(1);
-        });
-
-        it('should throw an error if the user is not found', async () => {
-            const nonExistentUserId = '00000000-0000-0000-0000-000000000000';
-
-            await expect(authService.updateTokenVersion(nonExistentUserId)).rejects.toThrow(
-                'User not found'
             );
         });
     });

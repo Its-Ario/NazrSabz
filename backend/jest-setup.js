@@ -1,13 +1,8 @@
-import { connect, clearDatabase, closeDatabase } from './jest-prisma-setup.js';
+import { prismaMock } from './tests/__mocks__/prismaClient.js';
+import { jest } from '@jest/globals';
 
-beforeAll(async () => {
-    await connect();
-});
+global.prismaMock = prismaMock;
 
-afterEach(async () => {
-    await clearDatabase();
-});
-
-afterAll(async () => {
-    await closeDatabase();
+beforeEach(() => {
+    jest.clearAllMocks();
 });

@@ -1,31 +1,58 @@
-import transactionService from '../src/services/transactionService.js';
-import prisma from '../src/utils/prisma.js';
+import { prismaMock } from './__mocks__/prismaClient.js';
+import { TransactionService } from '../src/services/transactionService.js';
+
+let transactionService;
+
+beforeEach(() => {
+    transactionService = new TransactionService(prismaMock);
+
+    prismaMock.$transaction.mockImplementation(async (cb) => cb(prismaMock));
+});
 
 async function createObjects() {
-    const user = await prisma.user.create({
-        data: {
-            username: `u${Date.now()}`,
-            passwordHash: '1',
-            email: `a${Date.now()}@b.com`,
-            name: 'Test User',
-        },
-    });
+    const user = {
+        id: 'u1',
+        username: 'user1',
+        passwordHash: 'hashed',
+        email: 'a@b.com',
+        name: 'Test User',
+    };
 
-    const request = await prisma.request.create({
-        data: { requesterId: user.id, status: 'pending', items: [], address: {} },
-    });
+    const request = {
+        id: 'r1',
+        requesterId: user.id,
+        status: 'pending',
+        items: [],
+        address: {},
+    };
 
-    const transaction = await prisma.transaction.create({
-        data: { userId: user.id, requestId: request.id, action: 'WITHDRAWL', amount: 20 },
-    });
+    const transaction = {
+        id: 't1',
+        userId: user.id,
+        requestId: request.id,
+        action: 'WITHDRAWL',
+        amount: 20,
+    };
+
+    prismaMock.user.create.mockResolvedValue(user);
+    prismaMock.request.create.mockResolvedValue(request);
+    prismaMock.transaction.create.mockResolvedValue(transaction);
+
+    prismaMock.user.findUnique.mockResolvedValue(user);
+    prismaMock.request.findUnique.mockResolvedValue(request);
+    prismaMock.transaction.findUnique.mockResolvedValue(transaction);
+
+    prismaMock.transaction.findMany.mockResolvedValue([transaction, transaction]);
+    prismaMock.transaction.count.mockResolvedValue(2);
 
     return { user, request, transaction };
 }
 
-describe('transactionService', () => {
+describe('TransactionService', () => {
     describe('createTransaction', () => {
         it('should create a transaction successfully', async () => {
             const { user, request } = await createObjects();
+
             const data = {
                 userId: user.id,
                 requestId: request.id,
@@ -33,18 +60,21 @@ describe('transactionService', () => {
                 amount: 20,
             };
 
-            const transaction = await transactionService.createTransaction(data);
+            const result = await transactionService.createTransaction(data);
 
-            expect(transaction.userId).toBe(user.id);
-            expect(transaction.requestId).toBe(request.id);
-            expect(transaction.amount).toBe(20);
+            expect(result.userId).toBe(user.id);
+            expect(result.requestId).toBe(request.id);
+            expect(result.amount).toBe(20);
         });
 
         it('should throw if user not found', async () => {
             const { request } = await createObjects();
-            await prisma.transaction.deleteMany({});
-            await prisma.request.deleteMany({});
-            await prisma.user.deleteMany({});
+
+            prismaMock.user.findUnique.mockResolvedValue(null);
+            prismaMock.transaction.create.mockImplementation(() => {
+                throw new Error('Should not be called');
+            });
+
             const data = {
                 userId: 'nonexistent',
                 requestId: request.id,
@@ -59,12 +89,13 @@ describe('transactionService', () => {
 
         it('should throw if request not found', async () => {
             const { user } = await createObjects();
-            await prisma.transaction.deleteMany({});
-            await prisma.request.deleteMany({});
+
+            prismaMock.request.findUnique.mockResolvedValue(null);
+
             const data = {
                 userId: user.id,
                 requestId: 'nonexistent',
-                action: 'WITHDRAWL',
+                action: 'ADDITION',
                 amount: 20,
             };
 
@@ -77,6 +108,7 @@ describe('transactionService', () => {
     describe('getTransactionById', () => {
         it('should return transaction by ID', async () => {
             const { transaction } = await createObjects();
+
             const result = await transactionService.getTransactionById(transaction.id);
 
             expect(result.id).toBe(transaction.id);
@@ -91,6 +123,7 @@ describe('transactionService', () => {
             await createObjects();
 
             const result = await transactionService.getAllTransactions({ page: 1, limit: 10 });
+
             expect(result.transactions.length).toBeGreaterThanOrEqual(2);
             expect(result.pagination.total).toBeGreaterThanOrEqual(2);
         });

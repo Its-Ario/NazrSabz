@@ -1,23 +1,34 @@
-import prisma from '../src/utils/prisma.js';
-import requestService from '../src/services/requestService.js';
-import walletService from '../src/services/walletService.js';
+import { prismaMock } from './__mocks__/prismaClient.js';
+import { RequestService } from '../src/services/requestService.js';
+
+let requestService;
+
+beforeEach(() => {
+    requestService = new RequestService(prismaMock);
+
+    prismaMock.$transaction.mockImplementation(async (cb) => {
+        return cb(prismaMock);
+    });
+});
 
 async function createUser(overrides = {}) {
-    const defaultData = {
+    const fakeUser = {
+        id: '1',
         name: 'n',
         username: `u_${Date.now()}`,
         email: `e_${Date.now()}@b.com`,
         passwordHash: 'hashed_password',
         tokenVersion: 0,
+        ...overrides,
     };
 
-    const user = await prisma.user.create({
-        data: { ...defaultData, ...overrides },
-    });
+    prismaMock.user.create.mockResolvedValue(fakeUser);
+    prismaMock.wallet.create.mockResolvedValue({ userId: fakeUser.id, balance: 0 });
 
-    await walletService.createWallet(user.id);
+    await prismaMock.user.create({ data: fakeUser });
+    await prismaMock.wallet.create({ data: { userId: fakeUser.id, balance: 0 } });
 
-    return user;
+    return fakeUser;
 }
 
 describe('RequestService', () => {
@@ -43,6 +54,9 @@ describe('RequestService', () => {
                 priority: 'high',
                 metadata: { weight: 8, category: 'recyclable' },
             };
+
+            const fakeRequest = { id: 'r1', ...requestData };
+            prismaMock.request.create.mockResolvedValue(fakeRequest);
 
             const result = await requestService.createRequest(requestData);
 

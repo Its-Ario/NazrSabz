@@ -3,7 +3,11 @@ import { throwError } from '../utils/AppError.js';
 import prisma from '../utils/prisma.js';
 import userService from './userService.js';
 
-class RequestService {
+export class RequestService {
+    constructor(prismaClient) {
+        this.prisma = prismaClient;
+    }
+
     async createRequest(requestData) {
         try {
             const {
@@ -17,7 +21,7 @@ class RequestService {
                 address = null,
             } = requestData;
 
-            const request = await prisma.request.create({
+            const request = await this.prisma.request.create({
                 data: {
                     requesterId,
                     collectorId,
@@ -39,7 +43,7 @@ class RequestService {
 
     async getRequestById(requestId) {
         try {
-            const result = await prisma.request.findUnique({
+            const result = await this.prisma.request.findUnique({
                 where: { id: requestId },
             });
 
@@ -61,7 +65,7 @@ class RequestService {
                 throwError('Invalid Status', 400, { code: 'ERR_INVALID_STATUS' });
             }
 
-            return await prisma.request.update({
+            return await this.prisma.request.update({
                 where: { id: requestId },
                 data: {
                     status: status,
@@ -82,7 +86,7 @@ class RequestService {
         try {
             const collector = await userService.getUserProfile(collectorId);
 
-            await prisma.request.update({
+            await this.prisma.request.update({
                 where: {
                     id: requestId,
                 },
@@ -105,13 +109,13 @@ class RequestService {
     async getAllRequests({ page = 1, limit = 10 } = {}) {
         const skip = (page - 1) * limit;
         const [requests, total] = await Promise.all([
-            prisma.request.findMany({
+            this.prisma.request.findMany({
                 skip,
                 take: limit,
                 include: { collector: true, requester: true },
                 orderBy: { createdAt: 'desc' },
             }),
-            prisma.request.count(),
+            this.prisma.request.count(),
         ]);
 
         return {
@@ -121,4 +125,4 @@ class RequestService {
     }
 }
 
-export default new RequestService();
+export default new RequestService(prisma);

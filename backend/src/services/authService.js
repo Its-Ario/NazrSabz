@@ -5,7 +5,11 @@ import userService from './userService.js';
 import prisma from '../utils/prisma.js';
 import { throwError } from '../utils/AppError.js';
 
-class AuthService {
+export class AuthService {
+    constructor(prismaClient) {
+        this.prisma = prismaClient;
+    }
+
     async registerUser({ name, username, email, phoneNumber, password }) {
         if (!email && !phoneNumber) {
             throwError('User must have at least one of email or phone number', 400, {
@@ -25,7 +29,7 @@ class AuthService {
             conditions.push({ phoneNumber });
         }
 
-        const existingUser = await prisma.user.findFirst({
+        const existingUser = await this.prisma.user.findFirst({
             where: { OR: conditions },
         });
 
@@ -37,7 +41,7 @@ class AuthService {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await this.prisma.$transaction(async (tx) => {
             const newUser = await tx.user.create({
                 data: {
                     name: name.trim(),
@@ -87,7 +91,7 @@ class AuthService {
         try {
             logger.info(`Incrementing tokenVersion for user: ${userId}`);
 
-            const user = await prisma.user.update({
+            const user = await this.prisma.user.update({
                 where: { id: userId },
                 data: {
                     tokenVersion: { increment: 1 },
@@ -113,4 +117,4 @@ class AuthService {
     }
 }
 
-export default new AuthService();
+export default new AuthService(prisma);

@@ -2,23 +2,27 @@ import prisma from '../utils/prisma.js';
 import logger from '../logger.js';
 import { throwError } from '../utils/AppError.js';
 
-class TransactionService {
+export class TransactionService {
+    constructor(prismaClient) {
+        this.prisma = prismaClient;
+    }
+
     async createTransaction({ userId, requestId, action, amount }) {
         const validActions = ['WITHDRAWL', 'ADDITION'];
         if (!validActions.includes(action)) {
             throwError('Invalid action', 400, { code: 'ERR_INVALID_ACTION' });
         }
 
-        const user = await prisma.user.findUnique({ where: { id: userId } });
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user) throwError('User not found', 404, { code: 'ERR_USER_NOT_FOUND' });
 
         let request = null;
         if (action === 'ADDITION') {
-            request = await prisma.request.findUnique({ where: { id: requestId } });
+            request = await this.prisma.request.findUnique({ where: { id: requestId } });
             if (!request) throwError('Request not found', 404, { code: 'ERR_REQ_NOT_FOUND' });
         }
 
-        const transaction = await prisma.transaction.create({
+        const transaction = await this.prisma.transaction.create({
             data: {
                 userId,
                 requestId,
@@ -32,7 +36,7 @@ class TransactionService {
     }
 
     async getTransactionById(id) {
-        const transaction = await prisma.transaction.findUnique({
+        const transaction = await this.prisma.transaction.findUnique({
             where: { id },
             include: {
                 user: true,
@@ -48,13 +52,13 @@ class TransactionService {
     async getAllTransactions({ page = 1, limit = 10 } = {}) {
         const skip = (page - 1) * limit;
         const [transactions, total] = await Promise.all([
-            prisma.transaction.findMany({
+            this.prisma.transaction.findMany({
                 skip,
                 take: limit,
                 include: { user: true, request: true },
                 orderBy: { createdAt: 'desc' },
             }),
-            prisma.transaction.count(),
+            this.prisma.transaction.count(),
         ]);
 
         return {
@@ -64,4 +68,4 @@ class TransactionService {
     }
 }
 
-export default new TransactionService();
+export default new TransactionService(prisma);

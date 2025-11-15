@@ -330,9 +330,6 @@ class LoginPage extends LitElement {
         const username = this.renderRoot.querySelector('#username')?.value.trim();
         const password = this.renderRoot.querySelector('#password')?.value.trim();
 
-        console.log(username);
-        console.log(password);
-
         try {
             const res = await fetch('/api/login', {
                 method: 'POST',

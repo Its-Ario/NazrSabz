@@ -1,21 +1,40 @@
-import userService from '../src/services/userService';
-import prisma from '../src/utils/prisma.js';
+import { prismaMock } from './__mocks__/prismaClient.js';
+import { UserService } from '../src/services/userService.js';
+
+let userService;
+
+beforeEach(() => {
+    userService = new UserService(prismaMock);
+
+    prismaMock.$transaction.mockImplementation(async (cb) => cb(prismaMock));
+});
 
 async function createUser(overrides = {}) {
-    const defaultData = {
+    const fakeUser = sanitizeUser({
+        id: `u_${Date.now()}`,
         name: 'n',
         username: `u_${Date.now()}`,
         email: `e_${Date.now()}@b.com`,
         passwordHash: 'hashed_password',
         tokenVersion: 0,
-    };
-
-    return prisma.user.create({
-        data: { ...defaultData, ...overrides },
+        role: 'USER',
+        ...overrides,
     });
+    prismaMock.user.create.mockResolvedValue(fakeUser);
+    prismaMock.user.findUnique.mockResolvedValue(fakeUser);
+    prismaMock.user.findMany.mockResolvedValue([fakeUser]);
+    prismaMock.user.update.mockResolvedValue({ ...fakeUser, ...overrides });
+
+    return fakeUser;
 }
 
-describe('userService', () => {
+function sanitizeUser(user) {
+    // eslint-disable-next-line no-unused-vars
+    const { passwordHash, tokenVersion, ...safeUser } = user;
+    return safeUser;
+}
+
+describe('UserService', () => {
     describe('getUserProfile', () => {
         it('should return a user profile by ID', async () => {
             const user = await createUser();
@@ -35,6 +54,9 @@ describe('userService', () => {
         });
 
         it('should update the user role successfully', async () => {
+            const updatedUser = { ...user, role: 'ADMIN' };
+            prismaMock.user.update.mockResolvedValue(updatedUser);
+
             const result = await userService.updateRole(user.id, 'ADMIN');
             expect(result.role).toBe('ADMIN');
         });
@@ -48,11 +70,13 @@ describe('userService', () => {
 
     describe('getUsers', () => {
         it('should return a list of users', async () => {
-            await createUser();
-            await createUser({
+            const user1 = await createUser();
+            const user2 = await createUser({
                 username: `u2_${Date.now()}`,
                 email: `e2_${Date.now()}@b.com`,
             });
+
+            prismaMock.user.findMany.mockResolvedValue([user1, user2]);
 
             const result = await userService.getUsers();
 

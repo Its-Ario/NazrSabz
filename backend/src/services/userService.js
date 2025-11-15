@@ -2,11 +2,14 @@ import logger from '../logger.js';
 import { throwError } from '../utils/AppError.js';
 import prisma from '../utils/prisma.js';
 
-class UserService {
+export class UserService {
+    constructor(prismaClient) {
+        this.prisma = prismaClient;
+    }
     async getUserProfile(userId) {
         try {
             logger.info(`Fetching profile for user: ${userId}`);
-            const user = await prisma.user.findUnique({
+            const user = await this.prisma.user.findUnique({
                 where: { id: userId },
                 select: {
                     id: true,
@@ -34,7 +37,7 @@ class UserService {
     async getFullUserProfile(userId) {
         try {
             logger.info(`Fetching profile for user: ${userId}`);
-            const user = await prisma.user.findUnique({
+            const user = await this.prisma.user.findUnique({
                 where: { id: userId },
             });
 
@@ -55,7 +58,7 @@ class UserService {
             if (!field) throwError('Field name is required', 400, { code: 'ERR_FIELD_REQUIRED' });
             logger.info(`Fetching user by ${field}: ${value}`);
 
-            const user = await prisma.user.findFirst({
+            const user = await this.prisma.user.findFirst({
                 where: { [field]: value },
                 select: {
                     id: true,
@@ -85,7 +88,7 @@ class UserService {
 
             logger.info(`Updating role for user ${userId} to ${newRole}`);
 
-            const updatedUser = await prisma.user.update({
+            const updatedUser = await this.prisma.user.update({
                 where: { id: userId },
                 data: { role: newRole },
                 select: {
@@ -123,7 +126,7 @@ class UserService {
             const safeLimit = Math.min(Math.max(1, limit), 100);
             logger.info(`Fetching all users: limit=${safeLimit}, skip=${skip}`);
 
-            const users = await prisma.user.findMany({
+            const users = await this.prisma.user.findMany({
                 where: role ? { role: role.toUpperCase() } : {},
                 select: {
                     id: true,
@@ -146,4 +149,4 @@ class UserService {
     }
 }
 
-export default new UserService();
+export default new UserService(prisma);

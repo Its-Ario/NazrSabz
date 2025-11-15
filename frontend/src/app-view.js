@@ -3,7 +3,7 @@ import './components/login-view.js';
 import './components/header-bar.js';
 import './components/user-map.js';
 import './components/user-list.js';
-import './components/login-page.js';
+import './pages/login-page.js';
 import { removeAuthToken } from './utils/auth.js';
 import { Router } from '@vaadin/router';
 

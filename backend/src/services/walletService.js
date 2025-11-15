@@ -2,11 +2,15 @@ import logger from '../logger.js';
 import { throwError } from '../utils/AppError.js';
 import prisma from '../utils/prisma.js';
 
-class WalletService {
+export class WalletService {
+    constructor(prismaClient) {
+        this.prisma = prismaClient;
+    }
+
     async createWallet(userId) {
         logger.info(`Creating wallet for ${userId}`);
 
-        const wallet = await prisma.wallet.create({
+        const wallet = await this.prisma.wallet.create({
             data: {
                 userId,
                 balance: 0,
@@ -25,7 +29,7 @@ class WalletService {
         try {
             logger.info(`Adding ${amount} funds to wallet of user ${userId}`);
 
-            const wallet = await prisma.wallet.update({
+            const wallet = await this.prisma.wallet.update({
                 where: { userId },
                 data: { balance: { increment: amount } },
             });
@@ -43,10 +47,10 @@ class WalletService {
     }
 
     async getWalletByUser(userId) {
-        return await prisma.wallet.findUnique({
+        return await this.prisma.wallet.findUnique({
             where: { userId },
         });
     }
 }
 
-export default new WalletService();
+export default new WalletService(prisma);
