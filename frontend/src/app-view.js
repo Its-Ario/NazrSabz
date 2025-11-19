@@ -1,11 +1,12 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, css, html } from 'lit';
 import './components/login-view.js';
 import './components/header-bar.js';
 import './components/user-map.js';
 import './components/user-list.js';
 import './pages/login-page.js';
+import './pages/home-page.js';
 import { removeAuthToken } from './utils/auth.js';
-import { Router } from '@vaadin/router';
+import { Router } from '@lit-labs/router';
 
 export class AppView extends LitElement {
     static properties = {
@@ -93,51 +94,20 @@ export class AppView extends LitElement {
         this.showLocation = true;
         this.currentCoordinates = { lat: 0, lng: 0 };
         this.connectionStatus = 'disconnected';
-    }
 
-    firstUpdated() {
-        const outlet = this.renderRoot.querySelector('#outlet');
-        const router = new Router(outlet);
-
-        router.setRoutes([
-            { path: '/', component: 'login-page' },
-            { path: '/about', component: 'header-bar' },
-            { path: '(.*)', redirect: '/' }, // fallback
+        this.router = new Router(this, [
+            { path: '/', render: () => html`<login-page></login-page>` },
+            { path: '/home', render: () => html`<home-page></home-page>` },
         ]);
     }
 
     render() {
-        return html`<div id="outlet"></div>`;
-        // return html`
-        //     ${!this.currentUser
-        //         ? html`<login-page @login-success=${this._onLogin}></login-page>`
-        //         : html`
-        //               <div class="app-container">
-        //                   <header-bar
-        //                       .user=${this.currentUser}
-        //                       @logout=${this._onLogout}
-        //                   ></header-bar>
-        //                   <div class="content">
-        //                       <div class="map-container">
-        //                           <user-map id="map" @map-click=${this._onMapClick}></user-map>
-        //                       </div>
-        //                       <div class="user-list-container">
-        //                           <user-list
-        //                               id="user-list"
-        //                               .users=${this.users}
-        //                               .isTracking=${this.isTracking}
-        //                               .showLocation=${this.showLocation}
-        //                               .currentCoordinates=${this.currentCoordinates}
-        //                               .connectionStatus=${this.connectionStatus}
-        //                               @toggle-tracking=${this._onToggleTracking}
-        //                               @toggle-show-location=${this._onToggleShowLocation}
-        //                               @focus-user=${this._onFocusUser}
-        //                           ></user-list>
-        //                       </div>
-        //                   </div>
-        //               </div>
-        //           `}
-        // `;
+        return this.router.outlet();
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('navigate', (e) => this.router.goto(e.detail.to));
     }
 
     _onLogin(e) {
@@ -149,6 +119,9 @@ export class AppView extends LitElement {
                 composed: true,
             })
         );
+
+        window.history.pushState({}, '', '/home');
+        window.dispatchEvent(new Event('location-changed'));
     }
 
     _onLogout() {
