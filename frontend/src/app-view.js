@@ -5,6 +5,8 @@ import './components/user-map.js';
 import './components/user-list.js';
 import './pages/login-page.js';
 import './pages/home-page.js';
+import './pages/new-request.js';
+import './pages/rewards-page.js';
 import { removeAuthToken } from './utils/auth.js';
 import { Router } from '@lit-labs/router';
 
@@ -98,6 +100,8 @@ export class AppView extends LitElement {
         this.router = new Router(this, [
             { path: '/', render: () => html`<login-page></login-page>` },
             { path: '/home', render: () => html`<home-page></home-page>` },
+            { path: '/new', render: () => html`<new-request-page></new-request-page>` },
+            { path: '/rewards', render: () => html`<rewards-page></rewards-page>` },
         ]);
     }
 

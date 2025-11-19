@@ -99,11 +99,12 @@ export class HomePage extends BaseComponent {
         .search-bar {
             padding: 0.75rem 1.25rem;
             margin-bottom: 0.25rem;
+            text-align: center;
         }
 
         .search-input {
             font-family: inherit;
-            width: 100%;
+            width: 90%;
             border-radius: 14px;
             padding: 0.875rem 1.125rem;
             border: 1px solid rgba(0, 0, 0, 0.08);
@@ -314,7 +315,7 @@ export class HomePage extends BaseComponent {
                 </div>
 
                 <div class="fab-container">
-                    <button class="fab">
+                    <button class="fab" @click=${this._onNewClick}>
                         <span class="icon-wrapper">${recyclingIcon}</span>
 
                         درخواست جدید
@@ -331,6 +332,16 @@ export class HomePage extends BaseComponent {
         this.dispatchEvent(
             new CustomEvent('navigate', {
                 detail: { to: '/' },
+                bubbles: true,
+                composed: true,
+            })
+        );
+    }
+
+    _onNewClick() {
+        this.dispatchEvent(
+            new CustomEvent('navigate', {
+                detail: { to: '/new' },
                 bubbles: true,
                 composed: true,
             })

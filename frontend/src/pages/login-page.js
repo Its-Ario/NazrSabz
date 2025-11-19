@@ -543,6 +543,8 @@ class LoginPage extends BaseComponent {
 
             const data = await res.json();
 
+            saveAuthToken(data.token);
+
             this.dispatchEvent(
                 new CustomEvent('login-success', {
                     detail: { user: data.user },
