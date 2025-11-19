@@ -1,5 +1,4 @@
 /** @type {import('vite').UserConfig} */
-import tailwindcss from '@tailwindcss/vite';
 
 export default {
     server: {
@@ -7,5 +6,4 @@ export default {
             '/api': 'http://localhost:3000',
         },
     },
-    plugins: [tailwindcss()],
 };

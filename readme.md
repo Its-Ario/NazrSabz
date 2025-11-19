@@ -33,7 +33,7 @@ This repository contains the **full source code** for the project.
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Native Web Components, [Vite](https://vitejs.dev/), [TailwindCSS](https://tailwindcss.com/), [Leaflet.js](https://leafletjs.com/), [Yjs](https://docs.yjs.dev/)
+- **Frontend**: Native Web Components, [Vite](https://vitejs.dev/), [Leaflet.js](https://leafletjs.com/), [Yjs](https://docs.yjs.dev/)
 - **Backend**: [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/), [Prisma ORM](https://www.prisma.io/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Authentication**: JSON Web Tokens (JWT)
