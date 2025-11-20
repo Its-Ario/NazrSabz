@@ -4,10 +4,10 @@ import './components/header-bar.js';
 import './components/user-map.js';
 import './components/user-list.js';
 import './pages/login-page.js';
-import './pages/home-page.js';
+import './pages/map-page.js';
 import './pages/new-request.js';
-import './pages/rewards-page.js';
-import { removeAuthToken } from './utils/auth.js';
+import './pages/dashboard-page.js';
+import './pages/driver-dashboard.js';
 import { Router } from '@lit-labs/router';
 
 export class AppView extends LitElement {
@@ -98,10 +98,42 @@ export class AppView extends LitElement {
         this.connectionStatus = 'disconnected';
 
         this.router = new Router(this, [
-            { path: '/', render: () => html`<login-page></login-page>` },
-            { path: '/home', render: () => html`<home-page></home-page>` },
-            { path: '/new', render: () => html`<new-request-page></new-request-page>` },
-            { path: '/rewards', render: () => html`<rewards-page></rewards-page>` },
+            {
+                path: '/',
+                render: () => {
+                    document.title = 'نذرسبز | ورود';
+                    return html`<login-page></login-page>`;
+                },
+            },
+            {
+                path: '/map',
+                render: () => {
+                    document.title = 'نذرسبز | نقشه';
+                    return html`<map-page></map-page>`;
+                },
+            },
+            {
+                path: '/new',
+                render: () => {
+                    document.title = 'نذرسبز | درخواست جدید';
+                    return html`<new-request-page></new-request-page>`;
+                },
+            },
+            {
+                path: '/dashboard',
+                render: () => {
+                    document.title = 'نذرسبز | داشبورد';
+                    console.log('USER:', this.currentUser);
+                    return html`<dashboard-page .user=${this.currentUser}></dashboard-page>`;
+                },
+            },
+            {
+                path: '/driver',
+                render: () => {
+                    document.title = 'نذرسبز | داشبورد';
+                    return html`<driver-dashboard></driver-dashboard>`;
+                },
+            },
         ]);
     }
 
@@ -111,7 +143,11 @@ export class AppView extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        this.addEventListener('navigate', (e) => this.router.goto(e.detail.to));
+        this.addEventListener('navigate', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.router.goto(e.detail.to);
+        });
     }
 
     _onLogin(e) {
@@ -119,24 +155,6 @@ export class AppView extends LitElement {
         this.dispatchEvent(
             new CustomEvent('login-success', {
                 detail: { user: e.detail.user },
-                bubbles: true,
-                composed: true,
-            })
-        );
-
-        window.history.pushState({}, '', '/home');
-        window.dispatchEvent(new Event('location-changed'));
-    }
-
-    _onLogout() {
-        removeAuthToken();
-        this.currentUser = null;
-        this.users = [];
-        this.isTracking = false;
-        this.connectionStatus = 'disconnected';
-
-        this.dispatchEvent(
-            new CustomEvent('logout', {
                 bubbles: true,
                 composed: true,
             })
@@ -183,8 +201,9 @@ export class AppView extends LitElement {
         }
     }
 
-    updateUsers(usersArr) {
-        this.users = usersArr;
+    setCurrentUser(user) {
+        this.currentUser = user;
+        console.log(this.currentUser);
     }
 
     updateTracking(isTracking) {

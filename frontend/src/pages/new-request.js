@@ -355,7 +355,7 @@ export class NewRequestPage extends BaseComponent {
     _onBackClick() {
         this.dispatchEvent(
             new CustomEvent('navigate', {
-                detail: { to: '/home' },
+                detail: { to: '/dashboard' },
                 bubbles: true,
                 composed: true,
             })

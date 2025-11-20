@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     app.addEventListener('login-success', (e) => {
         currentUser = e.detail.user;
         saveAuthToken(currentUser.token);
-        app.map?.setCurrentUser(currentUser.id);
+        app.setCurrentUser(currentUser);
         collabService.connect('map', currentUser);
     });
 
@@ -72,33 +72,4 @@ document.addEventListener('DOMContentLoaded', () => {
     collabService.addEventListener('connection-status', (e) =>
         app.updateConnectionStatus(e.detail)
     );
-
-    collabService.addEventListener('users-changed', (e) => {
-        const users = e.detail;
-        const map = app.map;
-
-        app.updateUsers(users);
-
-        if (map && map.isReady()) {
-            users.forEach((u) => {
-                if (u.lat !== undefined && u.lng !== undefined) {
-                    map.upsertMarker(
-                        u.userDetails,
-                        u.lat,
-                        u.lng,
-                        u.lastUpdated,
-                        u.current,
-                        u.accuracy
-                    );
-                }
-            });
-
-            const currentUsers = new Set(users.map((u) => u.userDetails.id));
-            map.markers.forEach((marker, id) => {
-                if (!currentUsers.has(id)) {
-                    map.removeMarker(id);
-                }
-            });
-        }
-    });
 });

@@ -4,17 +4,16 @@ import '../components/user-map';
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
 import {
     faBell,
-    faRecycle,
     faMoon,
     faSun,
     faRightFromBracket,
+    faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 import { BaseComponent } from '../components/base-component';
-import { removeAuthToken } from '../utils/auth';
 
-library.add(faBell, faRecycle, faMoon, faSun, faRightFromBracket);
+library.add(faBell, faMoon, faSun, faRightFromBracket, faCheck);
 
-export class HomePage extends BaseComponent {
+export class MapPage extends BaseComponent {
     static styles = css`
         :host {
             display: block;
@@ -41,7 +40,6 @@ export class HomePage extends BaseComponent {
             overflow: hidden;
         }
 
-        /* Top Bar Styling */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -257,7 +255,7 @@ export class HomePage extends BaseComponent {
 
     static properties = {
         activeFilter: { type: String },
-        currentUser: { type: Object },
+        user: { type: Object },
     };
 
     constructor() {
@@ -272,8 +270,7 @@ export class HomePage extends BaseComponent {
 
     render() {
         const bellIcon = icon({ prefix: 'fas', iconName: 'bell' }).node[0];
-        const recyclingIcon = icon({ prefix: 'fa', iconName: 'recycle' }).node[0];
-        const bracketIcon = icon({ prefix: 'fa', iconName: 'right-from-bracket' }).node[0];
+        const checkIcon = icon({ prefix: 'fa', iconName: 'check' }).node[0];
 
         const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
         const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
@@ -285,9 +282,7 @@ export class HomePage extends BaseComponent {
                         <span class="icon-wrapper"> ${this.darkMode ? sunIcon : moonIcon} </span>
                     </button>
                     <h2>نذر سبز</h2>
-                    <button @click="${this._onLogout}">
-                        <span class="icon-wrapper">${bracketIcon}</span>
-                    </button>
+
                     <button>
                         <span class="icon-wrapper">${bellIcon}</span>
                     </button>
@@ -316,37 +311,14 @@ export class HomePage extends BaseComponent {
 
                 <div class="fab-container">
                     <button class="fab" @click=${this._onNewClick}>
-                        <span class="icon-wrapper">${recyclingIcon}</span>
+                        <span class="icon-wrapper">${checkIcon}</span>
 
-                        درخواست جدید
+                        تایید
                     </button>
                 </div>
             </div>
         `;
     }
-
-    _onLogout() {
-        removeAuthToken();
-        this.currentUser = null;
-
-        this.dispatchEvent(
-            new CustomEvent('navigate', {
-                detail: { to: '/' },
-                bubbles: true,
-                composed: true,
-            })
-        );
-    }
-
-    _onNewClick() {
-        this.dispatchEvent(
-            new CustomEvent('navigate', {
-                detail: { to: '/new' },
-                bubbles: true,
-                composed: true,
-            })
-        );
-    }
 }
 
-customElements.define('home-page', HomePage);
+customElements.define('map-page', MapPage);
