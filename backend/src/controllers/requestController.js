@@ -104,3 +104,24 @@ export const getAllRequests = async (req, res) => {
 
     res.status(200).json({ ok: true, result });
 };
+
+export const getRequestStats = async (req, res) => {
+    const userId = req.user.id;
+
+    const result = await requestService.getRequestStats(userId, 'requester');
+    res.status(200).json({ ok: true, result });
+};
+
+export const getTotalWeight = async (req, res) => {
+    const userId = req.user.id;
+
+    const result = await requestService.getTotalRequestedWeight(userId);
+    res.status(200).json({ ok: true, result });
+};
+
+export const getWeightBreakdown = async (req, res) => {
+    const userId = req.user.id;
+
+    const result = await requestService.getWeightBreakdownByMaterial(userId);
+    res.status(200).json({ ok: true, result });
+};
