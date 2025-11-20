@@ -193,7 +193,7 @@ export class DashboardPage extends BaseComponent {
 
         main {
             flex: 1;
-            padding-bottom: 6rem;
+            padding-bottom: 7rem;
         }
 
         /* Profile Header */
@@ -650,15 +650,22 @@ export class DashboardPage extends BaseComponent {
             background: linear-gradient(
                 to top,
                 rgba(245, 247, 245, 1) 0%,
+                rgba(245, 247, 245, 0.8) 50%,
                 rgba(245, 247, 245, 0) 100%
             );
             pointer-events: none;
             display: flex;
             justify-content: center;
+            z-index: 9;
         }
 
         :host(.dark) .fab-container {
-            background: linear-gradient(to top, rgba(18, 18, 18, 1) 0%, rgba(18, 18, 18, 0) 100%);
+            background: linear-gradient(
+                to top,
+                rgba(18, 18, 18, 1) 0%,
+                rgba(18, 18, 18, 0.8) 50%,
+                rgba(18, 18, 18, 0) 100%
+            );
         }
 
         .fab {
@@ -697,6 +704,10 @@ export class DashboardPage extends BaseComponent {
         }
 
         @media (max-width: 374px) {
+            main {
+                padding-bottom: 6.5rem;
+            }
+
             .top-bar {
                 padding: 0.875rem 1rem;
             }
@@ -833,6 +844,10 @@ export class DashboardPage extends BaseComponent {
 
         /* Tablet (768px - 1023px) */
         @media (min-width: 768px) {
+            main {
+                padding-bottom: 8rem;
+            }
+
             .container {
                 margin: 0 auto;
                 background-color: #ffffff;
@@ -936,16 +951,22 @@ export class DashboardPage extends BaseComponent {
                 font-size: 0.9375rem;
             }
 
+            .fab-container {
+                padding: 1.5rem 2rem;
+            }
+
             .fab {
                 height: 3.75rem;
                 font-size: 1.0625rem;
+                border-radius: 18px;
+                max-width: 500px;
             }
         }
 
         /* Desktop (1024px - 1279px) */
         @media (min-width: 1024px) {
             main {
-                padding-bottom: 2rem;
+                padding-bottom: 9rem;
             }
 
             .top-bar {
@@ -1031,17 +1052,35 @@ export class DashboardPage extends BaseComponent {
                 height: 1.25rem;
             }
 
-            /* Desktop FAB - not fixed */
             .fab-container {
-                position: static;
                 padding: 2rem 3rem;
-                background: transparent;
+                background: linear-gradient(
+                    to top,
+                    rgba(245, 247, 245, 1) 0%,
+                    rgba(245, 247, 245, 0.9) 30%,
+                    rgba(245, 247, 245, 0) 100%
+                );
+            }
+
+            :host(.dark) .fab-container {
+                background: linear-gradient(
+                    to top,
+                    rgba(18, 18, 18, 1) 0%,
+                    rgba(18, 18, 18, 0.9) 30%,
+                    rgba(18, 18, 18, 0) 100%
+                );
             }
 
             .fab {
-                max-width: 400px;
+                max-width: 420px;
                 height: 4rem;
                 font-size: 1.125rem;
+                border-radius: 20px;
+            }
+
+            .fab .icon-wrapper {
+                width: 20px;
+                height: 20px;
             }
         }
 
@@ -1096,7 +1135,15 @@ export class DashboardPage extends BaseComponent {
             }
 
             .fab-container {
-                padding: 2rem 4rem 2.5rem;
+                padding: 2rem 4rem;
+            }
+
+            .fab {
+                max-width: 450px;
+            }
+
+            main {
+                padding-bottom: 9.5rem;
             }
         }
 
@@ -1122,6 +1169,10 @@ export class DashboardPage extends BaseComponent {
 
             .rewards-list {
                 grid-template-columns: repeat(3, 1fr);
+            }
+
+            main {
+                padding-bottom: 10rem;
             }
         }
 
