@@ -72,6 +72,7 @@ export const verify = async (req, res) => {
     const userData = {
         id: req.user.id.toString(),
         name: req.user.name,
+        username: req.user.username,
     };
 
     res.status(200).json({ ok: true, user: userData });

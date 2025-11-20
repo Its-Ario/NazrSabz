@@ -6,11 +6,14 @@ import {
     faRecycle,
     faSun,
     faMoon,
+    faWallet,
+    faArrowUp,
+    faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { BaseComponent } from '../components/base-component';
 import { removeAuthToken } from '../utils/auth';
 
-library.add(faRightFromBracket, faStar, faRecycle, faSun, faMoon);
+library.add(faRightFromBracket, faStar, faRecycle, faSun, faMoon, faWallet, faArrowUp, faPlus);
 
 export class DashboardPage extends BaseComponent {
     static properties = {
@@ -173,84 +176,182 @@ export class DashboardPage extends BaseComponent {
             color: #13ec13;
         }
 
-        /* Circular Progress */
-        .progress-section {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
+        /* Wallet Section */
+        .wallet-section {
             padding: 1rem 1.25rem;
-            align-items: center;
         }
 
-        .circular-progress {
-            position: relative;
-            width: 11rem;
-            height: 11rem;
+        .wallet-card {
+            background: linear-gradient(135deg, #13ec13 0%, #0fd60f 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            color: #0a1a0a;
+            box-shadow: 0 4px 16px rgba(19, 236, 19, 0.25);
+        }
+
+        :host(.dark) .wallet-card {
+            box-shadow: 0 4px 20px rgba(19, 236, 19, 0.35);
+        }
+
+        .wallet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .wallet-label {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .wallet-icon {
+            width: 2rem;
+            height: 2rem;
+            background-color: rgba(10, 26, 10, 0.15);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .circular-progress svg {
-            width: 100%;
-            height: 100%;
-            transform: rotate(-90deg);
+        .wallet-icon .icon-wrapper {
+            width: 18px;
+            height: 18px;
         }
 
-        .progress-bg {
-            stroke: #e2e8f0;
-            fill: transparent;
+        .wallet-balance {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
 
-        :host(.dark) .progress-bg {
-            stroke: #334155;
-        }
-
-        .progress-bar {
-            stroke: #13ec13;
-            fill: transparent;
-            stroke-linecap: round;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-
-        .progress-content {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .progress-value {
-            font-size: 1.75rem;
-            font-weight: 600;
-        }
-
-        .progress-label {
-            font-size: 0.875rem;
-            color: #7a8a7a;
-        }
-
-        :host(.dark) .progress-label {
-            color: #8a8a8a;
-        }
-
-        .progress-text {
-            font-size: 0.9375rem;
+        .wallet-currency {
+            font-size: 1rem;
             font-weight: 500;
-            text-align: center;
+            opacity: 0.9;
         }
 
-        .progress-description {
-            font-size: 0.875rem;
-            color: #7a8a7a;
-            text-align: center;
-            max-width: 90%;
-            line-height: 1.5;
+        .wallet-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
 
-        :host(.dark) .progress-description {
-            color: #8a8a8a;
+        .wallet-btn {
+            flex: 1;
+            height: 2.75rem;
+            border-radius: 12px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #15803d;
+            border: none;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .wallet-btn:hover {
+            background-color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .wallet-btn:active {
+            transform: translateY(0);
+        }
+
+        .wallet-btn .icon-wrapper {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Responsive Wallet */
+        @media (max-width: 374px) {
+            .wallet-section {
+                padding: 0.875rem 1rem;
+            }
+
+            .wallet-card {
+                padding: 1.25rem;
+            }
+
+            .wallet-balance {
+                font-size: 1.75rem;
+            }
+
+            .wallet-btn {
+                font-size: 0.875rem;
+                height: 2.5rem;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .wallet-section {
+                padding: 1rem 1.5rem;
+            }
+
+            .wallet-card {
+                padding: 1.75rem;
+            }
+
+            .wallet-balance {
+                font-size: 2.25rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .wallet-section {
+                padding: 1.5rem 2rem;
+            }
+
+            .wallet-card {
+                padding: 2rem;
+            }
+
+            .wallet-balance {
+                font-size: 2.5rem;
+            }
+
+            .wallet-actions {
+                gap: 1rem;
+            }
+
+            .wallet-btn {
+                height: 3rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .wallet-section {
+                padding: 1.5rem 3rem;
+            }
+
+            .wallet-card {
+                padding: 2.25rem;
+            }
+
+            .wallet-balance {
+                font-size: 2.75rem;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .wallet-section {
+                padding: 1.5rem 4rem;
+            }
+
+            .wallet-card {
+                max-width: 600px;
+                margin: 0 auto;
+            }
         }
 
         /* Stats */
@@ -531,7 +632,6 @@ export class DashboardPage extends BaseComponent {
             height: 18px;
         }
 
-        /* Small Mobile (320px - 374px) */
         @media (max-width: 374px) {
             .top-bar {
                 padding: 0.875rem 1rem;
@@ -547,7 +647,6 @@ export class DashboardPage extends BaseComponent {
             }
 
             .profile-header,
-            .progress-section,
             .stats-grid,
             .filter-tabs,
             .rewards-list {
@@ -573,15 +672,6 @@ export class DashboardPage extends BaseComponent {
                 font-size: 0.875rem;
             }
 
-            .circular-progress {
-                width: 10rem;
-                height: 10rem;
-            }
-
-            .progress-value {
-                font-size: 1.5rem;
-            }
-
             .stat-value {
                 font-size: 1.25rem;
             }
@@ -601,15 +691,6 @@ export class DashboardPage extends BaseComponent {
             }
         }
 
-        /* Medium Mobile (375px - 639px) */
-        @media (min-width: 375px) and (max-width: 639px) {
-            .circular-progress {
-                width: 11rem;
-                height: 11rem;
-            }
-        }
-
-        /* Large Mobile / Small Tablet (640px - 767px) */
         @media (min-width: 640px) {
             .top-bar {
                 padding: 1.125rem 1.5rem;
@@ -625,7 +706,6 @@ export class DashboardPage extends BaseComponent {
             }
 
             .profile-header,
-            .progress-section,
             .stats-grid,
             .filter-tabs,
             .rewards-list {
@@ -645,19 +725,6 @@ export class DashboardPage extends BaseComponent {
 
             .profile-info h2 {
                 font-size: 1.375rem;
-            }
-
-            .circular-progress {
-                width: 12rem;
-                height: 12rem;
-            }
-
-            .progress-value {
-                font-size: 2rem;
-            }
-
-            .progress-text {
-                font-size: 1rem;
             }
 
             .stat-card {
@@ -723,7 +790,6 @@ export class DashboardPage extends BaseComponent {
             }
 
             .profile-header,
-            .progress-section,
             .stats-grid,
             .filter-tabs,
             .rewards-list {
@@ -752,15 +818,6 @@ export class DashboardPage extends BaseComponent {
 
             .profile-info p {
                 font-size: 1rem;
-            }
-
-            .circular-progress {
-                width: 13rem;
-                height: 13rem;
-            }
-
-            .progress-value {
-                font-size: 2.25rem;
             }
 
             .stats-grid {
@@ -842,7 +899,6 @@ export class DashboardPage extends BaseComponent {
             }
 
             .profile-header,
-            .progress-section,
             .filter-tabs,
             .rewards-list {
                 padding-left: 3rem;
@@ -874,27 +930,6 @@ export class DashboardPage extends BaseComponent {
 
             .profile-info h2 {
                 font-size: 1.625rem;
-            }
-
-            .circular-progress {
-                width: 14rem;
-                height: 14rem;
-            }
-
-            .progress-value {
-                font-size: 2.5rem;
-            }
-
-            .progress-label {
-                font-size: 1rem;
-            }
-
-            .progress-text {
-                font-size: 1.0625rem;
-            }
-
-            .progress-description {
-                font-size: 1rem;
             }
 
             .stat-card {
@@ -966,7 +1001,6 @@ export class DashboardPage extends BaseComponent {
             }
 
             .profile-header,
-            .progress-section,
             .filter-tabs {
                 padding-left: 4rem;
                 padding-right: 4rem;
@@ -1046,16 +1080,6 @@ export class DashboardPage extends BaseComponent {
                 padding-bottom: 5.5rem;
             }
 
-            .circular-progress {
-                width: 9rem;
-                height: 9rem;
-            }
-
-            .progress-section {
-                padding-top: 0.5rem;
-                padding-bottom: 0.5rem;
-            }
-
             .fab-container {
                 padding: 0.75rem 1.25rem;
             }
@@ -1064,7 +1088,6 @@ export class DashboardPage extends BaseComponent {
                 height: 3rem;
             }
         }
-
         /* Print Styles */
         @media print {
             .top-bar,
@@ -1116,23 +1139,15 @@ export class DashboardPage extends BaseComponent {
         this.activeTab = tab;
     }
 
-    _calculateProgress() {
-        const total = 10000; // Next level at 10000
-        const current = this.userProfile.points;
-        const percentage = (current / total) * 100;
-        const circumference = 2 * Math.PI * 40; // r=40
-        const offset = circumference - (percentage / 100) * circumference;
-        return offset;
-    }
-
     render() {
         const bracketIcon = icon({ prefix: 'fa', iconName: 'right-from-bracket' }).node[0];
         const starIcon = icon({ prefix: 'fas', iconName: 'star' }).node[0];
         const recycleIcon = icon({ prefix: 'fas', iconName: 'recycle' }).node[0];
         const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
         const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
-
-        const progressOffset = this._calculateProgress();
+        const walletIcon = icon({ prefix: 'fas', iconName: 'wallet' }).node[0];
+        const arrowUpIcon = icon({ prefix: 'fas', iconName: 'arrow-up' }).node[0];
+        const plusIcon = icon({ prefix: 'fas', iconName: 'plus' }).node[0];
 
         return html`
             <div class="container">
@@ -1155,43 +1170,37 @@ export class DashboardPage extends BaseComponent {
                             ></div>
                             <div class="profile-info">
                                 <h2>${this.userProfile.name}</h2>
-                                <p>${this.userProfile.level}</p>
+                                <p>${this.userProfile.username}@</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="progress-section">
-                        <div class="circular-progress">
-                            <svg viewBox="0 0 100 100">
-                                <circle
-                                    class="progress-bg"
-                                    cx="50"
-                                    cy="50"
-                                    r="40"
-                                    stroke-width="10"
-                                ></circle>
-                                <circle
-                                    class="progress-bar"
-                                    cx="50"
-                                    cy="50"
-                                    r="40"
-                                    stroke-width="10"
-                                    stroke-dasharray="251.2"
-                                    stroke-dashoffset="${progressOffset}"
-                                ></circle>
-                            </svg>
-                            <div class="progress-content">
-                                <span class="progress-value">${this.userProfile.points}</span>
-                                <span class="progress-label">امتیاز کل</span>
+                    <!-- Wallet Section -->
+                    <div class="wallet-section">
+                        <div class="wallet-card">
+                            <div class="wallet-header">
+                                <span class="wallet-label">موجودی کیف پول</span>
+                                <div class="wallet-icon">
+                                    <span class="icon-wrapper">${walletIcon}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="wallet-balance">
+                                    ${this.userProfile.walletBalance.toLocaleString('fa-IR')}
+                                </div>
+                                <div class="wallet-currency">تومان</div>
+                            </div>
+                            <div class="wallet-actions">
+                                <button class="wallet-btn" @click="${this._onDeposit}">
+                                    <span class="icon-wrapper">${plusIcon}</span>
+                                    <span>افزایش موجودی</span>
+                                </button>
+                                <button class="wallet-btn" @click="${this._onWithdraw}">
+                                    <span class="icon-wrapper">${arrowUpIcon}</span>
+                                    <span>برداشت</span>
+                                </button>
                             </div>
                         </div>
-                        <p class="progress-text">
-                            ${this.userProfile.pointsToNext} امتیاز تا سطح بعدی
-                        </p>
-                        <p class="progress-description">
-                            با بازیافت ${this.userProfile.totalWeight} کیلوگرم زباله، به حفظ ۲ درخت
-                            کمک کرده‌اید.
-                        </p>
                     </div>
 
                     <div class="stats-grid">
@@ -1276,9 +1285,12 @@ export class DashboardPage extends BaseComponent {
     connectedCallback() {
         super.connectedCallback();
 
+        console.log(this.user);
+
         this.userProfile = {
             name: this.user?.name,
-            level: 'سطح ۳: قهرمان بازیافت',
+            username: this.user?.username,
+            walletBalance: 125000,
             points: 7500,
             pointsToNext: 2500,
             totalWeight: 120,

@@ -82,13 +82,20 @@ export const updateCollector = async (req, res) => {
 };
 
 export const getRequestById = async (req, res) => {
-    const { id } = req.query;
+    const { id } = req.params;
 
     if (typeof id !== 'string') {
         return res.status(400).json({ ok: false, message: 'Invalid Input' });
     }
 
     const result = await requestService.getRequestById(id);
+    res.status(200).json({ ok: true, result });
+};
+
+export const getRequests = async (req, res) => {
+    const userId = req.user.id;
+
+    const result = await requestService.getRequestsByRequester(userId);
     res.status(200).json({ ok: true, result });
 };
 

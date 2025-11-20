@@ -3,6 +3,8 @@ import { throwError } from '../utils/AppError.js';
 import prisma from '../utils/prisma.js';
 import userService from './userService.js';
 
+const ALLOWED_STATUSES = ['PENDING', 'COMPLETED', 'CANCELED'];
+
 export class RequestService {
     constructor(prismaClient) {
         this.prisma = prismaClient;
@@ -14,9 +16,9 @@ export class RequestService {
                 requesterId,
                 collectorId = null,
                 items,
-                status = 'pending',
+                status = 'PENDING',
                 scheduledAt = null,
-                priority = 'normal',
+                priority = 'NORMAL',
                 metadata = null,
                 address = null,
             } = requestData;
@@ -45,6 +47,10 @@ export class RequestService {
         try {
             const result = await this.prisma.request.findUnique({
                 where: { id: requestId },
+                include: {
+                    requester: { select: { id: true, name: true, phone: true } },
+                    collector: { select: { id: true, name: true, phone: true } },
+                },
             });
 
             if (!result) {
@@ -59,17 +65,15 @@ export class RequestService {
     }
 
     async updateStatus(requestId, status) {
-        const ALLOWED_STATUSES = ['PENDING', 'COMPLETED', 'CANCELED'];
         try {
-            if (!ALLOWED_STATUSES.includes(status)) {
+            const upperStatus = status.toUpperCase();
+            if (!ALLOWED_STATUSES.includes(upperStatus)) {
                 throwError('Invalid Status', 400, { code: 'ERR_INVALID_STATUS' });
             }
 
             return await this.prisma.request.update({
                 where: { id: requestId },
-                data: {
-                    status: status,
-                },
+                data: { status: upperStatus },
                 select: {
                     status: true,
                     requesterId: true,
@@ -84,22 +88,23 @@ export class RequestService {
 
     async updateCollector(requestId, collectorId) {
         try {
-            const collector = await userService.getUserProfile(collectorId);
+            await userService.getUserProfile(collectorId);
 
-            await this.prisma.request.update({
-                where: {
-                    id: requestId,
-                },
+            const updated = await this.prisma.request.update({
+                where: { id: requestId },
                 data: {
-                    collector: collector,
-                    collectorId: collectorId,
+                    collectorId,
                 },
-                select: {
+                include: {
                     requester: true,
                     collector: true,
+                },
+                select: {
                     status: true,
                 },
             });
+
+            return updated;
         } catch (e) {
             logger.error('Error updating request collector');
             throw e;
@@ -122,6 +127,147 @@ export class RequestService {
             requests,
             pagination: { page, limit, total, pages: Math.ceil(total / limit) },
         };
+    }
+
+    async getRequestsByRequester(requesterId, { status = null, page = 1, limit = 10 } = {}) {
+        const skip = (page - 1) * limit;
+        const where = { requesterId };
+        if (status) where.status = status.toUpperCase();
+
+        const [requests, total] = await Promise.all([
+            this.prisma.request.findMany({
+                where,
+                skip,
+                take: limit,
+                include: { collector: true, requester: true },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.request.count({ where }),
+        ]);
+
+        return {
+            requests,
+            pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+        };
+    }
+
+    async getRequestsByCollector(collectorId, { status = null, page = 1, limit = 10 } = {}) {
+        const skip = (page - 1) * limit;
+        const where = { collectorId };
+        if (status) where.status = status.toUpperCase();
+
+        const [requests, total] = await Promise.all([
+            this.prisma.request.findMany({
+                where,
+                skip,
+                take: limit,
+                include: { collector: true, requester: true },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.request.count({ where }),
+        ]);
+
+        return {
+            requests,
+            pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+        };
+    }
+
+    async getRequestStats(userId, role = 'requester') {
+        const where = role === 'collector' ? { collectorId: userId } : { requesterId: userId };
+
+        const grouped = await this.prisma.request.groupBy({
+            by: ['status'],
+            where,
+            _count: { _all: true },
+        });
+
+        const stats = {
+            total: 0,
+            PENDING: 0,
+            COMPLETED: 0,
+            CANCELED: 0,
+        };
+
+        grouped.forEach((g) => {
+            const count = g._count._all;
+            stats.total += count;
+            const key = g.status.toUpperCase();
+            if (key in stats) stats[key] = count;
+        });
+
+        return stats;
+    }
+
+    async getTotalCollectedWeight(collectorId) {
+        try {
+            const requests = await this.prisma.request.findMany({
+                where: {
+                    collectorId,
+                    status: 'COMPLETED',
+                },
+                select: { items: true },
+            });
+
+            let totalWeight = 0;
+
+            for (const { items } of requests) {
+                if (Array.isArray(items)) {
+                    items.forEach((item) => {
+                        if (item && typeof item.weight === 'number') {
+                            totalWeight += item.weight;
+                        }
+                    });
+                } else if (items && typeof items === 'object') {
+                    Object.values(items).forEach((value) => {
+                        if (typeof value === 'number') {
+                            totalWeight += value;
+                        }
+                    });
+                }
+            }
+
+            return Number(totalWeight.toFixed(2));
+        } catch (e) {
+            logger.error(
+                `Error calculating total weight for collector ${collectorId}: ${e.message}`
+            );
+            throw e;
+        }
+    }
+
+    async getTotalRequestedWeight(requesterId) {
+        try {
+            const requests = await this.prisma.request.findMany({
+                where: { requesterId },
+                select: { items: true },
+            });
+
+            let totalWeight = 0;
+
+            for (const { items } of requests) {
+                if (Array.isArray(items)) {
+                    items.forEach((item) => {
+                        if (item && typeof item.weight === 'number') {
+                            totalWeight += item.weight;
+                        }
+                    });
+                } else if (items && typeof items === 'object') {
+                    Object.values(items).forEach((value) => {
+                        if (typeof value === 'number') {
+                            totalWeight += value;
+                        }
+                    });
+                }
+            }
+
+            return Number(totalWeight.toFixed(2));
+        } catch (e) {
+            logger.error(
+                `Error calculating total requested weight for requester ${requesterId}: ${e.message}`
+            );
+            throw e;
+        }
     }
 }
 

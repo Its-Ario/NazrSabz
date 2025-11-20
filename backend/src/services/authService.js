@@ -72,10 +72,7 @@ export class AuthService {
 
         return {
             token,
-            userData: {
-                id: user.id,
-                name: user.name,
-            },
+            userData: user,
         };
     }
 
