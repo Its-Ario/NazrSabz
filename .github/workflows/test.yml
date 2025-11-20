@@ -31,16 +31,11 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Generate Prisma Client
-              working-directory: ./backend
-              run: |
-                  DATABASE_URL="file:./dev.db" pnpm exec prisma generate
+            - name: Generate Prisma client
+              run: pnpm exec prisma generate
 
-            - name: Run tests
-              working-directory: ./backend
-              run: |
-                  export DATABASE_URL="file:./test.db"
-                  pnpm test
+            - name: Run backend tests
+              run: pnpm test
 
     frontend:
         runs-on: ubuntu-latest
