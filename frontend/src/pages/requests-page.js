@@ -813,6 +813,14 @@ export class RequestsPage extends BaseComponent {
                             >
                                 تکمیل شده
                             </button>
+                            <button
+                                class="tab-button ${this.activeFilter === 'CANCELED'
+                                    ? 'active'
+                                    : ''}"
+                                @click="${() => this._setFilter('CANCELED')}"
+                            >
+                                لغو شده
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -112,6 +112,9 @@ importers:
       '@lit-labs/router':
         specifier: ^0.1.4
         version: 0.1.4
+      jalaali-js:
+        specifier: ^1.2.8
+        version: 1.2.8
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -2673,6 +2676,9 @@ packages:
 
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
+
+  jalaali-js@1.2.8:
+    resolution: {integrity: sha512-Jl/EwY84JwjW2wsWqeU4pNd22VNQ7EkjI36bDuLw31wH98WQW4fPjD0+mG7cdCK+Y8D6s9R3zLiQ3LaKu6bD8A==}
 
   jest-changed-files@30.0.5:
     resolution: {integrity: sha512-bGl2Ntdx0eAwXuGpdLdVYVr5YQHnSZlQ0y9HVDu565lCUAe9sj6JOtBbMmBBikGIegne9piDDIOeiLVoqTkz4A==}
@@ -6207,10 +6213,6 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
-
   debug@4.4.1(supports-color@5.5.0):
     dependencies:
       ms: 2.1.3
@@ -7245,6 +7247,8 @@ snapshots:
       '@isaacs/cliui': 8.0.2
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
+
+  jalaali-js@1.2.8: {}
 
   jest-changed-files@30.0.5:
     dependencies:
@@ -8976,7 +8980,7 @@ snapshots:
   vite-node@3.2.4(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2):
     dependencies:
       cac: 6.7.14
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@5.5.0)
       es-module-lexer: 1.7.0
       pathe: 2.0.3
       vite: 7.1.4(@types/node@24.3.0)(jiti@2.6.1)(lightningcss@1.30.2)
@@ -9019,7 +9023,7 @@ snapshots:
       '@vitest/spy': 3.2.4
       '@vitest/utils': 3.2.4
       chai: 5.3.3
-      debug: 4.4.1
+      debug: 4.4.1(supports-color@5.5.0)
       expect-type: 1.2.2
       magic-string: 0.30.18
       pathe: 2.0.3
