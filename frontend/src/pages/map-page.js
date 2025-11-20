@@ -132,60 +132,6 @@ export class MapPage extends BaseComponent {
             box-shadow: 0 0 0 3px rgba(19, 236, 19, 0.1);
         }
 
-        /* Filter Chips Styling */
-        .filter-chips {
-            display: flex;
-            gap: 0.625rem;
-            padding: 0.75rem 1.25rem;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .filter-chips::-webkit-scrollbar {
-            display: none;
-        }
-
-        .filter-chip {
-            padding: 0.625rem 1.125rem;
-            border-radius: 12px;
-            white-space: nowrap;
-            font-weight: 500;
-            font-size: 0.9375rem;
-            background-color: #ffffff;
-            color: #2d4a2d;
-            cursor: pointer;
-            flex-shrink: 0;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            transition: all 0.2s ease;
-        }
-
-        :host(.dark) .filter-chip {
-            background-color: #1e1e1e;
-            color: #b8b8b8;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .filter-chip:hover {
-            background-color: #f0f7f0;
-            transform: translateY(-1px);
-        }
-
-        :host(.dark) .filter-chip:hover {
-            background-color: #2a2a2a;
-        }
-
-        .filter-chip.active {
-            background-color: #13ec13;
-            color: #0a1a0a;
-            font-weight: 600;
-            border-color: #13ec13;
-            box-shadow: 0 2px 8px rgba(19, 236, 19, 0.25);
-        }
-
-        :host(.dark) .filter-chip.active {
-            box-shadow: 0 2px 12px rgba(19, 236, 19, 0.35);
-        }
-
         .map-container {
             flex: 1;
             position: relative;
@@ -254,18 +200,12 @@ export class MapPage extends BaseComponent {
     `;
 
     static properties = {
-        activeFilter: { type: String },
         user: { type: Object },
     };
 
     constructor() {
         super();
-        this.activeFilter = 'همه';
         this.users = [];
-    }
-
-    setFilter(filter) {
-        this.activeFilter = filter;
     }
 
     render() {
@@ -290,19 +230,6 @@ export class MapPage extends BaseComponent {
 
                 <div class="search-bar">
                     <input class="search-input" type="text" placeholder="جستجوی آدرس" />
-                </div>
-
-                <div class="filter-chips">
-                    ${['همه', 'پلاستیک', 'کاغذ', 'فلزات', 'شیشه', 'الکترونیکی'].map(
-                        (filter) => html`
-                            <div
-                                class="filter-chip ${this.activeFilter === filter ? 'active' : ''}"
-                                @click="${() => this.setFilter(filter)}"
-                            >
-                                ${filter}
-                            </div>
-                        `
-                    )}
                 </div>
 
                 <div class="map-container">
