@@ -834,7 +834,6 @@ export class DashboardPage extends BaseComponent {
         /* Tablet (768px - 1023px) */
         @media (min-width: 768px) {
             .container {
-                max-width: 768px;
                 margin: 0 auto;
                 background-color: #ffffff;
                 box-shadow: 0 0 40px rgba(0, 0, 0, 0.08);
@@ -945,10 +944,6 @@ export class DashboardPage extends BaseComponent {
 
         /* Desktop (1024px - 1279px) */
         @media (min-width: 1024px) {
-            .container {
-                max-width: 1024px;
-            }
-
             main {
                 padding-bottom: 2rem;
             }
@@ -1052,10 +1047,6 @@ export class DashboardPage extends BaseComponent {
 
         /* Large Desktop (1280px+) */
         @media (min-width: 1280px) {
-            .container {
-                max-width: 1280px;
-            }
-
             .top-bar {
                 padding: 1.75rem 4rem;
             }
@@ -1111,10 +1102,6 @@ export class DashboardPage extends BaseComponent {
 
         /* Extra Large Desktop (1536px+) */
         @media (min-width: 1536px) {
-            .container {
-                max-width: 1536px;
-            }
-
             .stats-grid {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);

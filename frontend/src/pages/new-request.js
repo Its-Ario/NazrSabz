@@ -1,5 +1,4 @@
 import { html, css } from 'lit';
-import { globalStyles } from '../styles/global-styles';
 import { BaseComponent } from '../components/base-component';
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
 import {
@@ -12,7 +11,8 @@ import {
     faMoon,
     faSun,
     faFile,
-    faCoins,
+    faCog,
+    faWeightHanging,
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -25,331 +25,716 @@ library.add(
     faMoon,
     faSun,
     faFile,
-    faCoins
+    faCog,
+    faWeightHanging
 );
 
 export class NewRequestPage extends BaseComponent {
-    static styles = [
-        globalStyles,
-        css`
-            :host {
-                display: block;
-                height: 100vh;
-                direction: rtl;
-                background-color: #f6f8f6;
-                direction: rtl;
-                background-color: #f5f7f5;
-                color: #1a1a1a;
-                transition:
-                    background-color 0.3s ease,
-                    color 0.3s ease;
-            }
+    static properties = {
+        selectedWasteTypes: { type: Array },
+        formData: { type: Object },
+        isSubmitting: { type: Boolean },
+    };
 
-            :host(.dark) {
-                background-color: #121212;
-                color: #e4e4e4;
-            }
+    static styles = css`
+        :host {
+            display: block;
+            min-height: 100vh;
+            direction: rtl;
+            font-family:
+                'Shabnam FD',
+                -apple-system,
+                BlinkMacSystemFont,
+                'Segoe UI',
+                sans-serif;
+            background-color: #f5f7f5;
+            color: #1a1a1a;
+            transition:
+                background-color 0.3s ease,
+                color 0.3s ease;
+            margin: 0;
+            padding: 0;
+        }
 
-            .app-container {
-                display: flex;
-                flex-direction: column;
-                min-height: 100dvh;
-                overflow-x: hidden;
-            }
+        :host(.dark) {
+            background-color: #121212;
+            color: #e4e4e4;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            background-color: #f5f7f5;
+            margin: 0;
+            width: 100%;
+        }
 
-            /* Top App Bar */
+        :host(.dark) .container {
+            background-color: #121212;
+        }
+
+        /* Top App Bar */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.25rem;
+            backdrop-filter: blur(12px);
+            background-color: rgba(255, 255, 255, 0.85);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            transition:
+                background-color 0.3s ease,
+                border-color 0.3s ease;
+        }
+
+        :host(.dark) .top-bar {
+            background-color: rgba(30, 30, 30, 0.85);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .top-bar h1 {
+            flex: 1;
+            text-align: center;
+            font-size: 1.125rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .top-bar-button {
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 12px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3a7f3a;
+            transition: all 0.2s ease;
+        }
+
+        :host(.dark) .top-bar-button {
+            color: #b8b8b8;
+        }
+
+        .top-bar-button:hover {
+            background-color: rgba(19, 236, 19, 0.1);
+        }
+
+        :host(.dark) .top-bar-button:hover {
+            background-color: rgba(19, 236, 19, 0.15);
+        }
+
+        .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+        }
+
+        .icon-wrapper svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        main {
+            flex: 1;
+            padding-bottom: 6rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            margin: 0;
+            padding: 1.25rem 1.25rem 0.75rem;
+            letter-spacing: -0.01em;
+        }
+
+        /* Waste Type Grid */
+        .waste-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.875rem;
+            padding: 0 1.25rem 1rem;
+        }
+
+        .waste-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-radius: 16px;
+            padding: 1rem;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            background-color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        :host(.dark) .waste-card {
+            background-color: #1e1e1e;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .waste-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        :host(.dark) .waste-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .waste-card.selected {
+            background: linear-gradient(
+                135deg,
+                rgba(19, 236, 19, 0.15) 0%,
+                rgba(15, 214, 15, 0.15) 100%
+            );
+            border-color: #13ec13;
+            box-shadow: 0 2px 8px rgba(19, 236, 19, 0.25);
+        }
+
+        :host(.dark) .waste-card.selected {
+            background: linear-gradient(
+                135deg,
+                rgba(19, 236, 19, 0.2) 0%,
+                rgba(15, 214, 15, 0.2) 100%
+            );
+            box-shadow: 0 2px 12px rgba(19, 236, 19, 0.35);
+        }
+
+        .waste-card .icon-wrapper {
+            width: 2rem;
+            height: 2rem;
+            color: #3a7f3a;
+        }
+
+        :host(.dark) .waste-card .icon-wrapper {
+            color: #b8b8b8;
+        }
+
+        .waste-card.selected .icon-wrapper {
+            color: #13ec13;
+        }
+
+        .waste-card h3 {
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: #1a1a1a;
+        }
+
+        :host(.dark) .waste-card h3 {
+            color: #e4e4e4;
+        }
+
+        .waste-card p {
+            font-size: 0.8125rem;
+            color: #7a8a7a;
+        }
+
+        :host(.dark) .waste-card p {
+            color: #8a8a8a;
+        }
+
+        /* Form Groups */
+        .form-section {
+            padding: 0 1.25rem 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        label {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.375rem;
+        }
+
+        :host(.dark) label {
+            color: #e4e4e4;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            background-color: #ffffff;
+            font-size: 0.9375rem;
+            color: #1a1a1a;
+            outline: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        :host(.dark) input,
+        :host(.dark) select,
+        :host(.dark) textarea {
+            background-color: #1e1e1e;
+            border-color: rgba(255, 255, 255, 0.08);
+            color: #e4e4e4;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #13ec13;
+            box-shadow: 0 0 0 3px rgba(19, 236, 19, 0.1);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #7a8a7a;
+        }
+
+        :host(.dark) input::placeholder,
+        :host(.dark) textarea::placeholder {
+            color: #8a8a8a;
+        }
+
+        textarea {
+            min-height: 7rem;
+            resize: vertical;
+        }
+
+        .input-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon .icon-wrapper {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7a8a7a;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        :host(.dark) .input-icon .icon-wrapper {
+            color: #8a8a8a;
+        }
+
+        .input-icon input,
+        .input-icon select,
+        .input-icon textarea {
+            padding-left: 2.75rem;
+            width: 100%;
+        }
+
+        .input-icon textarea {
+            padding-top: 0.875rem;
+        }
+
+        /* Weight Input with Items */
+        .weight-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .weight-item {
+            display: grid;
+            grid-template-columns: 6rem 1fr;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .weight-item-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #1a1a1a;
+            text-align: right;
+        }
+
+        :host(.dark) .weight-item-label {
+            color: #e4e4e4;
+        }
+
+        .weight-item input {
+            flex: 1;
+        }
+
+        /* FAB Container */
+        .fab-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.25rem;
+            background: linear-gradient(
+                to top,
+                rgba(245, 247, 245, 1) 0%,
+                rgba(245, 247, 245, 0) 100%
+            );
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+        }
+
+        :host(.dark) .fab-container {
+            background: linear-gradient(to top, rgba(18, 18, 18, 1) 0%, rgba(18, 18, 18, 0) 100%);
+        }
+
+        .fab {
+            max-width: 480px;
+            width: 100%;
+            height: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #13ec13 0%, #0fd60f 100%);
+            color: #0a1a0a;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(19, 236, 19, 0.3);
+            transition: all 0.2s ease;
+            pointer-events: auto;
+            font-family: inherit;
+        }
+
+        .fab:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(19, 236, 19, 0.4);
+        }
+
+        .fab:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .fab:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .fab .icon-wrapper {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Calendar Input */
+        input[type='date'] {
+            position: relative;
+            cursor: pointer;
+        }
+
+        input[type='date']::-webkit-calendar-picker-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        input[type='date']::-webkit-inner-spin-button,
+        input[type='date']::-webkit-clear-button {
+            display: none;
+        }
+
+        input[type='date']::-webkit-datetime-edit {
+            padding: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 374px) {
             .top-bar {
-                position: sticky;
-                top: 0;
-                z-index: 10;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 1rem;
-                padding-bottom: 0.5rem;
-                background-color: #ffffff;
-                border-bottom: 1px solid #dbe6db;
-            }
-
-            :host(.dark) .top-bar {
-                background-color: rgba(30, 30, 30, 0.85);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                padding: 0.875rem 1rem;
             }
 
             .top-bar h1 {
-                font-size: 1.125rem;
-                font-weight: bold;
-                text-align: center;
-                flex: 1;
-                letter-spacing: -0.015em;
-            }
-
-            .top-bar .icon-button {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 3rem;
-                height: 3rem;
-                cursor: pointer;
-                border-radius: 0.75rem;
-            }
-
-            /* Section Headers */
-            h2 {
-                font-size: 1.375rem;
-                font-weight: bold;
-                margin: 1.25rem 1rem 0.75rem;
-            }
-
-            /* Waste Type Grid */
-            .waste-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
-                gap: 0.75rem;
-                padding: 0 1rem;
-            }
-
-            .waste-card {
-                display: flex;
-                flex-direction: column;
-                gap: 0.5rem;
-                border-radius: 1rem;
-                padding: 1rem;
-                cursor: pointer;
-                border: 2px solid transparent;
-                transition: all 0.2s ease;
-            }
-
-            .waste-card.primary {
-                background-color: rgba(46, 139, 87, 0.1);
-                border-color: #2e8b57;
-                color: #2e8b57;
-            }
-
-            .waste-card:not(.primary) {
-                background-color: #ffffff;
-                border: 1px solid #dbe6db;
-                color: #111811;
-            }
-
-            :host(.dark) .waste-card:not(.primary) {
-                background-color: rgba(30, 30, 30, 0.85);
-                border-color: rgba(255, 255, 255, 0.08);
-                color: #e3f3e3;
-            }
-
-            .waste-card h3 {
-                font-weight: bold;
                 font-size: 1rem;
             }
 
-            .waste-card p {
-                font-size: 0.875rem;
-                color: #618961;
+            .top-bar-button {
+                width: 2.5rem;
+                height: 2.5rem;
             }
 
-            :host(.dark) .waste-card p {
-                color: #9bc99b;
+            .section-header {
+                padding: 1rem 1rem 0.625rem;
+                font-size: 1rem;
             }
 
-            /* Inputs */
-            .form-group {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1rem;
-                padding: 0 1rem;
-                margin-bottom: 1rem;
+            .waste-grid,
+            .form-section {
+                padding-left: 1rem;
+                padding-right: 1rem;
             }
 
-            label {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                min-width: 10rem;
+            .waste-card {
+                padding: 0.875rem;
+            }
+
+            .fab-container {
+                padding: 1rem;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .top-bar {
+                padding: 1.125rem 1.5rem;
+            }
+
+            .top-bar h1 {
+                font-size: 1.25rem;
+            }
+
+            .top-bar-button {
+                width: 3rem;
+                height: 3rem;
+            }
+
+            .section-header {
+                padding: 1.5rem 1.5rem 1rem;
+                font-size: 1.125rem;
+            }
+
+            .waste-grid {
+                grid-template-columns: repeat(4, 1fr);
+                padding: 0 1.5rem 1rem;
+            }
+
+            .form-section {
+                padding: 0 1.5rem 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .waste-card {
+                padding: 1.25rem;
+            }
+
+            .weight-item {
+                grid-template-columns: 8rem 1fr;
+            }
+
+            .weight-item-label {
+                font-size: 0.9375rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .top-bar {
+                padding: 1.25rem 2rem;
+            }
+
+            .top-bar h1 {
+                font-size: 1.375rem;
+            }
+
+            .section-header {
+                padding: 1.5rem 2rem 1rem;
+                font-size: 1.25rem;
+            }
+
+            .waste-grid,
+            .form-section {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+
+            .waste-card {
+                padding: 1.5rem;
             }
 
             input,
             select,
             textarea {
-                padding: 0.875rem 0.9375rem;
-                border-radius: 0.75rem;
-                border: 1px solid #dbe6db;
-                background-color: #ffffff;
-                font-size: 1rem;
-                color: #111811;
-                outline: none;
-                resize: none;
-                height: 3.5rem;
+                padding: 1rem 1.125rem;
             }
 
-            :host(.dark) input,
-            :host(.dark) select,
-            :host(.dark) textarea {
-                background-color: rgba(30, 30, 30, 0.85);
-                border-color: rgba(255, 255, 255, 0.08);
-                color: #e3f3e3;
-            }
-
-            input:focus,
-            select:focus,
-            textarea:focus {
-                border-color: #2e8b57;
-                box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.3);
-            }
-
-            textarea {
-                min-height: 7rem;
+            .input-icon input,
+            .input-icon select {
                 padding-left: 3rem;
             }
 
-            .fab-container {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                padding: 1rem;
-                background-color: rgba(255, 255, 255, 0.8);
-                backdrop-filter: blur(10px);
-                border-top: 1px solid #dbe6db;
-                display: flex;
-                justify-content: center;
+            .fab {
+                height: 3.75rem;
+                font-size: 1.0625rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            main {
+                padding-bottom: 2rem;
             }
 
-            :host(.dark) .fab-container {
-                background-color: rgba(30, 30, 30, 0.85);
-                border-color: rgba(255, 255, 255, 0.08);
+            .top-bar {
+                padding: 1.5rem 3rem;
+                position: static;
+            }
+
+            .top-bar h1 {
+                font-size: 1.5rem;
+            }
+
+            .section-header {
+                padding: 2rem 3rem 1rem;
+                font-size: 1.375rem;
+            }
+
+            .waste-grid,
+            .form-section {
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+
+            .fab-container {
+                position: static;
+                padding: 2rem 3rem;
+                background: transparent;
             }
 
             .fab {
-                max-width: 480px;
-                width: 100%;
-                height: 3.5rem;
-                border-radius: 16px;
-                background: linear-gradient(135deg, #13ec13 0%, #0fd60f 100%);
-                color: #0a1a0a;
-                display: flex;
-                font-family: inherit;
-                align-items: center;
-                justify-content: center;
-                font-weight: 600;
-                font-size: 1rem;
-                gap: 0.625rem;
-                box-shadow: 0 4px 16px rgba(19, 236, 19, 0.3);
-                cursor: pointer;
-                border: none;
-                transition: all 0.2s ease;
+                max-width: 400px;
+                height: 4rem;
+                font-size: 1.125rem;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .top-bar {
+                padding: 1.75rem 4rem;
             }
 
-            .fab:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(19, 236, 19, 0.4);
+            .top-bar h1 {
+                font-size: 1.625rem;
             }
 
-            .fab:active {
-                transform: translateY(0);
+            .section-header {
+                padding: 2rem 4rem 1rem;
+                font-size: 1.5rem;
             }
 
-            .icon-wrapper {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                width: 16px;
-                height: 16px;
+            .waste-grid,
+            .form-section {
+                padding-left: 4rem;
+                padding-right: 4rem;
             }
 
-            .icon-wrapper svg {
-                width: 100%;
-                height: 100%;
+            .fab-container {
+                padding: 2rem 4rem 2.5rem;
             }
-        `,
-    ];
+        }
+        @media print {
+            .top-bar,
+            .fab-container {
+                display: none;
+            }
 
-    render() {
-        const backIcon = icon({ prefix: 'fas', iconName: 'arrow-right' }).node[0];
-        const recyclingIcon = icon({ prefix: 'fa', iconName: 'recycle' }).node[0];
-        const glassIcon = icon({ prefix: 'fa', iconName: 'glass-water' }).node[0];
-        // const calenderIcon = icon({ prefix: 'fa', iconName: 'calendar' }).node[0];
-        const fileIcon = icon({ prefix: 'fa', iconName: 'file' }).node[0];
+            main {
+                padding-bottom: 0;
+            }
+        }
+    `;
 
-        const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
-        const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
+    constructor() {
+        super();
+        this.selectedWasteTypes = [];
+        this.formData = {
+            items: {},
+            date: '',
+            timeSlot: '',
+            address: '',
+            notes: '',
+        };
+        this.isSubmitting = false;
 
-        return html`
-            <div class="app-container">
-                <!-- Top Bar -->
-                <div class="top-bar">
-                    <div class="icon-button" @click=${this._onBackClick}>
-                        <span class="icon-wrapper">${backIcon}</span>
-                    </div>
-                    <h1>ثبت درخواست جدید</h1>
-                    <div @click="${super.toggleTheme}" class="icon-button">
-                        <span class="icon-wrapper"> ${this.darkMode ? sunIcon : moonIcon} </span>
-                    </div>
-                </div>
+        this.wasteTypes = [
+            { id: 'paper', name: 'کاغذ', description: 'مقوا، روزنامه', icon: 'file' },
+            { id: 'plastic', name: 'پلاستیک', description: 'بطری، ظروف', icon: 'recycle' },
+            { id: 'metal', name: 'فلز', description: 'قوطی، آهن', icon: 'cog' },
+            { id: 'glass', name: 'شیشه', description: 'بطری، ظروف', icon: 'glass-water' },
+        ];
 
-                <h2>نوع پسماند خود را انتخاب کنید</h2>
-                <div class="waste-grid">
-                    <div class="waste-card primary">
-                        <span class="icon-wrapper">${fileIcon}</span>
-                        <h3>کاغذ</h3>
-                        <p>مقوا، روزنامه</p>
-                    </div>
-                    <div class="waste-card">
-                        <span class="icon-wrapper">${recyclingIcon}</span>
-                        <h3>پلاستیک</h3>
-                        <p>بطری، ظروف</p>
-                    </div>
-                    <div class="waste-card">
-                        <span class="icon-wrapper">iron</span>
-                        <h3>فلز</h3>
-                        <p>قوطی، آهن</p>
-                    </div>
-                    <div class="waste-card">
-                        <span class="icon-wrapper">${glassIcon}</span>
-                        <h3>شیشه</h3>
-                        <p>بطری، ظروف</p>
-                    </div>
-                </div>
+        this.timeSlots = [
+            { value: 'morning', label: 'صبح ۹-۱۲' },
+            { value: 'afternoon', label: 'عصر ۱۴-۱۷' },
+            { value: 'evening', label: 'عصر ۱۷-۲۰' },
+        ];
+    }
 
-                <!-- Request Details -->
-                <h2>جزئیات درخواست</h2>
-                <div class="form-group">
-                    <label>
-                        وزن تقریبی (کیلوگرم)
-                        <input type="number" placeholder="مثلا: 5" />
-                    </label>
-                </div>
+    _toggleWasteType(typeId) {
+        const index = this.selectedWasteTypes.indexOf(typeId);
+        if (index > -1) {
+            this.selectedWasteTypes.splice(index, 1);
+            delete this.formData.items[typeId];
+        } else {
+            this.selectedWasteTypes.push(typeId);
+            this.formData.items[typeId] = '';
+        }
+        this.requestUpdate();
+    }
 
-                <div class="form-group">
-                    <label>
-                        تاریخ جمع‌آوری
-                        <input type="text" placeholder="انتخاب کنید" />
-                    </label>
-                    <label>
-                        بازه زمانی
-                        <select>
-                            <option>صبح ۹-۱۲</option>
-                            <option>عصر ۱۴-۱۷</option>
-                        </select>
-                    </label>
-                </div>
+    _handleWeightChange(typeId, event) {
+        this.formData.items[typeId] = event.target.value;
+    }
 
-                <div class="form-group">
-                    <label>
-                        آدرس شما
-                        <textarea placeholder="آدرس دقیق خود را وارد کنید..."></textarea>
-                    </label>
-                </div>
+    _handleInputChange(field, event) {
+        this.formData[field] = event.target.value;
+    }
 
-                <!-- Floating Action Button -->
-                <div class="fab-container">
-                    <button class="fab">
-                        <span class="icon-wrapper">${recyclingIcon}</span>
-                        ثبت درخواست
-                    </button>
-                </div>
-            </div>
-        `;
+    _validateForm() {
+        if (this.selectedWasteTypes.length === 0) {
+            return false;
+        }
+
+        for (const typeId of this.selectedWasteTypes) {
+            if (!this.formData.items[typeId] || parseFloat(this.formData.items[typeId]) <= 0) {
+                return false;
+            }
+        }
+
+        if (!this.formData.date || !this.formData.timeSlot || !this.formData.address) {
+            return false;
+        }
+
+        return true;
+    }
+
+    _handleSubmit() {
+        if (!this._validateForm()) {
+            // Show error message (will be implemented with actual API)
+            console.log('Form validation failed');
+            return;
+        }
+
+        this.isSubmitting = true;
+        console.log('Submitting form:', this.formData);
+        // API call will be implemented here
     }
 
     _onBackClick() {
@@ -360,6 +745,158 @@ export class NewRequestPage extends BaseComponent {
                 composed: true,
             })
         );
+    }
+
+    render() {
+        const backIcon = icon({ prefix: 'fas', iconName: 'arrow-right' }).node[0];
+        const recycleIcon = icon({ prefix: 'fa', iconName: 'recycle' }).node[0];
+        const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
+        const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
+        const calendarIcon = icon({ prefix: 'fa', iconName: 'calendar' }).node[0];
+        const clockIcon = icon({ prefix: 'fa', iconName: 'clock' }).node[0];
+        const locationIcon = icon({ prefix: 'fa', iconName: 'location-dot' }).node[0];
+
+        const getWasteIcon = (iconName) => {
+            return icon({ prefix: 'fa', iconName }).node[0];
+        };
+
+        const isFormValid = this._validateForm();
+
+        return html`
+            <div class="container">
+                <!-- Top Bar -->
+                <div class="top-bar">
+                    <button class="top-bar-button" @click=${this._onBackClick}>
+                        <span class="icon-wrapper">${backIcon}</span>
+                    </button>
+                    <h1>ثبت درخواست جدید</h1>
+                    <button class="top-bar-button" @click="${super.toggleTheme}">
+                        <span class="icon-wrapper">${this.darkMode ? sunIcon : moonIcon}</span>
+                    </button>
+                </div>
+
+                <main>
+                    <!-- Waste Type Selection -->
+                    <h2 class="section-header">نوع پسماند خود را انتخاب کنید</h2>
+                    <div class="waste-grid">
+                        ${this.wasteTypes.map(
+                            (type) => html`
+                                <div
+                                    class="waste-card ${this.selectedWasteTypes.includes(type.id)
+                                        ? 'selected'
+                                        : ''}"
+                                    @click=${() => this._toggleWasteType(type.id)}
+                                >
+                                    <span class="icon-wrapper">${getWasteIcon(type.icon)}</span>
+                                    <h3>${type.name}</h3>
+                                    <p>${type.description}</p>
+                                </div>
+                            `
+                        )}
+                    </div>
+
+                    <!-- Weight Inputs -->
+                    ${this.selectedWasteTypes.length > 0
+                        ? html`
+                              <h2 class="section-header">وزن تقریبی (کیلوگرم)</h2>
+                              <div class="form-section">
+                                  <div class="weight-inputs">
+                                      ${this.selectedWasteTypes.map((typeId) => {
+                                          const type = this.wasteTypes.find((t) => t.id === typeId);
+                                          return html`
+                                              <div class="weight-item">
+                                                  <span class="weight-item-label"
+                                                      >${type.name}:</span
+                                                  >
+                                                  <input
+                                                      type="number"
+                                                      min="0"
+                                                      step="0.5"
+                                                      placeholder="مثلا: 5 کیلوگرم"
+                                                      .value=${this.formData.items[typeId] || ''}
+                                                      @input=${(e) =>
+                                                          this._handleWeightChange(typeId, e)}
+                                                  />
+                                              </div>
+                                          `;
+                                      })}
+                                  </div>
+                              </div>
+                          `
+                        : ''}
+
+                    <!-- Request Details -->
+                    <h2 class="section-header">جزئیات درخواست</h2>
+                    <div class="form-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>تاریخ جمع‌آوری</label>
+                                <div class="input-icon">
+                                    <input
+                                        type="date"
+                                        .value=${this.formData.date}
+                                        @input=${(e) => this._handleInputChange('date', e)}
+                                    />
+                                    <span class="icon-wrapper">${calendarIcon}</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>بازه زمانی</label>
+                                <div class="input-icon">
+                                    <select
+                                        .value=${this.formData.timeSlot}
+                                        @change=${(e) => this._handleInputChange('timeSlot', e)}
+                                    >
+                                        <option value="">انتخاب کنید</option>
+                                        ${this.timeSlots.map(
+                                            (slot) =>
+                                                html`<option value=${slot.value}>
+                                                    ${slot.label}
+                                                </option>`
+                                        )}
+                                    </select>
+                                    <span class="icon-wrapper">${clockIcon}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>آدرس شما</label>
+                            <div class="input-icon">
+                                <textarea
+                                    placeholder="آدرس دقیق خود را وارد کنید..."
+                                    .value=${this.formData.address}
+                                    @input=${(e) => this._handleInputChange('address', e)}
+                                ></textarea>
+                                <span class="icon-wrapper">${locationIcon}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>توضیحات اضافی (اختیاری)</label>
+                            <textarea
+                                placeholder="توضیحات تکمیلی در مورد درخواست..."
+                                .value=${this.formData.notes}
+                                @input=${(e) => this._handleInputChange('notes', e)}
+                            ></textarea>
+                        </div>
+                    </div>
+                </main>
+
+                <!-- Floating Action Button -->
+                <div class="fab-container">
+                    <button
+                        class="fab"
+                        ?disabled=${!isFormValid || this.isSubmitting}
+                        @click=${this._handleSubmit}
+                    >
+                        <span class="icon-wrapper">${recycleIcon}</span>
+                        ${this.isSubmitting ? 'در حال ارسال...' : 'ثبت درخواست'}
+                    </button>
+                </div>
+            </div>
+        `;
     }
 }
 
