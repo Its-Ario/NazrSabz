@@ -473,11 +473,10 @@ export class LocationPickerMap extends BaseComponent {
     updated(changedProperties) {
         if (changedProperties.has('isOpen')) {
             if (this.isOpen) {
+                this.ge
                 if (!this.map) {
-                    // Delay initialization to ensure DOM is ready
                     setTimeout(() => this._initializeMap(), 150);
                 } else {
-                    // Map exists, just invalidate size
                     setTimeout(() => {
                         if (this.map) {
                             this.map.invalidateSize();

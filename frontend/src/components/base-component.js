@@ -20,6 +20,33 @@ export class BaseComponent extends LitElement {
                 this.darkMode = e.matches;
             }
         });
+
+        this._handleStorageChange = this._handleStorageChange.bind(this);
+        this._handleThemeChange = this._handleThemeChange.bind(this);
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+
+        window.addEventListener('storage', this._handleStorageChange);
+
+        window.addEventListener('theme-change', this._handleThemeChange);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener('storage', this._handleStorageChange);
+        window.removeEventListener('theme-change', this._handleThemeChange);
+    }
+
+    _handleStorageChange(e) {
+        if (e.key === 'theme-mode' && e.newValue) {
+            this.darkMode = e.newValue === 'dark';
+        }
+    }
+
+    _handleThemeChange(e) {
+        this.darkMode = e.detail.darkMode;
     }
 
     updated(changedProps) {
@@ -31,6 +58,12 @@ export class BaseComponent extends LitElement {
     setTheme(mode) {
         this.darkMode = mode === 'dark';
         localStorage.setItem('theme-mode', mode);
+
+        window.dispatchEvent(
+            new CustomEvent('theme-change', {
+                detail: { darkMode: this.darkMode },
+            })
+        );
     }
 
     toggleTheme() {
