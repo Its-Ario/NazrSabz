@@ -473,7 +473,6 @@ export class LocationPickerMap extends BaseComponent {
     updated(changedProperties) {
         if (changedProperties.has('isOpen')) {
             if (this.isOpen) {
-                this.ge
                 if (!this.map) {
                     setTimeout(() => this._initializeMap(), 150);
                 } else {
