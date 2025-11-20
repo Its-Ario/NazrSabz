@@ -36,8 +36,11 @@ jobs:
         run: |
           DATABASE_URL="file:./dev.db" pnpm exec prisma generate
 
-      - name: Run backend tests
-        run: pnpm test
+      - name: Run tests
+        working-directory: ./backend
+        run: |
+          export DATABASE_URL="file:./test.db"
+          pnpm test
 
   frontend:
     runs-on: ubuntu-latest
