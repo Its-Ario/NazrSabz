@@ -106,7 +106,8 @@ export class AuthService {
             return user;
         } catch (error) {
             if (error.code === 'P2025') {
-                throw new Error('User not found');
+                logger.warn(`User not found: ${userId}`);
+                throwError('User not found', 404, { code: 'ERR_USER_NOT_FOUND' });
             }
             logger.error(`Failed to update tokenVersion: ${error.message}`, error);
             throw error;
