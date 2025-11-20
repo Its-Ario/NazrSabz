@@ -2,8 +2,9 @@ import { html, css } from 'lit';
 import { BaseComponent } from '../components/base-component';
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
 import {
-    faUser,
+    faRightFromBracket,
     faMap,
+    faMapMarkedAlt,
     faChartLine,
     faHistory,
     faUserCircle,
@@ -11,18 +12,26 @@ import {
     faWeightHanging,
     faSun,
     faMoon,
+    faTruck,
+    faStar,
+    faRoute,
 } from '@fortawesome/free-solid-svg-icons';
+import { removeAuthToken } from '../utils/auth';
 
 library.add(
-    faUser,
+    faRightFromBracket,
     faMap,
+    faMapMarkedAlt,
     faChartLine,
     faHistory,
     faUserCircle,
     faCheckCircle,
     faWeightHanging,
     faSun,
-    faMoon
+    faMoon,
+    faTruck,
+    faStar,
+    faRoute
 );
 
 export class DriverDashboard extends BaseComponent {
@@ -30,6 +39,8 @@ export class DriverDashboard extends BaseComponent {
         activeTab: { type: String },
         requests: { type: Array },
         stats: { type: Object },
+        user: { type: Object },
+        driverProfile: { type: Object },
     };
 
     static styles = css`
@@ -129,35 +140,6 @@ export class DriverDashboard extends BaseComponent {
             background-color: rgba(19, 236, 19, 0.15);
         }
 
-        .profile-btn {
-            width: 2.75rem;
-            height: 2.75rem;
-            border-radius: 12px;
-            background-color: #ffffff;
-            border: 1px solid rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3a7f3a;
-            font-size: 1.25rem;
-            transition: all 0.2s ease;
-        }
-
-        :host(.dark) .profile-btn {
-            background-color: #1e1e1e;
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #b8b8b8;
-        }
-
-        .profile-btn:hover {
-            background-color: rgba(19, 236, 19, 0.1);
-        }
-
-        :host(.dark) .profile-btn:hover {
-            background-color: rgba(19, 236, 19, 0.15);
-        }
-
         .icon-wrapper {
             display: inline-flex;
             align-items: center;
@@ -175,6 +157,78 @@ export class DriverDashboard extends BaseComponent {
         .main {
             flex: 1;
             padding-bottom: 6rem;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            padding: 1rem 1.25rem;
+        }
+
+        .profile-content {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .profile-image {
+            width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+            border: 2px solid rgba(19, 236, 19, 0.2);
+        }
+
+        :host(.dark) .profile-image {
+            border-color: rgba(19, 236, 19, 0.3);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+            letter-spacing: -0.01em;
+        }
+
+        .profile-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #7a8a7a;
+        }
+
+        :host(.dark) .profile-details {
+            color: #8a8a8a;
+        }
+
+        .profile-vehicle {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .profile-vehicle .icon-wrapper {
+            width: 14px;
+            height: 14px;
+        }
+
+        .profile-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #fbbf24;
+        }
+
+        .profile-rating .icon-wrapper {
+            width: 14px;
+            height: 14px;
         }
 
         /* Segmented Buttons */
@@ -230,8 +284,8 @@ export class DriverDashboard extends BaseComponent {
         }
 
         :host(.dark) .segment-label.active {
-            color: #0a1a0a;
             box-shadow: 0 2px 12px rgba(19, 236, 19, 0.35);
+            color: #0a1a0a;
         }
 
         /* Cards Section */
@@ -318,7 +372,6 @@ export class DriverDashboard extends BaseComponent {
             border: 1px solid rgba(19, 236, 19, 0.3);
             font-size: 0.9375rem;
             font-weight: 600;
-            font-family: inherit;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -376,6 +429,7 @@ export class DriverDashboard extends BaseComponent {
             color: #2d4a2d;
             font-size: 0.9375rem;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -557,9 +611,26 @@ export class DriverDashboard extends BaseComponent {
                 font-size: 1rem;
             }
 
-            .profile-btn {
+            .top-bar-button {
                 width: 2.5rem;
                 height: 2.5rem;
+            }
+
+            .profile-header {
+                padding: 0.875rem 1rem;
+            }
+
+            .profile-image {
+                width: 4rem;
+                height: 4rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.125rem;
+            }
+
+            .profile-details {
+                font-size: 0.8125rem;
             }
 
             .segmented-container {
@@ -613,9 +684,26 @@ export class DriverDashboard extends BaseComponent {
                 font-size: 1.25rem;
             }
 
-            .profile-btn {
+            .top-bar-button {
                 width: 3rem;
                 height: 3rem;
+            }
+
+            .profile-header {
+                padding: 1rem 1.5rem;
+            }
+
+            .profile-image {
+                width: 5rem;
+                height: 5rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.375rem;
+            }
+
+            .profile-details {
+                font-size: 0.9375rem;
             }
 
             .main {
@@ -656,6 +744,7 @@ export class DriverDashboard extends BaseComponent {
             .accept-btn {
                 width: fit-content;
                 min-width: 100px;
+                font-family: inherit;
             }
 
             .map-button-container {
@@ -716,6 +805,23 @@ export class DriverDashboard extends BaseComponent {
                 font-size: 1.375rem;
             }
 
+            .profile-header {
+                padding: 1.5rem 2rem;
+            }
+
+            .profile-image {
+                width: 5.5rem;
+                height: 5.5rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.5rem;
+            }
+
+            .profile-details {
+                font-size: 1rem;
+            }
+
             .segmented-container {
                 padding: 1rem 2rem;
             }
@@ -756,7 +862,6 @@ export class DriverDashboard extends BaseComponent {
             }
 
             .map-btn {
-                font-family: inherit;
                 height: 3.5rem;
                 font-size: 1rem;
             }
@@ -822,6 +927,23 @@ export class DriverDashboard extends BaseComponent {
 
             .top-bar h1 {
                 font-size: 1.5rem;
+            }
+
+            .profile-header {
+                padding: 2rem 3rem 1.5rem;
+            }
+
+            .profile-content {
+                gap: 1.5rem;
+            }
+
+            .profile-image {
+                width: 6rem;
+                height: 6rem;
+            }
+
+            .profile-info h2 {
+                font-size: 1.625rem;
             }
 
             .segmented-container {
@@ -901,6 +1023,10 @@ export class DriverDashboard extends BaseComponent {
 
             .top-bar h1 {
                 font-size: 1.625rem;
+            }
+
+            .profile-header {
+                padding: 2rem 4rem 1.5rem;
             }
 
             .segmented-container {
@@ -1044,6 +1170,14 @@ export class DriverDashboard extends BaseComponent {
         this.stats = {
             todayCollections: 12,
             weeklyWeight: 75,
+            totalCollections: 234,
+            totalDistance: 1520,
+        };
+        this.driverProfile = {
+            name: 'رضا احمدی',
+            vehicleType: 'کامیونت',
+            rating: 4.8,
+            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtS8igzazX251rvvOMexnu8XeDZvgFSOX-7drIVKtMRpk5hT8uGx7R_uvDE-bvZbA-pyrbIKJeaobHFxd5Y05alN5URl_HKidh00hc_bOxIxe30elZNCZvvvrdN6XPuf3pFpI7D9qVzZaQYdkpKfUp9_uhkylXYLWcjeGGcrT3O79NgY6n82qY88fE9w6wgl7kGn2p0cYLss7ML6uMpIckqKjsBvM06ZwatPN_ELn-gxhasNuT9xpn7oNW4RkDd29eRTZgl2sIUig',
         };
     }
 
@@ -1057,7 +1191,7 @@ export class DriverDashboard extends BaseComponent {
     }
 
     render() {
-        const userIcon = icon({ prefix: 'fas', iconName: 'user' }).node[0];
+        const bracketIcon = icon({ prefix: 'fa', iconName: 'right-from-bracket' }).node[0];
         const mapIcon = icon({ prefix: 'fas', iconName: 'map' }).node[0];
         const chartIcon = icon({ prefix: 'fas', iconName: 'chart-line' }).node[0];
         const historyIcon = icon({ prefix: 'fas', iconName: 'history' }).node[0];
@@ -1066,13 +1200,15 @@ export class DriverDashboard extends BaseComponent {
         const weightIcon = icon({ prefix: 'fas', iconName: 'weight-hanging' }).node[0];
         const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
         const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
+        const truckIcon = icon({ prefix: 'fas', iconName: 'truck' }).node[0];
+        const starIcon = icon({ prefix: 'fas', iconName: 'star' }).node[0];
 
         return html`
             <div class="container">
                 <!-- Header -->
                 <div class="top-bar">
-                    <button class="top-bar-button">
-                        <span class="icon-wrapper">${userIcon}</span>
+                    <button class="top-bar-button" @click="${this._onLogout}">
+                        <span class="icon-wrapper">${bracketIcon}</span>
                     </button>
                     <h1>داشبورد راننده</h1>
                     <button class="top-bar-button" @click="${super.toggleTheme}">
@@ -1082,6 +1218,29 @@ export class DriverDashboard extends BaseComponent {
 
                 <!-- Main Content -->
                 <main class="main">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
+                        <div class="profile-content">
+                            <div
+                                class="profile-image"
+                                style="background-image: url('${this.driverProfile.image}')"
+                            ></div>
+                            <div class="profile-info">
+                                <h2>${this.driverProfile.name}</h2>
+                                <div class="profile-details">
+                                    <div class="profile-vehicle">
+                                        <span class="icon-wrapper">${truckIcon}</span>
+                                        <span>${this.driverProfile.vehicleType}</span>
+                                    </div>
+                                    <div class="profile-rating">
+                                        <span class="icon-wrapper">${starIcon}</span>
+                                        <span>${this.driverProfile.rating}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Segmented Buttons -->
                     <div class="segmented-container">
                         <div class="segmented-buttons">
@@ -1160,6 +1319,21 @@ export class DriverDashboard extends BaseComponent {
                                 </p>
                                 <p class="stat-label">وزن این هفته</p>
                             </div>
+                            <div class="stat-card">
+                                <span class="icon-wrapper stat-icon success"
+                                    >${checkCircleIcon}</span
+                                >
+                                <p class="stat-value">${this.stats.totalCollections}</p>
+                                <p class="stat-label">مجموع جمع‌آوری</p>
+                            </div>
+                            <div class="stat-card">
+                                <span class="icon-wrapper stat-icon info">${mapIcon}</span>
+                                <p class="stat-value">
+                                    ${this.stats.totalDistance}
+                                    <span class="stat-unit">کیلومتر</span>
+                                </p>
+                                <p class="stat-label">مسافت طی شده</p>
+                            </div>
                         </div>
                     </div>
                 </main>
@@ -1183,6 +1357,19 @@ export class DriverDashboard extends BaseComponent {
                 </nav>
             </div>
         `;
+    }
+
+    _onLogout() {
+        removeAuthToken();
+        this.user = null;
+
+        this.dispatchEvent(
+            new CustomEvent('navigate', {
+                detail: { to: '/' },
+                bubbles: true,
+                composed: true,
+            })
+        );
     }
 }
 
