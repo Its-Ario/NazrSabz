@@ -15,6 +15,7 @@ import {
     faWeightHanging,
 } from '@fortawesome/free-solid-svg-icons';
 import { getAuthToken } from '../utils/auth';
+import '../components/location-picker-map.js';
 
 library.add(
     faArrowRight,
@@ -37,6 +38,7 @@ export class NewRequestPage extends BaseComponent {
         isSubmitting: { type: Boolean },
         error: { type: String },
         user: { type: Object },
+        showLocationPicker: { type: Boolean },
     };
 
     static styles = css`
@@ -766,6 +768,36 @@ export class NewRequestPage extends BaseComponent {
                 padding-bottom: 0;
             }
         }
+
+        .location-button {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(19, 236, 19, 0.3);
+            background-color: transparent;
+            color: #13ec13;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .location-button:hover {
+            background-color: rgba(19, 236, 19, 0.1);
+            border-color: #13ec13;
+        }
+
+        .location-selected {
+            margin-top: 0.5rem;
+            font-size: 0.8125rem;
+            color: #7a8a7a;
+            font-family: monospace;
+        }
+
+        :host(.dark) .location-selected {
+            color: #8a8a8a;
+        }
     `;
 
     constructor() {
@@ -783,6 +815,8 @@ export class NewRequestPage extends BaseComponent {
         this.isSubmitting = false;
         this.error = null;
 
+        this.showLocationPicker = false;
+
         this.wasteTypes = [
             { id: 'paper', name: 'کاغذ', description: 'مقوا، روزنامه', icon: 'file' },
             { id: 'plastic', name: 'پلاستیک', description: 'بطری، ظروف', icon: 'recycle' },
@@ -795,6 +829,25 @@ export class NewRequestPage extends BaseComponent {
             { value: 'afternoon', label: 'عصر ۱۴-۱۷' },
             { value: 'evening', label: 'عصر ۱۷-۲۰' },
         ];
+    }
+
+    _openLocationPicker() {
+        this.showLocationPicker = true;
+        this.requestUpdate();
+    }
+
+    _closeLocationPicker() {
+        this.showLocationPicker = false;
+    }
+
+    _handleLocationSelected(event) {
+        const { lat, lng } = event.detail;
+        this.formData.location = {
+            type: 'Point',
+            coordinates: [lng, lat],
+        };
+        this.showLocationPicker = false;
+        this.requestUpdate();
     }
 
     _toggleWasteType(typeId) {
@@ -865,7 +918,7 @@ export class NewRequestPage extends BaseComponent {
             street: this.formData.street,
             city: this.formData.city,
             postalCode: this.formData.postalCode,
-            location: {}, // SOON
+            location: this.formData.location,
         };
 
         return {
@@ -931,6 +984,7 @@ export class NewRequestPage extends BaseComponent {
                     city: '',
                     postalCode: '',
                     notes: '',
+                    location: [],
                 };
             }
         } catch (error) {
@@ -1089,6 +1143,28 @@ export class NewRequestPage extends BaseComponent {
                             />
                         </div>
 
+                        <div class="form-group">
+                            <label>موقعیت مکانی (اختیاری)</label>
+                            <button
+                                type="button"
+                                class="location-button"
+                                @click=${this._openLocationPicker}
+                            >
+                                ${this.formData.location
+                                    ? 'تغییر موقعیت'
+                                    : 'انتخاب موقعیت روی نقشه'}
+                            </button>
+                            ${this.formData.location
+                                ? html`
+                                      <p class="location-selected">
+                                          موقعیت انتخاب شده:
+                                          ${this.formData.location.coordinates[1].toFixed(4)},
+                                          ${this.formData.location.coordinates[0].toFixed(4)}
+                                      </p>
+                                  `
+                                : ''}
+                        </div>
+
                         <div class="form-row">
                             <div class="form-group">
                                 <label>شهر</label>
@@ -1134,6 +1210,12 @@ export class NewRequestPage extends BaseComponent {
                         ${this.isSubmitting ? 'در حال ارسال...' : 'ثبت درخواست'}
                     </button>
                 </div>
+
+                <location-picker-map
+                    .isOpen=${this.showLocationPicker}
+                    @location-selected=${this._handleLocationSelected}
+                    @location-picker-close=${this._closeLocationPicker}
+                ></location-picker-map>
             </div>
         `;
     }
