@@ -1,13 +1,14 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { html, css, unsafeCSS } from 'lit';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import leafletStyles from 'leaflet/dist/leaflet.css?inline';
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
 import { faXmark, faCheck, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { BaseComponent } from './base-component';
 
 library.add(faXmark, faCheck, faLocationDot);
 
-export class LocationPickerMap extends LitElement {
+export class LocationPickerMap extends BaseComponent {
     static properties = {
         isOpen: { type: Boolean },
         selectedLocation: { type: Object },
@@ -54,7 +55,8 @@ export class LocationPickerMap extends LitElement {
                 border-radius: 16px;
                 width: 100%;
                 max-width: 800px;
-                max-height: 90vh;
+                height: 90vh;
+                max-height: 700px;
                 display: flex;
                 flex-direction: column;
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -133,9 +135,15 @@ export class LocationPickerMap extends LitElement {
                 flex: 1;
                 position: relative;
                 min-height: 400px;
+                overflow: hidden;
             }
 
             #map {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 width: 100%;
                 height: 100%;
                 z-index: 1;
@@ -291,7 +299,11 @@ export class LocationPickerMap extends LitElement {
                 height: 18px;
             }
 
-            /* Leaflet customization */
+            .custom-marker-wrapper {
+                background: transparent !important;
+                border: none !important;
+            }
+
             .location-marker {
                 background-color: #13ec13;
                 width: 24px;
@@ -360,16 +372,18 @@ export class LocationPickerMap extends LitElement {
             @media (max-width: 640px) {
                 .modal-overlay {
                     padding: 0;
+                    align-items: stretch;
                 }
 
                 .modal-container {
                     max-width: 100%;
+                    height: 100vh;
                     max-height: 100vh;
                     border-radius: 0;
                 }
 
                 .map-container {
-                    min-height: 300px;
+                    min-height: 50vh;
                 }
 
                 .map-hint {
@@ -387,26 +401,10 @@ export class LocationPickerMap extends LitElement {
         this.loading = true;
         this.map = null;
         this.marker = null;
-        this.darkMode = false;
     }
 
     connectedCallback() {
         super.connectedCallback();
-        // Check if parent has dark mode
-        this._checkDarkMode();
-    }
-
-    _checkDarkMode() {
-        // Check if any parent element has the 'dark' class
-        let element = this.parentElement;
-        while (element) {
-            if (element.classList?.contains('dark') || element.host?.classList?.contains('dark')) {
-                this.darkMode = true;
-                break;
-            }
-            element = element.parentElement || element.host?.parentElement;
-        }
-        this.requestUpdate();
     }
 
     render() {
@@ -475,7 +473,6 @@ export class LocationPickerMap extends LitElement {
     updated(changedProperties) {
         if (changedProperties.has('isOpen')) {
             if (this.isOpen) {
-                this._checkDarkMode();
                 if (!this.map) {
                     // Delay initialization to ensure DOM is ready
                     setTimeout(() => this._initializeMap(), 150);
@@ -496,7 +493,6 @@ export class LocationPickerMap extends LitElement {
         if (!mapElement || this.map) return;
 
         try {
-            // Initialize map centered on Tehran
             this.map = L.map(mapElement, {
                 zoomControl: true,
                 attributionControl: true,
@@ -505,24 +501,25 @@ export class LocationPickerMap extends LitElement {
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-                attribution: '© OpenStreetMap',
             }).addTo(this.map);
 
-            // Handle map clicks
             this.map.on('click', (e) => {
                 this._setLocation(e.latlng.lat, e.latlng.lng);
             });
 
-            this.map.whenReady(() => {
-                this.loading = false;
-                // Force a size recalculation
-                setTimeout(() => {
-                    if (this.map) {
-                        this.map.invalidateSize();
-                    }
-                }, 100);
-                this.requestUpdate();
-            });
+            setTimeout(() => {
+                if (this.map) {
+                    this.map.invalidateSize();
+                    this.loading = false;
+                    this.requestUpdate();
+                }
+            }, 100);
+
+            setTimeout(() => {
+                if (this.map) {
+                    this.map.invalidateSize();
+                }
+            }, 300);
         } catch (error) {
             console.error('Failed to initialize map:', error);
             this.loading = false;
@@ -533,25 +530,21 @@ export class LocationPickerMap extends LitElement {
     _setLocation(lat, lng) {
         this.selectedLocation = { lat, lng };
 
-        // Remove existing marker if any
         if (this.marker) {
             this.map.removeLayer(this.marker);
         }
 
-        // Create custom marker icon
         const markerIcon = L.divIcon({
-            className: 'location-marker',
+            className: 'custom-marker-wrapper',
             iconSize: [24, 24],
             iconAnchor: [12, 24],
             html: '<div class="location-marker"></div>',
         });
 
-        // Add new marker
         this.marker = L.marker([lat, lng], { icon: markerIcon }).addTo(this.map);
 
         this.requestUpdate();
     }
-
     _onClose() {
         this.dispatchEvent(
             new CustomEvent('location-picker-close', {
