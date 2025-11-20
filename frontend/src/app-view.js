@@ -116,14 +116,13 @@ export class AppView extends LitElement {
                 path: '/new',
                 render: () => {
                     document.title = 'نذرسبز | درخواست جدید';
-                    return html`<new-request-page></new-request-page>`;
+                    return html`<new-request-page .user=${this.currentUser}></new-request-page>`;
                 },
             },
             {
                 path: '/dashboard',
                 render: () => {
                     document.title = 'نذرسبز | داشبورد';
-                    console.log('USER:', this.currentUser);
                     return html`<dashboard-page .user=${this.currentUser}></dashboard-page>`;
                 },
             },

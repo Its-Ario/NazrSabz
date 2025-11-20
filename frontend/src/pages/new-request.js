@@ -14,6 +14,7 @@ import {
     faCog,
     faWeightHanging,
 } from '@fortawesome/free-solid-svg-icons';
+import { getAuthToken } from '../utils/auth';
 
 library.add(
     faArrowRight,
@@ -34,6 +35,8 @@ export class NewRequestPage extends BaseComponent {
         selectedWasteTypes: { type: Array },
         formData: { type: Object },
         isSubmitting: { type: Boolean },
+        error: { type: String },
+        user: { type: Object },
     };
 
     static styles = css`
@@ -147,6 +150,41 @@ export class NewRequestPage extends BaseComponent {
         main {
             flex: 1;
             padding-bottom: 6rem;
+        }
+
+        /* Error Message */
+        .error-banner {
+            margin: 1rem 1.25rem;
+            padding: 1rem;
+            background-color: #fee;
+            border: 1px solid #fcc;
+            border-radius: 12px;
+            color: #c00;
+            font-size: 0.9375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        :host(.dark) .error-banner {
+            background-color: #4a1a1a;
+            border-color: #7a2a2a;
+            color: #ff6b6b;
+        }
+
+        .error-banner button {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Section Headers */
@@ -286,6 +324,7 @@ export class NewRequestPage extends BaseComponent {
             outline: none;
             transition: all 0.2s ease;
             font-family: inherit;
+            box-sizing: border-box;
         }
 
         :host(.dark) input,
@@ -322,6 +361,7 @@ export class NewRequestPage extends BaseComponent {
             position: relative;
             display: flex;
             align-items: center;
+            width: 100%;
         }
 
         .input-icon .icon-wrapper {
@@ -342,7 +382,6 @@ export class NewRequestPage extends BaseComponent {
         .input-icon select,
         .input-icon textarea {
             padding-left: 2.75rem;
-            width: 100%;
         }
 
         .input-icon textarea {
@@ -499,6 +538,15 @@ export class NewRequestPage extends BaseComponent {
             .fab-container {
                 padding: 1rem;
             }
+
+            .form-section {
+                padding-left: 0.875rem;
+                padding-right: 0.875rem;
+            }
+
+            .error-banner {
+                margin: 1rem;
+            }
         }
 
         @media (min-width: 640px) {
@@ -531,6 +579,7 @@ export class NewRequestPage extends BaseComponent {
 
             .form-row {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
             }
 
             .waste-card {
@@ -544,6 +593,10 @@ export class NewRequestPage extends BaseComponent {
             .weight-item-label {
                 font-size: 0.9375rem;
             }
+
+            .error-banner {
+                margin: 1rem 1.5rem;
+            }
         }
 
         @media (min-width: 768px) {
@@ -553,6 +606,10 @@ export class NewRequestPage extends BaseComponent {
 
             .top-bar h1 {
                 font-size: 1.375rem;
+            }
+
+            .form-row {
+                gap: 1.5rem;
             }
 
             .section-header {
@@ -585,6 +642,30 @@ export class NewRequestPage extends BaseComponent {
                 height: 3.75rem;
                 font-size: 1.0625rem;
             }
+
+            .error-banner {
+                margin: 1rem 2rem;
+            }
+
+            .form-section {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+
+            .form-row {
+                gap: 2rem;
+            }
+
+            input,
+            select,
+            textarea {
+                padding: 1rem 1.125rem;
+            }
+
+            .input-icon input,
+            .input-icon select {
+                padding-left: 3rem;
+            }
         }
 
         @media (min-width: 1024px) {
@@ -599,6 +680,15 @@ export class NewRequestPage extends BaseComponent {
 
             .top-bar h1 {
                 font-size: 1.5rem;
+            }
+
+            .form-section {
+                padding-left: 3rem;
+                padding-right: 3rem;
+            }
+
+            .form-row {
+                gap: 2.5rem;
             }
 
             .section-header {
@@ -622,6 +712,10 @@ export class NewRequestPage extends BaseComponent {
                 max-width: 400px;
                 height: 4rem;
                 font-size: 1.125rem;
+            }
+
+            .error-banner {
+                margin: 1rem 3rem;
             }
         }
 
@@ -648,6 +742,19 @@ export class NewRequestPage extends BaseComponent {
             .fab-container {
                 padding: 2rem 4rem 2.5rem;
             }
+
+            .error-banner {
+                margin: 1rem 4rem;
+            }
+
+            .form-section {
+                padding-left: 4rem;
+                padding-right: 4rem;
+            }
+
+            .form-row {
+                gap: 3rem;
+            }
         }
         @media print {
             .top-bar,
@@ -668,10 +775,13 @@ export class NewRequestPage extends BaseComponent {
             items: {},
             date: '',
             timeSlot: '',
-            address: '',
+            street: '',
+            city: '',
+            postalCode: '',
             notes: '',
         };
         this.isSubmitting = false;
+        this.error = null;
 
         this.wasteTypes = [
             { id: 'paper', name: 'کاغذ', description: 'مقوا، روزنامه', icon: 'file' },
@@ -701,10 +811,12 @@ export class NewRequestPage extends BaseComponent {
 
     _handleWeightChange(typeId, event) {
         this.formData.items[typeId] = event.target.value;
+        this.requestUpdate();
     }
 
     _handleInputChange(field, event) {
         this.formData[field] = event.target.value;
+        this.requestUpdate();
     }
 
     _validateForm() {
@@ -718,23 +830,119 @@ export class NewRequestPage extends BaseComponent {
             }
         }
 
-        if (!this.formData.date || !this.formData.timeSlot || !this.formData.address) {
+        if (
+            !this.formData.date ||
+            !this.formData.timeSlot ||
+            !this.formData.street ||
+            !this.formData.city ||
+            !this.formData.postalCode
+        ) {
             return false;
         }
 
         return true;
     }
 
-    _handleSubmit() {
+    _prepareRequestData() {
+        const items = {};
+        for (const [type, weight] of Object.entries(this.formData.items)) {
+            items[type] = {
+                type: type,
+                weight: parseFloat(weight),
+            };
+        }
+
+        const date = new Date(this.formData.date);
+        const timeSlotMap = {
+            morning: 9,
+            afternoon: 14,
+            evening: 17,
+        };
+        const hour = timeSlotMap[this.formData.timeSlot] || 9;
+        date.setHours(hour, 0, 0, 0);
+
+        const address = {
+            street: this.formData.street,
+            city: this.formData.city,
+            postalCode: this.formData.postalCode,
+            location: {}, // SOON
+        };
+
+        return {
+            requesterId: this.user?.id,
+            items: items,
+            scheduledAt: date.toISOString(),
+            priority: 'NORMAL',
+            address: address,
+            metadata: {
+                timeSlot: this.formData.timeSlot,
+                notes: this.formData.notes || null,
+            },
+        };
+    }
+
+    async _handleSubmit() {
         if (!this._validateForm()) {
-            // Show error message (will be implemented with actual API)
-            console.log('Form validation failed');
+            this.error = 'لطفا تمام فیلدهای ضروری را پر کنید';
             return;
         }
 
         this.isSubmitting = true;
-        console.log('Submitting form:', this.formData);
-        // API call will be implemented here
+        this.error = null;
+
+        try {
+            const token = getAuthToken();
+            if (!token) {
+                throw new Error('لطفا ابتدا وارد شوید');
+            }
+
+            const requestData = this._prepareRequestData();
+
+            const response = await fetch('/api/requests/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(requestData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'خطا در ثبت درخواست');
+            }
+
+            if (data.ok) {
+                this.dispatchEvent(
+                    new CustomEvent('navigate', {
+                        detail: { to: '/dashboard' },
+                        bubbles: true,
+                        composed: true,
+                    })
+                );
+
+                this.selectedWasteTypes = [];
+                this.formData = {
+                    items: {},
+                    date: '',
+                    timeSlot: '',
+                    street: '',
+                    city: '',
+                    postalCode: '',
+                    notes: '',
+                };
+            }
+        } catch (error) {
+            console.error('Failed to submit request:', error);
+            this.error = error.message || 'خطا در ثبت درخواست. لطفا دوباره تلاش کنید.';
+        } finally {
+            this.isSubmitting = false;
+        }
+    }
+
+    _dismissError() {
+        this.error = null;
     }
 
     _onBackClick() {
@@ -754,7 +962,6 @@ export class NewRequestPage extends BaseComponent {
         const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
         const calendarIcon = icon({ prefix: 'fa', iconName: 'calendar' }).node[0];
         const clockIcon = icon({ prefix: 'fa', iconName: 'clock' }).node[0];
-        const locationIcon = icon({ prefix: 'fa', iconName: 'location-dot' }).node[0];
 
         const getWasteIcon = (iconName) => {
             return icon({ prefix: 'fa', iconName }).node[0];
@@ -774,6 +981,16 @@ export class NewRequestPage extends BaseComponent {
                         <span class="icon-wrapper">${this.darkMode ? sunIcon : moonIcon}</span>
                     </button>
                 </div>
+
+                <!-- Error Banner -->
+                ${this.error
+                    ? html`
+                          <div class="error-banner">
+                              <span>${this.error}</span>
+                              <button @click=${this._dismissError}>✕</button>
+                          </div>
+                      `
+                    : ''}
 
                 <main>
                     <!-- Waste Type Selection -->
@@ -836,6 +1053,7 @@ export class NewRequestPage extends BaseComponent {
                                         type="date"
                                         .value=${this.formData.date}
                                         @input=${(e) => this._handleInputChange('date', e)}
+                                        min=${new Date().toISOString().split('T')[0]}
                                     />
                                     <span class="icon-wrapper">${calendarIcon}</span>
                                 </div>
@@ -862,14 +1080,35 @@ export class NewRequestPage extends BaseComponent {
                         </div>
 
                         <div class="form-group">
-                            <label>آدرس شما</label>
-                            <div class="input-icon">
-                                <textarea
-                                    placeholder="آدرس دقیق خود را وارد کنید..."
-                                    .value=${this.formData.address}
-                                    @input=${(e) => this._handleInputChange('address', e)}
-                                ></textarea>
-                                <span class="icon-wrapper">${locationIcon}</span>
+                            <label>آدرس خیابان</label>
+                            <input
+                                type="text"
+                                placeholder="نام خیابان و پلاک"
+                                .value=${this.formData.street}
+                                @input=${(e) => this._handleInputChange('street', e)}
+                            />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>شهر</label>
+                                <input
+                                    type="text"
+                                    placeholder="نام شهر"
+                                    .value=${this.formData.city}
+                                    @input=${(e) => this._handleInputChange('city', e)}
+                                />
+                            </div>
+
+                            <div class="form-group">
+                                <label>کد پستی</label>
+                                <input
+                                    type="text"
+                                    placeholder="کد پستی ۱۰ رقمی"
+                                    maxlength="10"
+                                    .value=${this.formData.postalCode}
+                                    @input=${(e) => this._handleInputChange('postalCode', e)}
+                                />
                             </div>
                         </div>
 
