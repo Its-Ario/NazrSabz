@@ -248,14 +248,25 @@ export class RequestService {
             for (const { items } of requests) {
                 if (Array.isArray(items)) {
                     items.forEach((item) => {
-                        if (item && typeof item.weight === 'number') {
-                            totalWeight += item.weight;
+                        if (item && item.weight !== undefined && item.weight !== null) {
+                            const weight =
+                                typeof item.weight === 'string'
+                                    ? parseFloat(item.weight)
+                                    : item.weight;
+
+                            if (!isNaN(weight)) {
+                                totalWeight += weight;
+                            }
                         }
                     });
                 } else if (items && typeof items === 'object') {
                     Object.values(items).forEach((value) => {
-                        if (typeof value === 'number') {
-                            totalWeight += value;
+                        if (value !== undefined && value !== null && value !== '') {
+                            const weight = typeof value === 'string' ? parseFloat(value) : value;
+
+                            if (!isNaN(weight) && typeof weight === 'number') {
+                                totalWeight += weight;
+                            }
                         }
                     });
                 }

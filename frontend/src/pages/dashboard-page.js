@@ -11,7 +11,7 @@ import {
     faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import { BaseComponent } from '../components/base-component';
-import { removeAuthToken } from '../utils/auth';
+import { removeAuthToken, getAuthToken } from '../utils/auth';
 
 library.add(faRightFromBracket, faStar, faRecycle, faSun, faMoon, faWallet, faArrowUp, faPlus);
 
@@ -19,6 +19,9 @@ export class DashboardPage extends BaseComponent {
     static properties = {
         user: { type: Object },
         activeTab: { type: String },
+        userProfile: { type: Object },
+        loading: { type: Boolean },
+        error: { type: String },
     };
 
     static styles = css`
@@ -56,6 +59,67 @@ export class DashboardPage extends BaseComponent {
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+        }
+
+        /* Loading & Error States */
+        .loading-container,
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 3px solid rgba(19, 236, 19, 0.2);
+            border-top-color: #13ec13;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #7a8a7a;
+        }
+
+        :host(.dark) .loading-text {
+            color: #8a8a8a;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .retry-button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #13ec13 0%, #0fd60f 100%);
+            color: #0a1a0a;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(19, 236, 19, 0.3);
         }
 
         /* Top App Bar */
@@ -1110,6 +1174,9 @@ export class DashboardPage extends BaseComponent {
     constructor() {
         super();
         this.activeTab = 'all';
+        this.loading = true;
+        this.error = null;
+        this.userProfile = null;
         this.rewards = [
             {
                 id: 1,
@@ -1139,6 +1206,54 @@ export class DashboardPage extends BaseComponent {
         this.activeTab = tab;
     }
 
+    async fetchDashboardData() {
+        this.loading = true;
+        this.error = null;
+
+        try {
+            const token = getAuthToken();
+            if (!token) {
+                throw new Error('لطفا ابتدا وارد شوید');
+            }
+
+            const response = await fetch('/api/dashboard', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'خطا در دریافت اطلاعات');
+            }
+
+            if (data.ok) {
+                this.userProfile = {
+                    name: data.result.user.name,
+                    username: data.result.user.username,
+                    email: data.result.user.email,
+                    walletBalance: data.result.walletBalance || 0,
+                    totalWeight: data.result.totalWeight || 0,
+                    successfulRequests: data.result.successfulRequests || 0,
+                    totalRequests: data.result.totalRequests || 0,
+                    breakdown: {
+                        plastic: 0, // TODO: implement breakdown
+                        paper: 0,
+                        glass: 0,
+                    },
+                    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtS8igzazX251rvvOMexnu8XeDZvgFSOX-7drIVKtMRpk5hT8uGx7R_uvDE-bvZbA-pyrbIKJeaobHFxd5Y05alN5URl_HKidh00hc_bOxIxe30elZNCZvvvrdN6XPuf3pFpI7D9qVzZaQYdkpKfUp9_uhkylXYLWcjeGGcrT3O79NgY6n82qY88fE9w6wgl7kGn2p0cYLss7ML6uMpIckqKjsBvM06ZwatPN_ELn-gxhasNuT9xpn7oNW4RkDd29eRTZgl2sIUig',
+                };
+            }
+        } catch (error) {
+            console.error('Failed to load dashboard data:', error);
+            this.error = error.message;
+        } finally {
+            this.loading = false;
+        }
+    }
+
     render() {
         const bracketIcon = icon({ prefix: 'fa', iconName: 'right-from-bracket' }).node[0];
         const starIcon = icon({ prefix: 'fas', iconName: 'star' }).node[0];
@@ -1161,151 +1276,199 @@ export class DashboardPage extends BaseComponent {
                     </button>
                 </div>
 
-                <main>
-                    <div class="profile-header">
-                        <div class="profile-content">
-                            <div
-                                class="profile-image"
-                                style="background-image: url('${this.userProfile.image}')"
-                            ></div>
-                            <div class="profile-info">
-                                <h2>${this.userProfile.name}</h2>
-                                <p>${this.userProfile.username}@</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Wallet Section -->
-                    <div class="wallet-section">
-                        <div class="wallet-card">
-                            <div class="wallet-header">
-                                <span class="wallet-label">موجودی کیف پول</span>
-                                <div class="wallet-icon">
-                                    <span class="icon-wrapper">${walletIcon}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="wallet-balance">
-                                    ${this.userProfile.walletBalance.toLocaleString('fa-IR')}
-                                </div>
-                                <div class="wallet-currency">تومان</div>
-                            </div>
-                            <div class="wallet-actions">
-                                <button class="wallet-btn" @click="${this._onDeposit}">
-                                    <span class="icon-wrapper">${plusIcon}</span>
-                                    <span>افزایش موجودی</span>
-                                </button>
-                                <button class="wallet-btn" @click="${this._onWithdraw}">
-                                    <span class="icon-wrapper">${arrowUpIcon}</span>
-                                    <span>برداشت</span>
+                ${this.loading
+                    ? html`
+                          <div class="loading-container">
+                              <div class="loading-spinner"></div>
+                              <p class="loading-text">در حال بارگذاری...</p>
+                          </div>
+                      `
+                    : this.error
+                      ? html`
+                            <div class="error-container">
+                                <p class="error-message">${this.error}</p>
+                                <button class="retry-button" @click="${this.fetchDashboardData}">
+                                    تلاش مجدد
                                 </button>
                             </div>
-                        </div>
-                    </div>
+                        `
+                      : this.userProfile
+                        ? html`
+                              <main>
+                                  <div class="profile-header">
+                                      <div class="profile-content">
+                                          <div
+                                              class="profile-image"
+                                              style="background-image: url('${this.userProfile
+                                                  .image}')"
+                                          ></div>
+                                          <div class="profile-info">
+                                              <h2>${this.userProfile.name}</h2>
+                                              <p>${this.userProfile.username}@</p>
+                                          </div>
+                                      </div>
+                                  </div>
 
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <p class="stat-label">مجموع وزن</p>
-                            <p class="stat-value">${this.userProfile.totalWeight} کیلوگرم</p>
-                        </div>
-                        <div class="stat-card">
-                            <p class="stat-label">درخواست موفق</p>
-                            <p class="stat-value">${this.userProfile.successfulRequests}</p>
-                        </div>
-                        <div class="stat-card full-width">
-                            <p class="stat-label">تفکیک بازیافت</p>
-                            <div class="stat-breakdown">
-                                <span>پلاستیک: ${this.userProfile.breakdown.plastic} کیلوگرم</span>
-                                <span>کاغذ: ${this.userProfile.breakdown.paper} کیلوگرم</span>
-                                <span>شیشه: ${this.userProfile.breakdown.glass} کیلوگرم</span>
-                            </div>
-                        </div>
-                    </div>
+                                  <!-- Wallet Section -->
+                                  <div class="wallet-section">
+                                      <div class="wallet-card">
+                                          <div class="wallet-header">
+                                              <span class="wallet-label">موجودی کیف پول</span>
+                                              <div class="wallet-icon">
+                                                  <span class="icon-wrapper">${walletIcon}</span>
+                                              </div>
+                                          </div>
+                                          <div>
+                                              <div class="wallet-balance">
+                                                  ${this.userProfile.walletBalance.toLocaleString(
+                                                      'fa-IR'
+                                                  )}
+                                              </div>
+                                              <div class="wallet-currency">تومان</div>
+                                          </div>
+                                          <div class="wallet-actions">
+                                              <button
+                                                  class="wallet-btn"
+                                                  @click="${this._onDeposit}"
+                                              >
+                                                  <span class="icon-wrapper">${plusIcon}</span>
+                                                  <span>افزایش موجودی</span>
+                                              </button>
+                                              <button
+                                                  class="wallet-btn"
+                                                  @click="${this._onWithdraw}"
+                                              >
+                                                  <span class="icon-wrapper">${arrowUpIcon}</span>
+                                                  <span>برداشت</span>
+                                              </button>
+                                          </div>
+                                      </div>
+                                  </div>
 
-                    <h2 class="section-header">جوایز و تخفیف‌ها</h2>
+                                  <div class="stats-grid">
+                                      <div class="stat-card">
+                                          <p class="stat-label">مجموع وزن</p>
+                                          <p class="stat-value">
+                                              ${this.userProfile.totalWeight} کیلوگرم
+                                          </p>
+                                      </div>
+                                      <div class="stat-card">
+                                          <p class="stat-label">درخواست موفق</p>
+                                          <p class="stat-value">
+                                              ${this.userProfile.successfulRequests}
+                                          </p>
+                                      </div>
+                                      <div class="stat-card full-width">
+                                          <p class="stat-label">تفکیک بازیافت</p>
+                                          <div class="stat-breakdown">
+                                              <span
+                                                  >پلاستیک: ${this.userProfile.breakdown.plastic}
+                                                  کیلوگرم</span
+                                              >
+                                              <span
+                                                  >کاغذ: ${this.userProfile.breakdown.paper}
+                                                  کیلوگرم</span
+                                              >
+                                              <span
+                                                  >شیشه: ${this.userProfile.breakdown.glass}
+                                                  کیلوگرم</span
+                                              >
+                                          </div>
+                                      </div>
+                                  </div>
 
-                    <div class="filter-tabs">
-                        <div class="tabs-container">
-                            <button
-                                class="tab-button ${this.activeTab === 'all' ? 'active' : ''}"
-                                @click="${() => this.setActiveTab('all')}"
-                            >
-                                همه
-                            </button>
-                            <button
-                                class="tab-button ${this.activeTab === 'discounts' ? 'active' : ''}"
-                                @click="${() => this.setActiveTab('discounts')}"
-                            >
-                                تخفیف‌ها
-                            </button>
-                            <button
-                                class="tab-button ${this.activeTab === 'free' ? 'active' : ''}"
-                                @click="${() => this.setActiveTab('free')}"
-                            >
-                                کالای رایگان
-                            </button>
-                        </div>
-                    </div>
+                                  <h2 class="section-header">جوایز و تخفیف‌ها</h2>
 
-                    <!-- Rewards List -->
-                    <div class="rewards-list">
-                        ${this.rewards.map(
-                            (reward) => html`
-                                <div
-                                    class="reward-card"
-                                    @click="${() => this._onRewardClick(reward)}"
-                                >
-                                    <div class="reward-icon">
-                                        <img src="${reward.icon}" alt="${reward.title}" />
-                                    </div>
-                                    <div class="reward-info">
-                                        <p class="reward-title">${reward.title}</p>
-                                        <p class="reward-subtitle">${reward.subtitle}</p>
-                                    </div>
-                                    <div class="reward-points">
-                                        <span class="reward-points-value">${reward.points}</span>
-                                        <span class="icon-wrapper">${starIcon}</span>
-                                    </div>
-                                </div>
-                            `
-                        )}
-                    </div>
-                </main>
+                                  <div class="filter-tabs">
+                                      <div class="tabs-container">
+                                          <button
+                                              class="tab-button ${this.activeTab === 'all'
+                                                  ? 'active'
+                                                  : ''}"
+                                              @click="${() => this.setActiveTab('all')}"
+                                          >
+                                              همه
+                                          </button>
+                                          <button
+                                              class="tab-button ${this.activeTab === 'discounts'
+                                                  ? 'active'
+                                                  : ''}"
+                                              @click="${() => this.setActiveTab('discounts')}"
+                                          >
+                                              تخفیف‌ها
+                                          </button>
+                                          <button
+                                              class="tab-button ${this.activeTab === 'free'
+                                                  ? 'active'
+                                                  : ''}"
+                                              @click="${() => this.setActiveTab('free')}"
+                                          >
+                                              کالای رایگان
+                                          </button>
+                                      </div>
+                                  </div>
 
-                <div class="fab-container">
-                    <button class="fab" @click="${this._onNewRequest}">
-                        <span class="icon-wrapper">${recycleIcon}</span>
-                        ثبت درخواست جدید
-                    </button>
-                </div>
+                                  <!-- Rewards List -->
+                                  <div class="rewards-list">
+                                      ${this.rewards.map(
+                                          (reward) => html`
+                                              <div
+                                                  class="reward-card"
+                                                  @click="${() => this._onRewardClick(reward)}"
+                                              >
+                                                  <div class="reward-icon">
+                                                      <img
+                                                          src="${reward.icon}"
+                                                          alt="${reward.title}"
+                                                      />
+                                                  </div>
+                                                  <div class="reward-info">
+                                                      <p class="reward-title">${reward.title}</p>
+                                                      <p class="reward-subtitle">
+                                                          ${reward.subtitle}
+                                                      </p>
+                                                  </div>
+                                                  <div class="reward-points">
+                                                      <span class="reward-points-value"
+                                                          >${reward.points}</span
+                                                      >
+                                                      <span class="icon-wrapper">${starIcon}</span>
+                                                  </div>
+                                              </div>
+                                          `
+                                      )}
+                                  </div>
+                              </main>
+
+                              <div class="fab-container">
+                                  <button class="fab" @click="${this._onNewRequest}">
+                                      <span class="icon-wrapper">${recycleIcon}</span>
+                                      ثبت درخواست جدید
+                                  </button>
+                              </div>
+                          `
+                        : ''}
             </div>
         `;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         super.connectedCallback();
-
-        console.log(this.user);
-
-        this.userProfile = {
-            name: this.user?.name,
-            username: this.user?.username,
-            walletBalance: 125000,
-            points: 7500,
-            pointsToNext: 2500,
-            totalWeight: 120,
-            successfulRequests: 45,
-            breakdown: {
-                plastic: 50,
-                paper: 45,
-                glass: 25,
-            },
-            image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtS8igzazX251rvvOMexnu8XeDZvgFSOX-7drIVKtMRpk5hT8uGx7R_uvDE-bvZbA-pyrbIKJeaobHFxd5Y05alN5URl_HKidh00hc_bOxIxe30elZNCZvvvrdN6XPuf3pFpI7D9qVzZaQYdkpKfUp9_uhkylXYLWcjeGGcrT3O79NgY6n82qY88fE9w6wgl7kGn2p0cYLss7ML6uMpIckqKjsBvM06ZwatPN_ELn-gxhasNuT9xpn7oNW4RkDd29eRTZgl2sIUig',
-        };
+        await this.fetchDashboardData();
     }
 
     _onRewardClick(reward) {
         console.log('Reward clicked:', reward);
+    }
+
+    _onDeposit() {
+        console.log('Deposit clicked');
+        // TODO: Implement deposit modal/page
+    }
+
+    _onWithdraw() {
+        console.log('Withdraw clicked');
+        // TODO: Implement withdraw modal/page
     }
 
     _onNewRequest() {
