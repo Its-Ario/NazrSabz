@@ -210,7 +210,6 @@ export class AppView extends LitElement {
 
     setCurrentUser(user) {
         this.currentUser = user;
-        console.log(this.currentUser);
     }
 
     updateTracking(isTracking) {

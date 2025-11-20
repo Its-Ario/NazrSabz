@@ -1187,7 +1187,6 @@ export class DriverDashboard extends BaseComponent {
 
     acceptRequest(requestId) {
         console.log('Request accepted:', requestId);
-        // اینجا می‌توانید منطق پذیرش درخواست را پیاده‌سازی کنید
     }
 
     render() {
