@@ -20,7 +20,6 @@
         "@fortawesome/fontawesome-svg-core": "^7.1.0",
         "@fortawesome/free-solid-svg-icons": "^7.1.0",
         "@lit-labs/router": "^0.1.4",
-        "jalaali-js": "^1.2.8",
         "leaflet": "^1.9.4",
         "lit": "^3.3.1",
         "y-protocols": "^1.0.6",
