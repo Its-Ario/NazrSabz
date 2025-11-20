@@ -8,6 +8,7 @@ import './pages/map-page.js';
 import './pages/new-request.js';
 import './pages/dashboard-page.js';
 import './pages/driver-dashboard.js';
+import './pages/requests-page.js';
 import { Router } from '@lit-labs/router';
 
 export class AppView extends LitElement {
@@ -124,6 +125,13 @@ export class AppView extends LitElement {
                 render: () => {
                     document.title = 'نذرسبز | داشبورد';
                     return html`<dashboard-page .user=${this.currentUser}></dashboard-page>`;
+                },
+            },
+            {
+                path: '/requests',
+                render: () => {
+                    document.title = 'نذرسبز | درخواست ها';
+                    return html`<requests-page .user=${this.currentUser}></requests-page>`;
                 },
             },
             {

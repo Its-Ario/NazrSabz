@@ -136,3 +136,21 @@ export const getRecentRequests = async (req, res) => {
     });
     res.status(200).json({ ok: true, result: result.requests });
 };
+
+export const getRequestsHistory = async (req, res) => {
+    const userId = req.user.id;
+    const { status, page = 1, limit = 20 } = req.query;
+
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+    };
+
+    if (status && status !== 'all') {
+        options.status = status.toUpperCase();
+    }
+
+    const result = await requestService.getRequestsByRequester(userId, options);
+
+    res.status(200).json({ ok: true, result });
+};

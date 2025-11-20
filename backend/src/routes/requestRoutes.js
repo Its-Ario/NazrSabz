@@ -10,17 +10,21 @@ import {
     getRequestStats,
     getTotalWeight,
     getRecentRequests,
+    getRequestsHistory,
+    updateCollector,
 } from '../controllers/requestController.js';
 
 router.use(auth);
 
 router.post('/create', createRequest);
 router.post('/update-status', isAdmin, updateStatus);
-router.get('/get/:id', isAdmin, getRequestById);
+router.post('/update-collector', isAdmin, updateCollector);
+router.get('/get/:id', getRequestById);
 router.get('/get', getRequests);
 router.get('/all', isAdmin, getAllRequests);
 router.get('/stats', getRequestStats);
 router.get('/weight/total', getTotalWeight);
 router.get('/recent', getRecentRequests);
+router.get('/history', getRequestsHistory);
 
 export default router;
