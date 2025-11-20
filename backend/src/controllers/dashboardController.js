@@ -6,12 +6,13 @@ export const getDashboardData = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const [user, wallet, stats, totalWeight, recentRequests] = await Promise.all([
+        const [user, wallet, stats, totalWeight, recentRequests, breakdown] = await Promise.all([
             userService.getUserProfile(userId),
             walletService.getWalletByUser(userId),
             requestService.getRequestStats(userId, 'requester'),
             requestService.getTotalRequestedWeight(userId),
             requestService.getRequestsByRequester(userId, { limit: 5, page: 1 }),
+            requestService.getWeightBreakdownByMaterial(userId),
         ]);
 
         const result = {
@@ -29,6 +30,7 @@ export const getDashboardData = async (req, res) => {
             totalRequests: stats.total || 0,
             stats: stats,
             recentRequests: recentRequests.requests || [],
+            breakdown: breakdown,
         };
 
         res.status(200).json({ ok: true, result });

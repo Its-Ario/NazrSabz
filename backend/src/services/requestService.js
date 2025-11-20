@@ -246,36 +246,80 @@ export class RequestService {
             let totalWeight = 0;
 
             for (const { items } of requests) {
-                if (Array.isArray(items)) {
-                    items.forEach((item) => {
-                        if (item && item.weight !== undefined && item.weight !== null) {
-                            const weight =
-                                typeof item.weight === 'string'
-                                    ? parseFloat(item.weight)
-                                    : item.weight;
+                if (!items || typeof items !== 'object') continue;
 
-                            if (!isNaN(weight)) {
-                                totalWeight += weight;
-                            }
-                        }
-                    });
-                } else if (items && typeof items === 'object') {
-                    Object.values(items).forEach((value) => {
-                        if (value !== undefined && value !== null && value !== '') {
-                            const weight = typeof value === 'string' ? parseFloat(value) : value;
+                const itemsArray = Array.isArray(items) ? items : Object.values(items);
 
-                            if (!isNaN(weight) && typeof weight === 'number') {
-                                totalWeight += weight;
-                            }
+                itemsArray.forEach((item) => {
+                    if (item && typeof item === 'object' && 'weight' in item) {
+                        const weight =
+                            typeof item.weight === 'string' ? parseFloat(item.weight) : item.weight;
+
+                        if (!isNaN(weight) && typeof weight === 'number') {
+                            totalWeight += weight;
                         }
-                    });
-                }
+                    }
+                });
             }
 
             return Number(totalWeight.toFixed(2));
         } catch (e) {
             logger.error(
                 `Error calculating total requested weight for requester ${requesterId}: ${e.message}`
+            );
+            throw e;
+        }
+    }
+
+    async getWeightBreakdownByMaterial(requesterId) {
+        try {
+            const requests = await this.prisma.request.findMany({
+                where: {
+                    requesterId,
+                },
+                select: { items: true },
+            });
+
+            const breakdown = {
+                plastic: 0,
+                paper: 0,
+                glass: 0,
+                metal: 0,
+            };
+
+            for (const { items } of requests) {
+                if (!items || typeof items !== 'object') continue;
+
+                logger.info(`Processing items: ${JSON.stringify(items)}`); // Debug log
+
+                const itemsArray = Array.isArray(items) ? items : Object.values(items);
+
+                itemsArray.forEach((item) => {
+                    if (item && typeof item === 'object' && item.type) {
+                        const weight =
+                            typeof item.weight === 'string' ? parseFloat(item.weight) : item.weight;
+
+                        if (!isNaN(weight) && typeof weight === 'number') {
+                            const type = item.type.toLowerCase();
+                            logger.info(`Adding ${weight} to ${type}`); // Debug log
+                            if (Object.prototype.hasOwnProperty.call(breakdown, type)) {
+                                breakdown[type] += weight;
+                            }
+                        }
+                    }
+                });
+            }
+
+            Object.keys(breakdown).forEach((key) => {
+                breakdown[key] = Number(breakdown[key].toFixed(2));
+            });
+
+            logger.info(`Final breakdown: ${JSON.stringify(breakdown)}`); // Debug log
+
+            return breakdown;
+        } catch (e) {
+            logger.error(
+                `Error calculating weight breakdown for requester ${requesterId}: ${e.message}`
             );
             throw e;
         }

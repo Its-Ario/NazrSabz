@@ -1408,10 +1408,11 @@ export class DashboardPage extends BaseComponent {
                     canceledRequests: data.result.canceledRequests || 0,
                     totalRequests: data.result.totalRequests || 0,
                     recentRequests: data.result.recentRequests || [],
-                    breakdown: {
-                        plastic: 0, // TODO: implement breakdown
+                    breakdown: data.result.breakdown || {
+                        plastic: 0,
                         paper: 0,
                         glass: 0,
+                        metal: 0,
                     },
                     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtS8igzazX251rvvOMexnu8XeDZvgFSOX-7drIVKtMRpk5hT8uGx7R_uvDE-bvZbA-pyrbIKJeaobHFxd5Y05alN5URl_HKidh00hc_bOxIxe30elZNCZvvvrdN6XPuf3pFpI7D9qVzZaQYdkpKfUp9_uhkylXYLWcjeGGcrT3O79NgY6n82qY88fE9w6wgl7kGn2p0cYLss7ML6uMpIckqKjsBvM06ZwatPN_ELn-gxhasNuT9xpn7oNW4RkDd29eRTZgl2sIUig',
                 };
@@ -1553,6 +1554,10 @@ export class DashboardPage extends BaseComponent {
                                               >
                                               <span
                                                   >شیشه: ${this.userProfile.breakdown.glass}
+                                                  کیلوگرم</span
+                                              >
+                                              <span
+                                                  >فلز: ${this.userProfile.breakdown.metal}
                                                   کیلوگرم</span
                                               >
                                           </div>
