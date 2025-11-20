@@ -125,3 +125,14 @@ export const getWeightBreakdown = async (req, res) => {
     const result = await requestService.getWeightBreakdownByMaterial(userId);
     res.status(200).json({ ok: true, result });
 };
+
+export const getRecentRequests = async (req, res) => {
+    const userId = req.user.id;
+    const limit = parseInt(req.query.limit) || 5;
+
+    const result = await requestService.getRequestsByRequester(userId, {
+        limit: limit,
+        page: 1,
+    });
+    res.status(200).json({ ok: true, result: result.requests });
+};

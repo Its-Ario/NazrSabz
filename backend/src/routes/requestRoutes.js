@@ -9,6 +9,7 @@ import {
     getRequests,
     getRequestStats,
     getTotalWeight,
+    getRecentRequests,
 } from '../controllers/requestController.js';
 
 router.use(auth);
@@ -20,5 +21,6 @@ router.get('/get', getRequests);
 router.get('/all', isAdmin, getAllRequests);
 router.get('/stats', getRequestStats);
 router.get('/weight/total', getTotalWeight);
+router.get('/recent', getRecentRequests);
 
 export default router;

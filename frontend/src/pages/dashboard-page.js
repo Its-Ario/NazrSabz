@@ -1156,6 +1156,186 @@ export class DashboardPage extends BaseComponent {
                 page-break-inside: avoid;
             }
         }
+
+        /* Recent Requests Section */
+        .recent-requests-section {
+            padding: 0 1.25rem 1rem;
+        }
+
+        .section-header-with-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0 0.75rem;
+        }
+
+        .section-header-with-action .section-header {
+            padding: 0;
+            margin: 0;
+        }
+
+        .view-all-btn {
+            padding: 0.5rem 1rem;
+            background-color: transparent;
+            border: 1px solid rgba(19, 236, 19, 0.3);
+            border-radius: 8px;
+            color: #13ec13;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .view-all-btn:hover {
+            background-color: rgba(19, 236, 19, 0.1);
+            border-color: #13ec13;
+        }
+
+        :host(.dark) .view-all-btn {
+            border-color: rgba(19, 236, 19, 0.4);
+        }
+
+        .requests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .request-card {
+            padding: 1rem;
+            border-radius: 12px;
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+
+        :host(.dark) .request-card {
+            background-color: #1e1e1e;
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .request-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        :host(.dark) .request-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .request-id {
+            font-family: monospace;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #7a8a7a;
+        }
+
+        :host(.dark) .request-id {
+            color: #8a8a8a;
+        }
+
+        .request-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        :host(.dark) .status-pending {
+            background-color: #78350f;
+            color: #fef3c7;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        :host(.dark) .status-completed {
+            background-color: #065f46;
+            color: #d1fae5;
+        }
+
+        .status-canceled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        :host(.dark) .status-canceled {
+            background-color: #7f1d1d;
+            color: #fee2e2;
+        }
+
+        .request-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .request-date {
+            font-size: 0.875rem;
+            color: #7a8a7a;
+            margin: 0;
+        }
+
+        :host(.dark) .request-date {
+            color: #8a8a8a;
+        }
+
+        .request-items {
+            font-size: 0.8125rem;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        :host(.dark) .request-items {
+            color: #e4e4e4;
+        }
+
+        @media (min-width: 640px) {
+            .recent-requests-section {
+                padding: 0 1.5rem 1rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .recent-requests-section {
+                padding: 0 2rem 1rem;
+            }
+
+            .requests-list {
+                gap: 1rem;
+            }
+
+            .request-card {
+                padding: 1.25rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .recent-requests-section {
+                padding: 0 3rem 1rem;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .recent-requests-section {
+                padding: 0 4rem 1rem;
+            }
+        }
     `;
 
     constructor() {
@@ -1224,7 +1404,10 @@ export class DashboardPage extends BaseComponent {
                     walletBalance: data.result.walletBalance || 0,
                     totalWeight: data.result.totalWeight || 0,
                     successfulRequests: data.result.successfulRequests || 0,
+                    pendingRequests: data.result.pendingRequests || 0,
+                    canceledRequests: data.result.canceledRequests || 0,
                     totalRequests: data.result.totalRequests || 0,
+                    recentRequests: data.result.recentRequests || [],
                     breakdown: {
                         plastic: 0, // TODO: implement breakdown
                         paper: 0,
@@ -1345,6 +1528,18 @@ export class DashboardPage extends BaseComponent {
                                               ${this.userProfile.successfulRequests}
                                           </p>
                                       </div>
+                                      <div class="stat-card">
+                                          <p class="stat-label">در انتظار</p>
+                                          <p class="stat-value">
+                                              ${this.userProfile.pendingRequests}
+                                          </p>
+                                      </div>
+                                      <div class="stat-card">
+                                          <p class="stat-label">کل درخواست‌ها</p>
+                                          <p class="stat-value">
+                                              ${this.userProfile.totalRequests}
+                                          </p>
+                                      </div>
                                       <div class="stat-card full-width">
                                           <p class="stat-label">تفکیک بازیافت</p>
                                           <div class="stat-breakdown">
@@ -1363,6 +1558,58 @@ export class DashboardPage extends BaseComponent {
                                           </div>
                                       </div>
                                   </div>
+
+                                  <!-- Recent Requests Section -->
+                                  ${this.userProfile.recentRequests &&
+                                  this.userProfile.recentRequests.length > 0
+                                      ? html`
+                                            <div class="recent-requests-section">
+                                                <div class="section-header-with-action">
+                                                    <h2 class="section-header">درخواست‌های اخیر</h2>
+                                                    <button
+                                                        class="view-all-btn"
+                                                        @click="${this._onViewAllRequests}"
+                                                    >
+                                                        مشاهده همه
+                                                    </button>
+                                                </div>
+                                                <div class="requests-list">
+                                                    ${this.userProfile.recentRequests.map(
+                                                        (request) => html`
+                                                            <div class="request-card">
+                                                                <div class="request-header">
+                                                                    <span class="request-id"
+                                                                        >#${request.id.slice(
+                                                                            -8
+                                                                        )}</span
+                                                                    >
+                                                                    <span
+                                                                        class="request-status status-${request.status.toLowerCase()}"
+                                                                    >
+                                                                        ${this._getStatusText(
+                                                                            request.status
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="request-info">
+                                                                    <p class="request-date">
+                                                                        ${this._formatDate(
+                                                                            request.createdAt
+                                                                        )}
+                                                                    </p>
+                                                                    <p class="request-items">
+                                                                        ${this._getRequestItemsSummary(
+                                                                            request.items
+                                                                        )}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        `
+                                                    )}
+                                                </div>
+                                            </div>
+                                        `
+                                      : ''}
 
                                   <h2 class="section-header">جوایز و تخفیف‌ها</h2>
 
@@ -1475,6 +1722,54 @@ export class DashboardPage extends BaseComponent {
         this.dispatchEvent(
             new CustomEvent('navigate', {
                 detail: { to: '/' },
+                bubbles: true,
+                composed: true,
+            })
+        );
+    }
+
+    _getStatusText(status) {
+        const statusMap = {
+            PENDING: 'در انتظار',
+            COMPLETED: 'تکمیل شده',
+            CANCELED: 'لغو شده',
+        };
+        return statusMap[status] || status;
+    }
+
+    _formatDate(dateString) {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('fa-IR', options);
+    }
+
+    _getRequestItemsSummary(items) {
+        if (!items || typeof items !== 'object') return 'اطلاعاتی موجود نیست';
+
+        const itemsArray = Array.isArray(items) ? items : Object.values(items);
+        const summary = itemsArray
+            .map((item) => {
+                if (item && item.type && item.weight) {
+                    const typeNames = {
+                        plastic: 'پلاستیک',
+                        paper: 'کاغذ',
+                        glass: 'شیشه',
+                        metal: 'فلز',
+                    };
+                    return `${typeNames[item.type] || item.type}: ${item.weight} کیلوگرم`;
+                }
+                return null;
+            })
+            .filter(Boolean)
+            .join(' • ');
+
+        return summary || 'اطلاعاتی موجود نیست';
+    }
+
+    _onViewAllRequests() {
+        this.dispatchEvent(
+            new CustomEvent('navigate', {
+                detail: { to: '/requests' },
                 bubbles: true,
                 composed: true,
             })

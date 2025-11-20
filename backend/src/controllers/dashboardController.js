@@ -6,11 +6,12 @@ export const getDashboardData = async (req, res) => {
     const userId = req.user.id;
 
     try {
-        const [user, wallet, stats, totalWeight] = await Promise.all([
+        const [user, wallet, stats, totalWeight, recentRequests] = await Promise.all([
             userService.getUserProfile(userId),
             walletService.getWalletByUser(userId),
             requestService.getRequestStats(userId, 'requester'),
             requestService.getTotalRequestedWeight(userId),
+            requestService.getRequestsByRequester(userId, { limit: 5, page: 1 }),
         ]);
 
         const result = {
@@ -23,8 +24,11 @@ export const getDashboardData = async (req, res) => {
             walletBalance: wallet?.balance || 0,
             totalWeight: totalWeight,
             successfulRequests: stats.COMPLETED || 0,
+            pendingRequests: stats.PENDING || 0,
+            canceledRequests: stats.CANCELED || 0,
             totalRequests: stats.total || 0,
             stats: stats,
+            recentRequests: recentRequests.requests || [],
         };
 
         res.status(200).json({ ok: true, result });
