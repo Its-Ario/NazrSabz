@@ -2,7 +2,7 @@ import { css, html } from 'lit';
 import { globalStyles } from '../styles/global-styles.js';
 import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/auth.js';
 
-import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
     faMobile,
     faLock,
@@ -10,10 +10,11 @@ import {
     faMoon,
     faUser,
     faEnvelope,
+    faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 import { BaseComponent } from '../components/base-component.js';
 
-library.add(faMobile, faLock, faSun, faMoon, faUser, faEnvelope);
+library.add(faMobile, faLock, faSun, faMoon, faUser, faEnvelope, faTimes);
 
 class LoginPage extends BaseComponent {
     static styles = [
@@ -48,8 +49,11 @@ class LoginPage extends BaseComponent {
                 max-width: 400px;
                 background-color: transparent;
                 padding: 1rem;
+                position: relative;
+                z-index: 1;
             }
 
+            /* --- EXISTING STYLES (Title, Form, Inputs, Buttons) --- */
             .auth-title {
                 font-size: 28px;
                 font-weight: 600;
@@ -93,6 +97,7 @@ class LoginPage extends BaseComponent {
                 transition:
                     background-color 0.2s ease,
                     color 0.2s ease;
+                z-index: 10;
             }
 
             :host(.dark) .dark-mode-toggle {
@@ -102,11 +107,11 @@ class LoginPage extends BaseComponent {
             .dark-mode-toggle:hover {
                 background-color: rgba(19, 236, 19, 0.1);
             }
-
             :host(.dark) .dark-mode-toggle:hover {
                 background-color: rgba(19, 236, 19, 0.15);
             }
 
+            /* Toggle Container */
             .toggle-container {
                 display: flex;
                 background-color: rgba(0, 0, 0, 0.05);
@@ -203,7 +208,6 @@ class LoginPage extends BaseComponent {
             .input-wrapper input::placeholder {
                 color: #7a8a7a;
             }
-
             :host(.dark) .input-wrapper input::placeholder {
                 color: #8a8a8a;
             }
@@ -226,7 +230,6 @@ class LoginPage extends BaseComponent {
                 color: #6a6a6a;
             }
 
-            /* Forgot Password */
             .forgot-password {
                 text-align: left;
                 margin-top: -0.5rem;
@@ -244,7 +247,6 @@ class LoginPage extends BaseComponent {
                 color: #13ec13;
             }
 
-            /* Primary Button */
             .primary-btn {
                 width: 100%;
                 height: 56px;
@@ -269,7 +271,6 @@ class LoginPage extends BaseComponent {
                 transform: translateY(0);
             }
 
-            /* Divider */
             .divider {
                 display: flex;
                 align-items: center;
@@ -352,6 +353,7 @@ class LoginPage extends BaseComponent {
                 font-weight: 500;
                 text-decoration: none;
                 transition: color 0.2s ease;
+                cursor: pointer;
             }
 
             .footer-text a:hover {
@@ -366,7 +368,6 @@ class LoginPage extends BaseComponent {
                 width: 16px;
                 height: 16px;
             }
-
             .icon-wrapper svg {
                 width: 100%;
                 height: 100%;
@@ -389,6 +390,128 @@ class LoginPage extends BaseComponent {
                 color: #16a34a;
                 border: 1px solid rgba(19, 236, 19, 0.2);
             }
+
+            /* --- MODAL (TERMS OF SERVICE) STYLES --- */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                backdrop-filter: blur(3px);
+                animation: fadeIn 0.2s ease-out;
+            }
+
+            .modal-container {
+                background-color: #fff;
+                width: 90%;
+                max-width: 500px;
+                max-height: 80vh;
+                border-radius: 20px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                animation: slideUp 0.2s ease-out;
+                overflow: hidden;
+            }
+
+            :host(.dark) .modal-container {
+                background-color: #1e1e1e;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .modal-header {
+                padding: 1.25rem;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            :host(.dark) .modal-header {
+                border-bottom-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .modal-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: #1a1a1a;
+                margin: 0;
+            }
+
+            :host(.dark) .modal-title {
+                color: #e4e4e4;
+            }
+
+            .close-icon-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: #6b7280;
+                font-size: 1.2rem;
+                padding: 4px;
+                display: flex;
+                transition: color 0.2s;
+            }
+
+            :host(.dark) .close-icon-btn {
+                color: #8a8a8a;
+            }
+            .close-icon-btn:hover {
+                color: #ef4444;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+                overflow-y: auto;
+                font-size: 14px;
+                line-height: 1.7;
+                color: #334155;
+                text-align: justify;
+            }
+
+            :host(.dark) .modal-body {
+                color: #b8b8b8;
+            }
+
+            .modal-footer {
+                padding: 1rem 1.5rem;
+                border-top: 1px solid rgba(0, 0, 0, 0.08);
+            }
+
+            :host(.dark) .modal-footer {
+                border-top-color: rgba(255, 255, 255, 0.1);
+            }
+
+            .modal-footer .primary-btn {
+                margin-top: 0;
+                height: 48px;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
         `,
     ];
 
@@ -397,6 +520,7 @@ class LoginPage extends BaseComponent {
         error: { type: String },
         successMessage: { type: String },
         isRegistering: { type: Boolean },
+        showTerms: { type: Boolean },
     };
 
     constructor() {
@@ -405,15 +529,12 @@ class LoginPage extends BaseComponent {
         this.error = '';
         this.successMessage = '';
         this.isRegistering = false;
+        this.showTerms = false;
     }
 
     render() {
-        const userIcon = icon({ prefix: 'fas', iconName: 'user' }).node[0];
-        const mobileIcon = icon({ prefix: 'fas', iconName: 'mobile' }).node[0];
-        const lockIcon = icon({ prefix: 'fas', iconName: 'lock' }).node[0];
-        const emailIcon = icon({ prefix: 'fas', iconName: 'envelope' }).node[0];
-        const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
-        const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
+        const moonIcon = this.renderIcon('moon');
+        const sunIcon = this.renderIcon('sun');
 
         return html`
             <div class="auth-page">
@@ -458,7 +579,6 @@ class LoginPage extends BaseComponent {
                         : ''}
 
                     <form class="auth-form" @submit=${this.handleSubmit}>
-                        <!-- Name (Register only) -->
                         ${this.isRegistering
                             ? html`
                                   <div class="form-group">
@@ -469,55 +589,58 @@ class LoginPage extends BaseComponent {
                                               id="fullName"
                                               placeholder="مثال: علی محمدی"
                                           />
-                                          <span class="icon-wrapper">${userIcon}</span>
+                                          <span class="icon-wrapper"
+                                              >${this.renderIcon('user')}</span
+                                          >
                                       </div>
                                   </div>
                               `
                             : ''}
 
-                        <!-- Username -->
                         <div class="form-group">
                             <label>نام کاربری</label>
                             <div class="input-wrapper">
                                 <input type="text" id="username" placeholder="user123" />
-                                <span class="icon-wrapper">${userIcon}</span>
+                                <span class="icon-wrapper">${this.renderIcon('user')}</span>
                             </div>
                         </div>
 
                         ${this.isRegistering
                             ? html`
                                   <div class="form-group">
-                                      <label>ایمیل</label>
+                                      <label>ایمیل (اختیاری اگر شماره موبایل وارد شود)</label>
                                       <div class="input-wrapper">
                                           <input
                                               type="email"
                                               id="email"
                                               placeholder="email@example.com"
                                           />
-                                          <span class="icon-wrapper">${emailIcon}</span>
+                                          <span class="icon-wrapper"
+                                              >${this.renderIcon('envelope')}</span
+                                          >
                                       </div>
                                   </div>
-
                                   <div class="form-group">
-                                      <label>شماره موبایل</label>
+                                      <label>شماره موبایل (اختیاری اگر ایمیل وارد شود)</label>
                                       <div class="input-wrapper">
                                           <input
                                               type="tel"
                                               id="phoneNumber"
                                               placeholder="0912..."
                                           />
-                                          <span class="icon-wrapper">${mobileIcon}</span>
+                                          <span class="icon-wrapper"
+                                              >${this.renderIcon('mobile')}</span
+                                          >
                                       </div>
                                   </div>
                               `
                             : ''}
 
-                        <!-- Password -->
                         <div class="form-group">
                             <label>رمز عبور</label>
                             <div class="input-wrapper">
                                 <input type="password" id="password" placeholder="••••••••" />
-                                <span class="icon-wrapper">${lockIcon}</span>
+                                <span class="icon-wrapper">${this.renderIcon('lock')}</span>
                             </div>
                         </div>
 
@@ -547,25 +670,58 @@ class LoginPage extends BaseComponent {
                         type="button"
                         class="google-btn"
                         @click=${() => (window.location.href = '/api/login/google')}
-                        aria-label="ورود با گوگل"
                     >
                         <img
                             class="g-icon"
                             src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                             alt=""
-                            aria-hidden="true"
                         />
                         <span>ورود با گوگل</span>
                     </button>
 
                     <p class="footer-text">
                         با ورود یا ثبت‌نام، شما با
-                        <a href="#">شرایط و قوانین</a>
+                        <a href="#" @click=${this.openTerms}>شرایط و قوانین</a>
                         ما موافقت می‌کنید.
                     </p>
                 </div>
+
+                ${this.showTerms
+                    ? html`
+                          <div class="modal-overlay" @click=${this.closeTerms}>
+                              <div class="modal-container" @click=${(e) => e.stopPropagation()}>
+                                  <div class="modal-header">
+                                      <h3 class="modal-title">شرایط و قوانین</h3>
+                                      <button class="close-icon-btn" @click=${this.closeTerms}>
+                                          <span class="icon-wrapper" style="width:14px;height:14px;"
+                                              >${this.renderIcon('times')}</span
+                                          >
+                                      </button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <p><strong>۱. تست</strong></p>
+                                      <p>متن تست</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button class="primary-btn" @click=${this.closeTerms}>
+                                          متوجه شدم
+                                      </button>
+                                  </div>
+                              </div>
+                          </div>
+                      `
+                    : ''}
             </div>
         `;
+    }
+
+    openTerms(e) {
+        e.preventDefault();
+        this.showTerms = true;
+    }
+
+    closeTerms() {
+        this.showTerms = false;
     }
 
     switchMode(isRegistering) {
@@ -578,7 +734,6 @@ class LoginPage extends BaseComponent {
         super.connectedCallback();
         const params = new URLSearchParams(window.location.search);
         const googleToken = params.get('googleToken');
-
         if (googleToken) {
             saveAuthToken(googleToken);
             this.dispatchEvent(
@@ -598,14 +753,12 @@ class LoginPage extends BaseComponent {
     async attemptAutoLogin() {
         const token = getAuthToken();
         if (!token) return;
-
         try {
             const res = await fetch(`api/verify-token`, {
                 method: 'GET',
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (!res.ok) throw new Error('Token invalid');
-
             const data = await res.json();
             this.dispatchEvent(
                 new CustomEvent('login-success', {
@@ -642,20 +795,12 @@ class LoginPage extends BaseComponent {
                 const email = this.renderRoot.querySelector('#email')?.value.trim();
                 const phoneNumber = this.renderRoot.querySelector('#phoneNumber')?.value.trim();
 
-                if (!name || !username || !password) {
+                if (!name || !username || !password)
                     throw new Error('لطفا تمام فیلدهای ضروری را پر کنید.');
-                }
-                if (!email && !phoneNumber) {
+                if (!email && !phoneNumber)
                     throw new Error('لطفا ایمیل یا شماره موبایل را وارد کنید.');
-                }
 
-                const payload = {
-                    name,
-                    username,
-                    password,
-                    email,
-                    phoneNumber,
-                };
+                const payload = { name, username, password, email, phoneNumber };
 
                 const res = await fetch('/api/register', {
                     method: 'POST',
@@ -668,7 +813,6 @@ class LoginPage extends BaseComponent {
 
                 this.successMessage = 'حساب کاربری با موفقیت ساخته شد. لطفا وارد شوید.';
                 this.loading = false;
-
                 setTimeout(() => {
                     this.switchMode(false);
                 }, 2000);
@@ -691,7 +835,6 @@ class LoginPage extends BaseComponent {
                         composed: true,
                     })
                 );
-
                 this.dispatchEvent(
                     new CustomEvent('navigate', {
                         detail: { to: '/dashboard' },

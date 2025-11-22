@@ -1,3 +1,4 @@
+import { icon } from '@fortawesome/fontawesome-svg-core';
 import { LitElement } from 'lit';
 
 export class BaseComponent extends LitElement {
@@ -69,5 +70,9 @@ export class BaseComponent extends LitElement {
     toggleTheme() {
         const newMode = this.darkMode ? 'light' : 'dark';
         this.setTheme(newMode);
+    }
+
+    renderIcon(iconName, prefix = 'fas') {
+        return icon({ prefix, iconName }).node[0];
     }
 }
