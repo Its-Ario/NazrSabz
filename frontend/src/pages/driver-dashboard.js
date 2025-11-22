@@ -1204,7 +1204,6 @@ export class DriverDashboard extends BaseComponent {
 
         return html`
             <div class="container">
-                <!-- Header -->
                 <div class="top-bar">
                     <button class="top-bar-button" @click="${this._onLogout}">
                         <span class="icon-wrapper">${bracketIcon}</span>
@@ -1215,9 +1214,7 @@ export class DriverDashboard extends BaseComponent {
                     </button>
                 </div>
 
-                <!-- Main Content -->
                 <main class="main">
-                    <!-- Profile Header -->
                     <div class="profile-header">
                         <div class="profile-content">
                             <div
@@ -1240,7 +1237,6 @@ export class DriverDashboard extends BaseComponent {
                         </div>
                     </div>
 
-                    <!-- Segmented Buttons -->
                     <div class="segmented-container">
                         <div class="segmented-buttons">
                             <label
@@ -1264,7 +1260,6 @@ export class DriverDashboard extends BaseComponent {
                         </div>
                     </div>
 
-                    <!-- Request Cards -->
                     <div class="cards-section">
                         ${this.requests.map(
                             (request) => html`
@@ -1291,7 +1286,6 @@ export class DriverDashboard extends BaseComponent {
                         )}
                     </div>
 
-                    <!-- Map Button -->
                     <div class="map-button-container">
                         <button class="map-btn">
                             <span class="icon-wrapper">${mapIcon}</span>
@@ -1299,7 +1293,6 @@ export class DriverDashboard extends BaseComponent {
                         </button>
                     </div>
 
-                    <!-- Performance Stats -->
                     <div class="stats-section">
                         <h2 class="stats-title">آمار عملکرد</h2>
                         <div class="stats-grid">
@@ -1337,7 +1330,6 @@ export class DriverDashboard extends BaseComponent {
                     </div>
                 </main>
 
-                <!-- Bottom Navigation -->
                 <nav class="bottom-nav">
                     <div class="nav-content">
                         <a class="nav-item active" href="#">

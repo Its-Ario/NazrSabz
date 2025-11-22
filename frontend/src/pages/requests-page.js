@@ -185,7 +185,6 @@ export class RequestsPage extends BaseComponent {
 
         return html`
             <div class="container">
-                <!-- Top Bar -->
                 <div class="top-bar">
                     <div class="top-bar-header">
                         <button class="top-bar-button" @click=${this._onBackClick}>
@@ -197,7 +196,6 @@ export class RequestsPage extends BaseComponent {
                         </button>
                     </div>
 
-                    <!-- Filter Tabs -->
                     <div class="filter-tabs">
                         <div class="tabs-container">
                             <button
@@ -234,7 +232,6 @@ export class RequestsPage extends BaseComponent {
                     </div>
                 </div>
 
-                <!-- Main Content -->
                 <main>
                     ${this.loading
                         ? html`

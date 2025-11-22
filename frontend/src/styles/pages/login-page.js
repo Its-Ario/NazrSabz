@@ -34,7 +34,6 @@ export const loginStyles = css`
         z-index: 1;
     }
 
-    /* --- EXISTING STYLES (Title, Form, Inputs, Buttons) --- */
     .auth-title {
         font-size: 28px;
         font-weight: 600;

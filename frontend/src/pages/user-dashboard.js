@@ -170,7 +170,6 @@ export class DashboardPage extends BaseComponent {
                                       </div>
                                   </div>
 
-                                  <!-- Wallet Section -->
                                   <div class="wallet-section">
                                       <div class="wallet-card">
                                           <div class="wallet-header">
@@ -254,7 +253,6 @@ export class DashboardPage extends BaseComponent {
                                       </div>
                                   </div>
 
-                                  <!-- Recent Requests Section -->
                                   ${this.userProfile.recentRequests &&
                                   this.userProfile.recentRequests.length > 0
                                       ? html`
@@ -337,7 +335,6 @@ export class DashboardPage extends BaseComponent {
                                       </div>
                                   </div>
 
-                                  <!-- Rewards List -->
                                   <div class="rewards-list">
                                       ${this.rewards.map(
                                           (reward) => html`

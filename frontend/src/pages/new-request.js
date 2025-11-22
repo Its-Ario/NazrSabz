@@ -270,7 +270,6 @@ export class NewRequestPage extends BaseComponent {
 
         return html`
             <div class="container">
-                <!-- Top Bar -->
                 <div class="top-bar">
                     <button class="top-bar-button" @click=${this._onBackClick}>
                         <span class="icon-wrapper">${backIcon}</span>
@@ -281,7 +280,6 @@ export class NewRequestPage extends BaseComponent {
                     </button>
                 </div>
 
-                <!-- Error Banner -->
                 ${this.error
                     ? html`
                           <div class="error-banner">
@@ -292,7 +290,6 @@ export class NewRequestPage extends BaseComponent {
                     : ''}
 
                 <main>
-                    <!-- Waste Type Selection -->
                     <h2 class="section-header">نوع پسماند خود را انتخاب کنید</h2>
                     <div class="waste-grid">
                         ${this.wasteTypes.map(
@@ -311,7 +308,6 @@ export class NewRequestPage extends BaseComponent {
                         )}
                     </div>
 
-                    <!-- Weight Inputs -->
                     ${this.selectedWasteTypes.length > 0
                         ? html`
                               <h2 class="section-header">وزن تقریبی (کیلوگرم)</h2>
@@ -341,7 +337,6 @@ export class NewRequestPage extends BaseComponent {
                           `
                         : ''}
 
-                    <!-- Request Details -->
                     <h2 class="section-header">جزئیات درخواست</h2>
                     <div class="form-section">
                         <div class="form-row">
@@ -444,7 +439,6 @@ export class NewRequestPage extends BaseComponent {
                     </div>
                 </main>
 
-                <!-- Floating Action Button -->
                 <div class="fab-container">
                     <button
                         class="fab"
