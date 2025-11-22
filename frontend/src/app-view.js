@@ -6,7 +6,7 @@ import './components/user-list.js';
 import './pages/login-page.js';
 import './pages/map-page.js';
 import './pages/new-request.js';
-import './pages/dashboard-page.js';
+import './pages/user-dashboard.js';
 import './pages/driver-dashboard.js';
 import './pages/requests-page.js';
 import { Router } from '@lit-labs/router';
