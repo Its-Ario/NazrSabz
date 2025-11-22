@@ -3,10 +3,17 @@ import { globalStyles } from '../styles/global-styles.js';
 import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/auth.js';
 
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
-import { faMobile, faLock, faSun, faMoon } from '@fortawesome/free-solid-svg-icons';
+import {
+    faMobile,
+    faLock,
+    faSun,
+    faMoon,
+    faUser,
+    faEnvelope,
+} from '@fortawesome/free-solid-svg-icons';
 import { BaseComponent } from '../components/base-component.js';
 
-library.add(faMobile, faLock, faSun, faMoon);
+library.add(faMobile, faLock, faSun, faMoon, faUser, faEnvelope);
 
 class LoginPage extends BaseComponent {
     static styles = [
@@ -29,6 +36,7 @@ class LoginPage extends BaseComponent {
                 justify-content: center;
                 background-color: #f5f7f5;
                 transition: background-color 0.3s ease;
+                padding: 2rem 0;
             }
 
             :host(.dark) .auth-page {
@@ -99,11 +107,6 @@ class LoginPage extends BaseComponent {
                 background-color: rgba(19, 236, 19, 0.15);
             }
 
-            .dark-mode-toggle .material-symbols-outlined {
-                font-size: 1.5rem;
-            }
-
-            /* Toggle Container */
             .toggle-container {
                 display: flex;
                 background-color: rgba(0, 0, 0, 0.05);
@@ -146,6 +149,8 @@ class LoginPage extends BaseComponent {
                 color: #0f172a;
                 padding: 0.25rem 1rem;
                 border-radius: 12px;
+                width: 100%;
+                display: block;
             }
 
             :host(.dark) .toggle-option input:checked + span {
@@ -293,7 +298,6 @@ class LoginPage extends BaseComponent {
                 color: #8a8a8a;
             }
 
-            /* Google Button */
             .google-btn {
                 display: flex;
                 align-items: center;
@@ -331,7 +335,6 @@ class LoginPage extends BaseComponent {
                 height: 24px;
             }
 
-            /* Footer Text */
             .footer-text {
                 font-size: 12px;
                 color: #9ca3af;
@@ -356,7 +359,6 @@ class LoginPage extends BaseComponent {
                 color: #13ec13;
             }
 
-            /* Icon Wrapper */
             .icon-wrapper {
                 display: inline-flex;
                 align-items: center;
@@ -369,24 +371,47 @@ class LoginPage extends BaseComponent {
                 width: 100%;
                 height: 100%;
             }
+
+            .message-box {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+                font-size: 14px;
+                text-align: center;
+            }
+            .error-msg {
+                background-color: rgba(239, 68, 68, 0.1);
+                color: #ef4444;
+                border: 1px solid rgba(239, 68, 68, 0.2);
+            }
+            .success-msg {
+                background-color: rgba(19, 236, 19, 0.1);
+                color: #16a34a;
+                border: 1px solid rgba(19, 236, 19, 0.2);
+            }
         `,
     ];
 
     static properties = {
         loading: { type: Boolean },
         error: { type: String },
+        successMessage: { type: String },
+        isRegistering: { type: Boolean },
     };
 
     constructor() {
         super();
         this.loading = false;
         this.error = '';
+        this.successMessage = '';
+        this.isRegistering = false;
     }
 
     render() {
-        const phoneIcon = icon({ prefix: 'fas', iconName: 'mobile' }).node[0];
+        const userIcon = icon({ prefix: 'fas', iconName: 'user' }).node[0];
+        const mobileIcon = icon({ prefix: 'fas', iconName: 'mobile' }).node[0];
         const lockIcon = icon({ prefix: 'fas', iconName: 'lock' }).node[0];
-
+        const emailIcon = icon({ prefix: 'fas', iconName: 'envelope' }).node[0];
         const moonIcon = icon({ prefix: 'fa', iconName: 'moon' }).node[0];
         const sunIcon = icon({ prefix: 'fa', iconName: 'sun' }).node[0];
 
@@ -399,29 +424,95 @@ class LoginPage extends BaseComponent {
                 <div class="auth-container">
                     <h1 class="auth-title">به <strong>نذر سبز</strong> خوش آمدید!</h1>
                     <p class="auth-subtitle">
-                        برای مشارکت در بازیافت، وارد شوید یا حساب کاربری جدید بسازید.
+                        ${this.isRegistering
+                            ? 'اطلاعات خود را برای ساخت حساب کاربری وارد کنید.'
+                            : 'برای مشارکت در بازیافت، وارد شوید یا حساب کاربری جدید بسازید.'}
                     </p>
 
                     <div class="toggle-container">
                         <label class="toggle-option">
-                            <input type="radio" name="auth-toggle" value="ورود" checked />
+                            <input
+                                type="radio"
+                                name="auth-toggle"
+                                .checked=${!this.isRegistering}
+                                @change=${() => this.switchMode(false)}
+                            />
                             <span>ورود</span>
                         </label>
                         <label class="toggle-option">
-                            <input type="radio" name="auth-toggle" value="ثبت‌نام" />
+                            <input
+                                type="radio"
+                                name="auth-toggle"
+                                .checked=${this.isRegistering}
+                                @change=${() => this.switchMode(true)}
+                            />
                             <span>ثبت‌نام</span>
                         </label>
                     </div>
 
+                    ${this.error
+                        ? html`<div class="message-box error-msg">${this.error}</div>`
+                        : ''}
+                    ${this.successMessage
+                        ? html`<div class="message-box success-msg">${this.successMessage}</div>`
+                        : ''}
+
                     <form class="auth-form" @submit=${this.handleSubmit}>
+                        <!-- Name (Register only) -->
+                        ${this.isRegistering
+                            ? html`
+                                  <div class="form-group">
+                                      <label>نام و نام خانوادگی</label>
+                                      <div class="input-wrapper">
+                                          <input
+                                              type="text"
+                                              id="fullName"
+                                              placeholder="مثال: علی محمدی"
+                                          />
+                                          <span class="icon-wrapper">${userIcon}</span>
+                                      </div>
+                                  </div>
+                              `
+                            : ''}
+
+                        <!-- Username -->
                         <div class="form-group">
                             <label>نام کاربری</label>
                             <div class="input-wrapper">
-                                <input type="text" placeholder="test" id="username" />
-                                <span class="icon-wrapper">${phoneIcon}</span>
+                                <input type="text" id="username" placeholder="user123" />
+                                <span class="icon-wrapper">${userIcon}</span>
                             </div>
                         </div>
 
+                        ${this.isRegistering
+                            ? html`
+                                  <div class="form-group">
+                                      <label>ایمیل</label>
+                                      <div class="input-wrapper">
+                                          <input
+                                              type="email"
+                                              id="email"
+                                              placeholder="email@example.com"
+                                          />
+                                          <span class="icon-wrapper">${emailIcon}</span>
+                                      </div>
+                                  </div>
+
+                                  <div class="form-group">
+                                      <label>شماره موبایل</label>
+                                      <div class="input-wrapper">
+                                          <input
+                                              type="tel"
+                                              id="phoneNumber"
+                                              placeholder="0912..."
+                                          />
+                                          <span class="icon-wrapper">${mobileIcon}</span>
+                                      </div>
+                                  </div>
+                              `
+                            : ''}
+
+                        <!-- Password -->
                         <div class="form-group">
                             <label>رمز عبور</label>
                             <div class="input-wrapper">
@@ -430,16 +521,26 @@ class LoginPage extends BaseComponent {
                             </div>
                         </div>
 
-                        <div class="forgot-password">
-                            <a href="#">فراموشی رمز عبور؟</a>
-                        </div>
+                        ${!this.isRegistering
+                            ? html`
+                                  <div class="forgot-password">
+                                      <a href="#">فراموشی رمز عبور؟</a>
+                                  </div>
+                              `
+                            : ''}
 
-                        <button type="submit" class="primary-btn">ورود به حساب کاربری</button>
+                        <button type="submit" class="primary-btn" ?disabled=${this.loading}>
+                            ${this.loading
+                                ? 'لطفا صبر کنید...'
+                                : this.isRegistering
+                                  ? 'ایجاد حساب کاربری'
+                                  : 'ورود به حساب کاربری'}
+                        </button>
                     </form>
 
                     <div class="divider">
                         <hr />
-                        <p>یا ورود از طریق</p>
+                        <p>یا ${this.isRegistering ? 'ثبت‌نام' : 'ورود'} از طریق</p>
                         <hr />
                     </div>
                     <button
@@ -467,9 +568,14 @@ class LoginPage extends BaseComponent {
         `;
     }
 
+    switchMode(isRegistering) {
+        this.isRegistering = isRegistering;
+        this.error = '';
+        this.successMessage = '';
+    }
+
     connectedCallback() {
         super.connectedCallback();
-
         const params = new URLSearchParams(window.location.search);
         const googleToken = params.get('googleToken');
 
@@ -482,12 +588,10 @@ class LoginPage extends BaseComponent {
                     composed: true,
                 })
             );
-
             const url = new URL(window.location.href);
             url.search = '';
             window.history.replaceState({}, '', url);
         }
-
         this.attemptAutoLogin();
     }
 
@@ -510,7 +614,6 @@ class LoginPage extends BaseComponent {
                     composed: true,
                 })
             );
-
             this.dispatchEvent(
                 new CustomEvent('navigate', {
                     detail: { to: '/dashboard' },
@@ -528,38 +631,75 @@ class LoginPage extends BaseComponent {
         e.preventDefault();
         this.loading = true;
         this.error = '';
+        this.successMessage = '';
 
         const username = this.renderRoot.querySelector('#username')?.value.trim();
         const password = this.renderRoot.querySelector('#password')?.value.trim();
 
         try {
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            });
+            if (this.isRegistering) {
+                const name = this.renderRoot.querySelector('#fullName')?.value.trim();
+                const email = this.renderRoot.querySelector('#email')?.value.trim();
+                const phoneNumber = this.renderRoot.querySelector('#phoneNumber')?.value.trim();
 
-            if (!res.ok) throw new Error('Invalid username or password');
+                if (!name || !username || !password) {
+                    throw new Error('لطفا تمام فیلدهای ضروری را پر کنید.');
+                }
+                if (!email && !phoneNumber) {
+                    throw new Error('لطفا ایمیل یا شماره موبایل را وارد کنید.');
+                }
 
-            const data = await res.json();
+                const payload = {
+                    name,
+                    username,
+                    password,
+                    email,
+                    phoneNumber,
+                };
 
-            saveAuthToken(data.token);
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
 
-            this.dispatchEvent(
-                new CustomEvent('login-success', {
-                    detail: { user: data.user },
-                    bubbles: true,
-                    composed: true,
-                })
-            );
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Registration failed');
 
-            this.dispatchEvent(
-                new CustomEvent('navigate', {
-                    detail: { to: '/dashboard' },
-                    bubbles: true,
-                    composed: true,
-                })
-            );
+                this.successMessage = 'حساب کاربری با موفقیت ساخته شد. لطفا وارد شوید.';
+                this.loading = false;
+
+                setTimeout(() => {
+                    this.switchMode(false);
+                }, 2000);
+            } else {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                if (!res.ok) throw new Error('نام کاربری یا رمز عبور اشتباه است');
+
+                const data = await res.json();
+                saveAuthToken(data.token);
+
+                this.dispatchEvent(
+                    new CustomEvent('login-success', {
+                        detail: { user: data.user },
+                        bubbles: true,
+                        composed: true,
+                    })
+                );
+
+                this.dispatchEvent(
+                    new CustomEvent('navigate', {
+                        detail: { to: '/dashboard' },
+                        bubbles: true,
+                        composed: true,
+                    })
+                );
+            }
         } catch (err) {
             this.error = err.message;
             console.error(err);
