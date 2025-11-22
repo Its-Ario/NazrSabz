@@ -113,7 +113,7 @@ class LoginPage extends BaseComponent {
                         ${this.isRegistering
                             ? html`
                                   <div class="form-group">
-                                      <label>ایمیل (اختیاری اگر شماره موبایل وارد شود)</label>
+                                      <label>ایمیل</label>
                                       <div class="input-wrapper">
                                           <input
                                               type="email"
@@ -126,7 +126,7 @@ class LoginPage extends BaseComponent {
                                       </div>
                                   </div>
                                   <div class="form-group">
-                                      <label>شماره موبایل (اختیاری اگر ایمیل وارد شود)</label>
+                                      <label>شماره موبایل</label>
                                       <div class="input-wrapper">
                                           <input
                                               type="tel"
