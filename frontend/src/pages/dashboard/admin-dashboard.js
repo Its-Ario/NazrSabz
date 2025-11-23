@@ -106,153 +106,75 @@ export class AdminDashboard extends BaseComponent {
     async fetchDashboardData() {
         this.loading = true;
         this.error = null;
-        try {
-            const token = getAuthToken();
-            if (!token) throw new Error('لطفا ابتدا وارد شوید');
 
-            await new Promise((r) => setTimeout(r, 800));
+        try {
+            const data = await this.getDashboardOverview();
 
             this.stats = {
-                totalWeight: 12450,
-                activeUsers: 1280,
-                activeDrivers: 42,
-                pendingRequests: 15,
-                todaysPayout: '2,500,000',
-                totalRevenue: '125,000,000',
-                monthlyGrowth: 12.5,
-                completedToday: 48,
-                avgResponseTime: '8 دقیقه',
-                completedRequests: 856,
-                canceledRequests: 23,
+                totalWeight: data.stats.totalWeight,
+                activeUsers: data.stats.activeUsers,
+                activeDrivers: data.stats.activeDrivers,
+                pendingRequests: data.stats.pendingRequests || 0,
+                todaysPayout: data.stats.todaysPayout?.toLocaleString('fa-IR') || 0,
+                totalRevenue: data.stats.totalRevenue?.toLocaleString('fa-IR') || 0,
+                monthlyGrowth: data.stats.monthlyGrowth || 0,
+                completedToday: data.stats.completedToday || 0,
+                avgResponseTime: data.stats.avgResponseTime + ' دقیقه',
+                completedRequests: data.stats.completedRequests || 0,
+                canceledRequests: data.stats.canceledRequests || 0,
             };
+
+            console.log(this.stats);
+
+            this.chartData = {
+                weeklyRequests: data.charts.weeklyRequests.map((val, index) => ({
+                    day: this._getDayName(index),
+                    value: val,
+                })),
+                recyclingBreakdown: data.charts.breakdown,
+                requestStatus: {
+                    completed: data.stats.completedRequests,
+                    pending: data.stats.pendingRequests,
+                    canceled: data.stats.canceledRequests,
+                },
+                monthlyRevenue: data.charts.revenue.map((val, index) => ({
+                    month: this._getMonthName(index),
+                    value: val,
+                })),
+            };
+
+            this.activities = data.recentActivity.map((log) => ({
+                id: log.id,
+                title: log.title,
+                subtitle: log.description,
+                type: log.type,
+                icon: this._mapIconToType(log.type),
+                time: this._formatTimeAgo(log.createdAt),
+            }));
+
+            this.recentTransactions = data.recentTransactions.map((tx) => ({
+                id: tx.id,
+                type: tx.type,
+                user: tx.userName,
+                amount: tx.amount.toLocaleString('fa-IR'),
+                status: tx.status,
+                date: new Date(tx.createdAt).toLocaleDateString('fa-IR'),
+            }));
 
             this.systemHealth = {
                 status: 'operational',
                 uptime: '99.9%',
-                activeConnections: 342,
-                serverLoad: 45,
+                activeConnections: Math.floor(Math.random() * 500) + 100,
+                serverLoad: Math.floor(Math.random() * 30) + 20,
                 lastBackup: '2 ساعت پیش',
             };
-
-            this.chartData = {
-                weeklyRequests: [
-                    { day: 'شنبه', value: 45 },
-                    { day: 'یکشنبه', value: 52 },
-                    { day: 'دوشنبه', value: 48 },
-                    { day: 'سه‌شنبه', value: 61 },
-                    { day: 'چهارشنبه', value: 55 },
-                    { day: 'پنجشنبه', value: 58 },
-                    { day: 'جمعه', value: 38 },
-                ],
-                recyclingBreakdown: {
-                    plastic: 3500,
-                    paper: 4200,
-                    glass: 2100,
-                    metal: 2650,
-                },
-                requestStatus: {
-                    completed: 856,
-                    pending: 15,
-                    canceled: 23,
-                },
-                monthlyRevenue: [
-                    { month: 'فروردین', value: 95 },
-                    { month: 'اردیبهشت', value: 102 },
-                    { month: 'خرداد', value: 98 },
-                    { month: 'تیر', value: 108 },
-                    { month: 'مرداد', value: 115 },
-                    { month: 'شهریور', value: 125 },
-                ],
-            };
-
-            this.activities = [
-                {
-                    id: 1,
-                    title: 'راننده علی حسینی',
-                    subtitle: 'درخواست #8821 را تکمیل کرد',
-                    type: 'success',
-                    icon: 'check-circle',
-                    time: '2 دقیقه پیش',
-                },
-                {
-                    id: 2,
-                    title: 'کاربر جدید: مریم احمدی',
-                    subtitle: 'ثبت‌نام در سیستم',
-                    type: 'blue',
-                    icon: 'user-plus',
-                    time: '15 دقیقه پیش',
-                },
-                {
-                    id: 3,
-                    title: 'درخواست برداشت',
-                    subtitle: 'منطقه 4 - نیاز به تخصیص راننده',
-                    type: 'orange',
-                    icon: 'clipboard-list',
-                    time: '1 ساعت پیش',
-                },
-                {
-                    id: 4,
-                    title: 'راننده رضا محمدی',
-                    subtitle: 'شروع شیفت کاری',
-                    type: 'blue',
-                    icon: 'truck',
-                    time: '2 ساعت پیش',
-                },
-                {
-                    id: 5,
-                    title: 'برداشت موجودی',
-                    subtitle: 'کاربر سارا کریمی - 500,000 تومان',
-                    type: 'blue',
-                    icon: 'money-bill-wave',
-                    time: '3 ساعت پیش',
-                },
-                {
-                    id: 6,
-                    title: 'لغو درخواست',
-                    subtitle: 'درخواست #8815 توسط کاربر لغو شد',
-                    type: 'error',
-                    icon: 'ban',
-                    time: '4 ساعت پیش',
-                },
-            ];
-
-            this.recentTransactions = [
-                {
-                    id: 1,
-                    type: 'payout',
-                    user: 'علی حسینی',
-                    amount: '250,000',
-                    status: 'completed',
-                    date: '1403/09/15',
-                },
-                {
-                    id: 2,
-                    type: 'deposit',
-                    user: 'مریم احمدی',
-                    amount: '100,000',
-                    status: 'completed',
-                    date: '1403/09/15',
-                },
-                {
-                    id: 3,
-                    type: 'payout',
-                    user: 'رضا محمدی',
-                    amount: '180,000',
-                    status: 'pending',
-                    date: '1403/09/15',
-                },
-                {
-                    id: 4,
-                    type: 'deposit',
-                    user: 'سارا کریمی',
-                    amount: '75,000',
-                    status: 'completed',
-                    date: '1403/09/14',
-                },
-            ];
         } catch (error) {
             console.error('Failed to load admin data:', error);
             this.error = error.message;
+
+            if (error.message.includes('401') || error.message.includes('token')) {
+                this._onLogout();
+            }
         } finally {
             this.loading = false;
         }
@@ -652,6 +574,26 @@ export class AdminDashboard extends BaseComponent {
         if (changedProperties.has('darkMode')) {
             this.initAllCharts();
         }
+    }
+
+    async getDashboardOverview() {
+        const token = getAuthToken();
+        if (!token) throw new Error('No auth token found');
+
+        const response = await fetch(`/api/dashboard/admin`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to fetch dashboard data');
+        }
+
+        return data.result;
     }
 
     disconnectedCallback() {
@@ -1305,6 +1247,35 @@ export class AdminDashboard extends BaseComponent {
                 composed: true,
             })
         );
+    }
+
+    _getDayName(index) {
+        const days = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
+        return days[index] || days[0];
+    }
+
+    _getMonthName(index) {
+        const months = ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'];
+        return months[index] || '';
+    }
+
+    _mapIconToType(type) {
+        const map = {
+            user_register: 'user-plus',
+            request_complete: 'check-circle',
+            warning: 'exclamation-triangle',
+            error: 'ban',
+        };
+        return map[type] || 'bell';
+    }
+
+    _formatTimeAgo(dateString) {
+        const diff = Date.now() - new Date(dateString).getTime();
+        const minutes = Math.floor(diff / 60000);
+        if (minutes < 60) return `${minutes} دقیقه پیش`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} ساعت پیش`;
+        return 'دیروز';
     }
 }
 
