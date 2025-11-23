@@ -140,7 +140,8 @@ describe('UserService', () => {
                 name: user.name,
                 username: user.username,
                 email: user.email,
-                tokenVersion: user.tokenVersion,
+                role: user.role,
+                tokenVersion: false,
                 passwordHash: false,
             });
 
@@ -155,7 +156,8 @@ describe('UserService', () => {
                     name: true,
                     username: true,
                     email: true,
-                    tokenVersion: true,
+                    role: true,
+                    tokenVersion: false,
                     passwordHash: false,
                 },
             });
@@ -169,7 +171,8 @@ describe('UserService', () => {
                 name: user.name,
                 username: user.username,
                 email: user.email,
-                tokenVersion: user.tokenVersion,
+                role: user.role,
+                tokenVersion: false,
                 passwordHash: false,
             });
 
@@ -183,7 +186,8 @@ describe('UserService', () => {
                     name: true,
                     username: true,
                     email: true,
-                    tokenVersion: true,
+                    role: true,
+                    tokenVersion: false,
                     passwordHash: false,
                 },
             });
@@ -197,6 +201,7 @@ describe('UserService', () => {
                 name: user.name,
                 username: user.username,
                 email: user.email,
+                role: user.role,
                 tokenVersion: user.tokenVersion,
                 passwordHash: user.passwordHash,
             });
@@ -211,6 +216,7 @@ describe('UserService', () => {
                     name: true,
                     username: true,
                     email: true,
+                    role: true,
                     tokenVersion: true,
                     passwordHash: true,
                 },

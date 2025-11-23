@@ -73,6 +73,7 @@ export const verify = async (req, res) => {
         id: req.user.id.toString(),
         name: req.user.name,
         username: req.user.username,
+        role: req.user.role,
     };
 
     res.status(200).json({ ok: true, user: userData });

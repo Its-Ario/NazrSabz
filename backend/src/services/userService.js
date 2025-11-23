@@ -65,7 +65,8 @@ export class UserService {
                     name: true,
                     username: true,
                     email: true,
-                    tokenVersion: true,
+                    role: true,
+                    tokenVersion: includePassword,
                     passwordHash: includePassword,
                 },
             });

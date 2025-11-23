@@ -70,9 +70,12 @@ export class AuthService {
 
         const token = generateToken(user);
 
+        // eslint-disable-next-line no-unused-vars
+        const { passwordHash, tokenVersion, ...safeUser } = user;
+
         return {
             token,
-            userData: user,
+            userData: safeUser,
         };
     }
 

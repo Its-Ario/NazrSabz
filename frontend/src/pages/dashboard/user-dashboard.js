@@ -10,14 +10,14 @@ import {
     faArrowUp,
     faPlus,
 } from '@fortawesome/free-solid-svg-icons';
-import { BaseComponent } from '../components/base-component';
-import { removeAuthToken, getAuthToken } from '../utils/auth';
-import { dashboardStyles } from '../styles/pages/user-dashboard';
-import { globalStyles } from '../styles/global-styles';
+import { BaseComponent } from '../../components/base-component';
+import { removeAuthToken, getAuthToken } from '../../utils/auth';
+import { dashboardStyles } from '../../styles/pages/user-dashboard';
+import { globalStyles } from '../../styles/global-styles';
 
 library.add(faRightFromBracket, faStar, faRecycle, faSun, faMoon, faWallet, faArrowUp, faPlus);
 
-export class DashboardPage extends BaseComponent {
+export class UserDashboard extends BaseComponent {
     static properties = {
         user: { type: Object },
         activeTab: { type: String },
@@ -469,4 +469,4 @@ export class DashboardPage extends BaseComponent {
     }
 }
 
-customElements.define('dashboard-page', DashboardPage);
+customElements.define('user-dashboard', UserDashboard);

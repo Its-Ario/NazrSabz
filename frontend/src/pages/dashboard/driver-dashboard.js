@@ -1,5 +1,5 @@
 import { html, css } from 'lit';
-import { BaseComponent } from '../components/base-component';
+import { BaseComponent } from '../../components/base-component';
 import { library, icon } from '@fortawesome/fontawesome-svg-core';
 import {
     faRightFromBracket,
@@ -16,7 +16,7 @@ import {
     faStar,
     faRoute,
 } from '@fortawesome/free-solid-svg-icons';
-import { removeAuthToken } from '../utils/auth';
+import { removeAuthToken } from '../../utils/auth';
 
 library.add(
     faRightFromBracket,
