@@ -234,6 +234,55 @@ export const adminDashboardStyles = css`
         margin: 0;
     }
 
+    .sidebar-actions {
+        padding: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    :host(.dark) .sidebar-actions {
+        border-top-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-action-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.875rem 1rem;
+        border-radius: 12px;
+        border: none;
+        background: transparent;
+        color: #7a8a7a;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+        text-align: right;
+    }
+
+    :host(.dark) .sidebar-action-btn {
+        color: #8a8a8a;
+    }
+
+    .sidebar-action-btn:hover {
+        background-color: rgba(59, 130, 246, 0.05);
+        color: #3b82f6;
+    }
+
+    .sidebar-action-btn.logout-btn:hover {
+        background-color: rgba(239, 68, 68, 0.05);
+        color: #ef4444;
+    }
+
+    .sidebar-action-btn .icon-wrapper {
+        width: 20px;
+        height: 20px;
+    }
+
     .close-sidebar-btn {
         width: 2.5rem;
         height: 2.5rem;

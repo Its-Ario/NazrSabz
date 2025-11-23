@@ -814,6 +814,31 @@ export class AdminDashboard extends BaseComponent {
                                                 <span>${this.systemHealth.serverLoad}%</span>
                                             </div>
                                         </div>
+
+                                        <div class="sidebar-actions">
+                                            <button
+                                                class="sidebar-action-btn"
+                                                @click="${this.toggleTheme}"
+                                            >
+                                                <span class="icon-wrapper">
+                                                    ${this.darkMode
+                                                        ? this.renderIcon('sun')
+                                                        : this.renderIcon('moon')}
+                                                </span>
+                                                <span
+                                                    >${this.darkMode ? 'حالت روز' : 'حالت شب'}</span
+                                                >
+                                            </button>
+                                            <button
+                                                class="sidebar-action-btn logout-btn"
+                                                @click="${this._onLogout}"
+                                            >
+                                                <span class="icon-wrapper"
+                                                    >${this.renderIcon('right-from-bracket')}</span
+                                                >
+                                                <span>خروج از حساب</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </aside>
 
