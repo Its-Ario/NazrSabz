@@ -38,15 +38,18 @@ export const getDashboardData = async (req, res) => {
 export const getAdminDashboardData = async (req, res) => {
     // const userId = req.user.id;
 
+    const userCounts = await userService.getAllUserCounts();
+    const requestCounts = await requestService.getAllRequestCounts();
+
     const result = {
         stats: {
             totalWeight: 12450,
-            activeUsers: await userService.getUsersCountByRole('USER'),
-            activeDrivers: await userService.getUsersCountByRole('DRIVER'),
-            pendingRequests: await requestService.getRequestCountByStatus('PENDING'),
-            canceledRequests: await requestService.getRequestCountByStatus('CANCELED'),
-            completedToday: 48,
-            completedRequests: await requestService.getRequestCountByStatus('COMPLETED'),
+            activeUsers: userCounts.USER,
+            activeDrivers: userCounts.DRIVER,
+            pendingRequests: requestCounts.PENDING,
+            canceledRequests: requestCounts.CANCELED,
+            completedToday: await requestService.getCompletedToday(),
+            completedRequests: requestCounts.COMPLETED,
             totalRevenue: 125000000,
             avgResponseTime: 8,
         },

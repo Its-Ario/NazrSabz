@@ -81,6 +81,50 @@ export class RequestService {
         }
     }
 
+    async getAllRequestCounts() {
+        const results = await prisma.request.groupBy({
+            by: ['status'],
+            _count: {
+                id: true,
+            },
+        });
+
+        const stats = {
+            PENDING: 0,
+            COMPLETED: 0,
+            CANCELED: 0,
+        };
+
+        results.forEach((item) => {
+            stats[item.status] = item._count.id;
+        });
+
+        return stats;
+    }
+
+    async getCompletedToday() {
+        const now = new Date();
+
+        const startOfDay = new Date(now);
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date(now);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const count = await prisma.request.count({
+            where: {
+                status: 'COMPLETED',
+
+                updatedAt: {
+                    gte: startOfDay,
+                    lte: endOfDay,
+                },
+            },
+        });
+
+        return count;
+    }
+
     async updateStatus(requestId, status) {
         try {
             const upperStatus = status.toUpperCase();

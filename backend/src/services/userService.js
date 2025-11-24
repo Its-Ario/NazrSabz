@@ -158,6 +158,28 @@ export class UserService {
 
         return count;
     }
+
+    async getAllUserCounts() {
+        const results = await prisma.user.groupBy({
+            by: ['role'],
+            _count: {
+                id: true,
+            },
+        });
+
+        const stats = {
+            USER: 0,
+            DRIVER: 0,
+            MANAGER: 0,
+            ADMIN: 0,
+        };
+
+        results.forEach((item) => {
+            stats[item.role] = item._count.id;
+        });
+
+        return stats;
+    }
 }
 
 export default new UserService(prisma);
