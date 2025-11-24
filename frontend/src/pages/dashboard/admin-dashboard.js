@@ -621,6 +621,7 @@ export class AdminDashboard extends BaseComponent {
         Object.values(this.charts).forEach((chart) => {
             if (chart) chart.destroy();
         });
+        if (this.healthInterval) clearInterval(this.healthInterval);
     }
 
     render() {
@@ -1147,6 +1148,23 @@ export class AdminDashboard extends BaseComponent {
     async connectedCallback() {
         super.connectedCallback();
         await this.fetchDashboardData();
+
+        this.healthInterval = setInterval(async () => {
+            if (this.loading) return;
+            try {
+                const healthData = await this.getSystemHealth();
+                this.systemHealth = {
+                    status: healthData.status,
+                    uptime: `${healthData.uptime} ساعت`,
+                    activeConnections: healthData.activeConnections,
+                    serverLoad: healthData.serverLoad,
+                    lastBackup: this._formatTimeAgo(healthData.lastBackup),
+                };
+                this.requestUpdate();
+            } catch (e) {
+                console.warn('Health poll failed', e);
+            }
+        }, 30000);
     }
 
     _getColorType(type) {
