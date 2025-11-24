@@ -64,6 +64,23 @@ export class RequestService {
         }
     }
 
+    async getRequestCountByStatus(status) {
+        const upperStatus = status.toUpperCase();
+        if (!ALLOWED_STATUSES.includes(upperStatus)) {
+            throwError('Invalid Status', 400, { code: 'ERR_INVALID_STATUS' });
+        }
+        try {
+            const result = await this.prisma.request.count({
+                where: { status },
+            });
+
+            return result;
+        } catch (e) {
+            logger.error('Error fetching requests by status:', status);
+            throw e;
+        }
+    }
+
     async updateStatus(requestId, status) {
         try {
             const upperStatus = status.toUpperCase();
@@ -313,8 +330,6 @@ export class RequestService {
             Object.keys(breakdown).forEach((key) => {
                 breakdown[key] = Number(breakdown[key].toFixed(2));
             });
-
-            logger.info(`Final breakdown: ${JSON.stringify(breakdown)}`); // Debug log
 
             return breakdown;
         } catch (e) {

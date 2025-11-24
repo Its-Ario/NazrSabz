@@ -43,7 +43,7 @@ model Request {
   items       Json
   address     Json
   metadata    Json?
-  status      String    @default("pending")
+  status      RequestStatus    @default(PENDING)
   scheduledAt DateTime?
   completedAt DateTime?
   priority    String    @default("normal")
@@ -89,4 +89,10 @@ enum UserRole {
   MANAGER
   DRIVER
   USER
+}
+
+enum RequestStatus {
+  PENDING
+  COMPLETED
+  CANCELED
 }
