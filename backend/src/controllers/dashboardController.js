@@ -55,7 +55,7 @@ export const getAdminDashboardData = async (req, res) => {
         },
         charts: {
             weeklyRequests: [10, 20, 15, 40, 35, 20, 60],
-            breakdown: { plastic: 300, paper: 150, glass: 50, metal: 100 },
+            breakdown: await requestService.getWeightBreakdownByMaterial(),
             revenue: [100, 120, 110, 140, 130, 180],
         },
         recentActivity: [
