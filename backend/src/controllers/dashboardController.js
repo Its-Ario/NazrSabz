@@ -41,8 +41,8 @@ export const getAdminDashboardData = async (req, res) => {
     const result = {
         stats: {
             totalWeight: 12450,
-            activeUsers: 1280,
-            activeDrivers: 42,
+            activeUsers: await userService.getUsersCountByRole('USER'),
+            activeDrivers: await userService.getUsersCountByRole('DRIVER'),
             pendingRequests: 15,
             canceledRequests: 1,
             completedToday: 48,

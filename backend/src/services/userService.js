@@ -148,6 +148,16 @@ export class UserService {
             throw error;
         }
     }
+
+    async getUsersCountByRole(role = 'USER') {
+        const count = await prisma.user.count({
+            where: {
+                role,
+            },
+        });
+
+        return count;
+    }
 }
 
 export default new UserService(prisma);
