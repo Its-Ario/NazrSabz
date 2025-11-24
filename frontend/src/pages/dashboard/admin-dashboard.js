@@ -103,6 +103,25 @@ export class AdminDashboard extends BaseComponent {
         this.sidebarOpen = false;
     }
 
+    async getSystemHealth() {
+        const token = getAuthToken();
+        const response = await fetch(`/api/admin/health`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        if (!response.ok) throw new Error('Failed to fetch health stats');
+
+        return data.result;
+    }
+
     async fetchDashboardData() {
         this.loading = true;
         this.error = null;
@@ -161,12 +180,13 @@ export class AdminDashboard extends BaseComponent {
                 date: new Date(tx.createdAt).toLocaleDateString('fa-IR'),
             }));
 
+            const healthData = await this.getSystemHealth();
+
             this.systemHealth = {
-                status: 'operational',
-                uptime: '99.9%',
-                activeConnections: Math.floor(Math.random() * 500) + 100,
-                serverLoad: Math.floor(Math.random() * 30) + 20,
-                lastBackup: '2 ساعت پیش',
+                status: healthData.status,
+                uptime: `${healthData.uptime} ساعت`,
+                serverLoad: healthData.serverLoad,
+                lastBackup: this._formatTimeAgo(healthData.lastBackup),
             };
         } catch (error) {
             console.error('Failed to load admin data:', error);

@@ -44,6 +44,7 @@ export const getAdminDashboardData = async (req, res) => {
             activeUsers: 1280,
             activeDrivers: 42,
             pendingRequests: 15,
+            canceledRequests: 1,
             completedToday: 48,
             completedRequests: 30,
             totalRevenue: 125000000,

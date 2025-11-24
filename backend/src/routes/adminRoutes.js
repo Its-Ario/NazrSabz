@@ -2,6 +2,7 @@ import { Router } from 'express';
 import userService from '../services/userService.js';
 import auth, { isAdmin } from '../middleware/authMiddleware.js';
 import authService from '../services/authService.js';
+import si from 'systeminformation';
 
 const router = Router();
 router.use(auth, isAdmin);
@@ -38,6 +39,21 @@ router.patch('/changerole/:id', async (req, res) => {
         message: 'Role updated successfuly',
         username: updatedUser.username,
     });
+});
+
+router.get('/health', async (req, res) => {
+    const cpu = await si.currentLoad();
+    const mem = await si.mem();
+    const time = await si.time();
+
+    const result = {
+        status: 'operational',
+        uptime: Math.floor(time.uptime / 3600),
+        serverLoad: Math.round(cpu.currentLoad),
+        memoryUsage: Math.round((mem.active / mem.total) * 100),
+    };
+
+    res.json({ ok: true, result });
 });
 
 export default router;
