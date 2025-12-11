@@ -363,7 +363,6 @@ export class LocationPickerMap extends BaseComponent {
                 border-bottom-color: rgba(255, 255, 255, 0.1);
             }
 
-            /* Dark mode tile layer filter */
             .modal-container.dark .leaflet-tile-pane {
                 filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3)
                     brightness(0.7);

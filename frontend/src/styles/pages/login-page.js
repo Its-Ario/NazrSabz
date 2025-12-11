@@ -91,7 +91,6 @@ export const loginStyles = css`
         background-color: rgba(19, 236, 19, 0.15);
     }
 
-    /* Toggle Container */
     .toggle-container {
         display: flex;
         background-color: rgba(0, 0, 0, 0.05);
@@ -144,7 +143,6 @@ export const loginStyles = css`
         box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
     }
 
-    /* Form Groups */
     .form-group {
         margin-bottom: 1rem;
     }
@@ -371,7 +369,6 @@ export const loginStyles = css`
         border: 1px solid rgba(19, 236, 19, 0.2);
     }
 
-    /* --- MODAL (TERMS OF SERVICE) STYLES --- */
     .modal-overlay {
         position: fixed;
         top: 0;

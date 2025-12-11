@@ -31,7 +31,6 @@ export const dashboardStyles = css`
         overflow-x: hidden;
     }
 
-    /* Loading & Error States */
     .loading-container,
     .error-container {
         display: flex;
@@ -92,7 +91,6 @@ export const dashboardStyles = css`
         box-shadow: 0 4px 12px rgba(19, 236, 19, 0.3);
     }
 
-    /* Top App Bar */
     .top-bar {
         position: sticky;
         top: 0;
@@ -166,7 +164,6 @@ export const dashboardStyles = css`
         padding-bottom: 7rem;
     }
 
-    /* Profile Header */
     .profile-header {
         padding: 1rem 1.25rem;
     }
@@ -210,7 +207,6 @@ export const dashboardStyles = css`
         color: #13ec13;
     }
 
-    /* Wallet Section */
     .wallet-section {
         padding: 1rem 1.25rem;
     }
@@ -306,7 +302,6 @@ export const dashboardStyles = css`
         height: 16px;
     }
 
-    /* Responsive Wallet */
     @media (max-width: 374px) {
         .wallet-section {
             padding: 0.875rem 1rem;
@@ -388,7 +383,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Stats */
     .stats-grid {
         display: flex;
         flex-wrap: wrap;
@@ -456,7 +450,6 @@ export const dashboardStyles = css`
         color: #8a8a8a;
     }
 
-    /* Section Header */
     .section-header {
         font-size: 1.125rem;
         font-weight: 600;
@@ -465,7 +458,6 @@ export const dashboardStyles = css`
         letter-spacing: -0.01em;
     }
 
-    /* Filter Tabs */
     .filter-tabs {
         padding: 0 1.25rem 1rem;
     }
@@ -515,7 +507,6 @@ export const dashboardStyles = css`
         box-shadow: 0 2px 12px rgba(19, 236, 19, 0.35);
     }
 
-    /* Reward Cards */
     .rewards-list {
         display: flex;
         flex-direction: column;
@@ -610,7 +601,6 @@ export const dashboardStyles = css`
         color: #fbbf24;
     }
 
-    /* Floating Action Button */
     .fab-container {
         position: fixed;
         bottom: 0;
@@ -812,7 +802,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Tablet (768px - 1023px) */
     @media (min-width: 768px) {
         main {
             padding-bottom: 8rem;
@@ -933,7 +922,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Desktop (1024px - 1279px) */
     @media (min-width: 1024px) {
         main {
             padding-bottom: 9rem;
@@ -1054,7 +1042,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Large Desktop (1280px+) */
     @media (min-width: 1280px) {
         .top-bar {
             padding: 1.75rem 4rem;
@@ -1117,7 +1104,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Extra Large Desktop (1536px+) */
     @media (min-width: 1536px) {
         .stats-grid {
             display: grid;
@@ -1146,7 +1132,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Landscape Mobile */
     @media (max-height: 600px) and (orientation: landscape) {
         main {
             padding-bottom: 5.5rem;
@@ -1160,7 +1145,6 @@ export const dashboardStyles = css`
             height: 3rem;
         }
     }
-    /* Print Styles */
     @media print {
         .top-bar,
         .fab-container,
@@ -1178,7 +1162,6 @@ export const dashboardStyles = css`
         }
     }
 
-    /* Recent Requests Section */
     .recent-requests-section {
         padding: 0 1.25rem 1rem;
     }

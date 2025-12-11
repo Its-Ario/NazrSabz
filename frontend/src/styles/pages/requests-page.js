@@ -36,7 +36,6 @@ export const requestsStyles = css`
         overflow-x: hidden;
     }
 
-    /* Top App Bar */
     .top-bar {
         position: sticky;
         top: 0;
@@ -108,7 +107,6 @@ export const requestsStyles = css`
         height: 100%;
     }
 
-    /* Filter Tabs */
     .filter-tabs {
         padding: 0.75rem 1.25rem 1rem;
     }
@@ -153,7 +151,6 @@ export const requestsStyles = css`
         box-shadow: 0 2px 8px rgba(19, 236, 19, 0.25);
     }
 
-    /* Loading & Error States */
     .loading-container,
     .error-container {
         display: flex;
@@ -214,7 +211,6 @@ export const requestsStyles = css`
         box-shadow: 0 4px 12px rgba(19, 236, 19, 0.3);
     }
 
-    /* Request List */
     .requests-list {
         display: flex;
         flex-direction: column;
@@ -372,7 +368,6 @@ export const requestsStyles = css`
         color: #8a8a8a;
     }
 
-    /* Empty State */
     .empty-state {
         display: flex;
         flex-direction: column;
@@ -443,7 +438,6 @@ export const requestsStyles = css`
         box-shadow: 0 6px 20px rgba(19, 236, 19, 0.4);
     }
 
-    /* Pagination */
     .pagination {
         display: flex;
         justify-content: center;
@@ -491,7 +485,6 @@ export const requestsStyles = css`
         color: #8a8a8a;
     }
 
-    /* Responsive Design */
     @media (max-width: 374px) {
         main {
             padding: 0.75rem 1rem 2rem;

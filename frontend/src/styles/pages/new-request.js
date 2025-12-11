@@ -39,7 +39,6 @@ export const newReqStyles = css`
         background-color: #121212;
     }
 
-    /* Top App Bar */
     .top-bar {
         position: sticky;
         top: 0;
@@ -113,7 +112,6 @@ export const newReqStyles = css`
         padding-bottom: 6rem;
     }
 
-    /* Error Message */
     .error-banner {
         margin: 1rem 1.25rem;
         padding: 1rem;
@@ -148,7 +146,6 @@ export const newReqStyles = css`
         justify-content: center;
     }
 
-    /* Section Headers */
     .section-header {
         font-size: 1.0625rem;
         font-weight: 600;
@@ -157,7 +154,6 @@ export const newReqStyles = css`
         letter-spacing: -0.01em;
     }
 
-    /* Waste Type Grid */
     .waste-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -239,7 +235,6 @@ export const newReqStyles = css`
         color: #8a8a8a;
     }
 
-    /* Form Groups */
     .form-section {
         padding: 0 1.25rem 1rem;
     }
@@ -345,7 +340,6 @@ export const newReqStyles = css`
         padding-top: 0.875rem;
     }
 
-    /* Weight Input with Items */
     .weight-inputs {
         display: flex;
         flex-direction: column;
@@ -374,7 +368,6 @@ export const newReqStyles = css`
         flex: 1;
     }
 
-    /* FAB Container */
     .fab-container {
         position: fixed;
         bottom: 0;
@@ -431,7 +424,6 @@ export const newReqStyles = css`
         height: 18px;
     }
 
-    /* Calendar Input */
     input[type='date'] {
         position: relative;
         cursor: pointer;
@@ -458,7 +450,6 @@ export const newReqStyles = css`
         padding: 0;
     }
 
-    /* Responsive Design */
     @media (max-width: 374px) {
         .top-bar {
             padding: 0.875rem 1rem;
@@ -787,7 +778,6 @@ export const newReqStyles = css`
         background-color: #121212;
     }
 
-    /* Top App Bar */
     .top-bar {
         position: sticky;
         top: 0;
@@ -861,7 +851,6 @@ export const newReqStyles = css`
         padding-bottom: 6rem;
     }
 
-    /* Error Message */
     .error-banner {
         margin: 1rem 1.25rem;
         padding: 1rem;
@@ -896,7 +885,6 @@ export const newReqStyles = css`
         justify-content: center;
     }
 
-    /* Section Headers */
     .section-header {
         font-size: 1.0625rem;
         font-weight: 600;
@@ -905,7 +893,6 @@ export const newReqStyles = css`
         letter-spacing: -0.01em;
     }
 
-    /* Waste Type Grid */
     .waste-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -987,7 +974,6 @@ export const newReqStyles = css`
         color: #8a8a8a;
     }
 
-    /* Form Groups */
     .form-section {
         padding: 0 1.25rem 1rem;
     }
@@ -1093,7 +1079,6 @@ export const newReqStyles = css`
         padding-top: 0.875rem;
     }
 
-    /* Weight Input with Items */
     .weight-inputs {
         display: flex;
         flex-direction: column;
@@ -1122,7 +1107,6 @@ export const newReqStyles = css`
         flex: 1;
     }
 
-    /* FAB Container */
     .fab-container {
         position: fixed;
         bottom: 0;
@@ -1179,7 +1163,6 @@ export const newReqStyles = css`
         height: 18px;
     }
 
-    /* Calendar Input */
     input[type='date'] {
         position: relative;
         cursor: pointer;
@@ -1206,7 +1189,6 @@ export const newReqStyles = css`
         padding: 0;
     }
 
-    /* Responsive Design */
     @media (max-width: 374px) {
         .top-bar {
             padding: 0.875rem 1rem;

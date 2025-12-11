@@ -8,6 +8,7 @@ import './pages/map-page.js';
 import './pages/new-request.js';
 import './pages/requests-page.js';
 import './pages/dashboard/dashboard-main.js';
+import './pages/dashboard/driver-dashboard.js';
 import { Router } from '@lit-labs/router';
 
 export class AppView extends LitElement {
