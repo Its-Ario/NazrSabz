@@ -18,25 +18,44 @@ export class RequestService {
                 items,
                 status = 'PENDING',
                 scheduledAt = null,
-                priority = 'NORMAL',
+                priority = 'NORMAL', // Changed to match schema string default if needed
                 metadata = null,
                 address = null,
             } = requestData;
 
-            const request = await this.prisma.request.create({
-                data: {
-                    requesterId,
-                    collectorId,
-                    items,
-                    status,
-                    scheduledAt,
-                    priority,
-                    metadata,
-                    address,
-                },
+            // Execute in a transaction to ensure both creation and location update happen (or fail) together
+            const result = await this.prisma.$transaction(async (tx) => {
+                // 1. Create the request WITHOUT the location field
+                const request = await tx.request.create({
+                    data: {
+                        requesterId,
+                        collectorId,
+                        items,
+                        status,
+                        scheduledAt,
+                        priority,
+                        metadata,
+                        address,
+                        // location: DO NOT include this here
+                    },
+                });
+
+                // 2. If coordinates exist, update the row with Raw SQL
+                // Assuming address.location.coordinates is [longitude, latitude]
+                if (address && address.location && Array.isArray(address.location.coordinates)) {
+                    const [lng, lat] = address.location.coordinates;
+
+                    await tx.$executeRaw`
+          UPDATE "Request"
+          SET location = ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)
+          WHERE id = ${request.id}
+        `;
+                }
+
+                return request;
             });
 
-            return request;
+            return result;
         } catch (e) {
             logger.error(`Error creating request: ${e.message}`, e);
             throw e;

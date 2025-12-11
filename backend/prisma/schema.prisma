@@ -7,11 +7,13 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [postgis()]
 }
 
 model User {
@@ -26,6 +28,13 @@ model User {
   tokenVersion Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  driverStatus DriverStatus? @default(OFFLINE)
+  vehicleModel String?
+  rating       Float         @default(5.0)
+  
+  // PostGIS Location (Raw type)
+  location     Unsupported("geometry(Point, 4326)")?
 
   requestsCollected Request[]     @relation("CollectorRequests")
   requestsMade      Request[]     @relation("RequesterRequests")
@@ -48,9 +57,13 @@ model Request {
   completedAt DateTime?
   priority    String    @default("normal")
 
+  location    Unsupported("geometry(Point, 4326)")?
+
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   Transaction Transaction[]
+
+  @@index([location], name: "request_location_idx", type: Gist)
 }
 
 model Transaction {
@@ -95,4 +108,10 @@ enum RequestStatus {
   PENDING
   COMPLETED
   CANCELED
+}
+
+enum DriverStatus {
+  ONLINE
+  OFFLINE
+  BUSY
 }

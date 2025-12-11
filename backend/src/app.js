@@ -14,6 +14,7 @@ import authRoutes from './routes/authRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import driverRoutes from './routes/driverRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -39,6 +40,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/transaction', transactionRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/driver', driverRoutes);
 
 app.use(errorHandler);
 

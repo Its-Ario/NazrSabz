@@ -21,6 +21,7 @@ import {
 import { removeAuthToken } from '../../utils/auth';
 import { driverDashboardStyles } from '../../styles/pages/driver-dashboard';
 import { globalStyles } from '../../styles/global-styles';
+import { DriverService } from '../../services/driver-service';
 
 library.add(
     faRightFromBracket,
@@ -80,67 +81,120 @@ export class DriverDashboard extends BaseComponent {
         this.error = null;
 
         try {
-            await new Promise((r) => setTimeout(r, 1000));
+            // 1. Load Profile & Stats (Doesn't need GPS)
+            const profileData = await DriverService.getProfile();
 
             this.driverProfile = {
-                name: 'رضا احمدی',
-                vehicle: 'کامیونت ایسوزو',
-                rating: 4.8,
-                image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtS8igzazX251rvvOMexnu8XeDZvgFSOX-7drIVKtMRpk5hT8uGx7R_uvDE-bvZbA-pyrbIKJeaobHFxd5Y05alN5URl_HKidh00hc_bOxIxe30elZNCZvvvrdN6XPuf3pFpI7D9qVzZaQYdkpKfUp9_uhkylXYLWcjeGGcrT3O79NgY6n82qY88fE9w6wgl7kGn2p0cYLss7ML6uMpIckqKjsBvM06ZwatPN_ELn-gxhasNuT9xpn7oNW4RkDd29eRTZgl2sIUig',
+                name: profileData.result.user.name,
+                vehicle: profileData.result.vehicle.model, // e.g., 'Nissan Junior'
+                rating: profileData.result.rating,
+                image: profileData.result.user.avatar || 'default-avatar-url',
             };
 
-            this.stats = {
-                todayCount: 12,
-                weekWeight: 450,
-                totalCount: 1280,
-                distance: 45,
-            };
+            this.stats = profileData.result.stats; // { todayCount, weekWeight... }
+            this.isOnline = profileData.result.status === 'ONLINE';
 
-            this.requests = [
-                {
-                    id: 1,
-                    type: 'plastic',
-                    title: 'ضایعات پلاستیک و پت',
-                    address: 'تهران، سعادت‌آباد، خیابان سرو غربی',
-                    dist: '2.5 km',
-                    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuChkXjuwu00dJ3DJRI_4qfMc1Jf4xBAFLs6GAlzurrrmHY1FdsUn8EaF75oGl2SaNIDb-WshN_AeYk-fsTOQVHM0rA3tGLh7FS7S1q9tqdrDooJq_x5HuFdDUTMNtjBxtXlhvhGu2qya6TDXgbz8unWqUg2MRuW7lnLK53SyIuRlDN4c26H26h04bXBxDHsKriEoJrzaoXBd6J8uFSf6zWIrFl9B2YSrP0TCOD2rkDZiezt1iysGNn5oAbboA7SvFjlx1mFwDPZGI4',
-                },
-                {
-                    id: 2,
-                    type: 'metal',
-                    title: 'آهن‌آلات و ضایعات ساختمانی',
-                    address: 'تهران، آزادی، بلوار استاد معین',
-                    dist: '4.1 km',
-                    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBC4j7X2-p--UNwe3SbTLRgtKAPKLvOHmipUrlVI7wPAP4JdJQOlHK0M3RNewhp1zBV9ZgcdCbLzQl9-3_tm-_F8mOUrEqNKmOFyDgdJRa26c1cFgR2bmkzYCwHqWa8br7JCpffbGN0S7_dZeHXm0VeP551f2lUHzaqNjsuzeB7HdYVbrDIDvvGle5fx16ygHvzOcgim35TPcdr9mTS0u_sHBuNmSSrL65HU9mQqc6_jnRPJHlBa-CJ13x610rnJNA0dXLrP7XQL4Y',
-                },
-                {
-                    id: 3,
-                    type: 'paper',
-                    title: 'کاغذ و مقوای باطله',
-                    address: 'تهران، ونک، خیابان ملاصدرا',
-                    dist: '1.8 km',
-                    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuChkXjuwu00dJ3DJRI_4qfMc1Jf4xBAFLs6GAlzurrrmHY1FdsUn8EaF75oGl2SaNIDb-WshN_AeYk-fsTOQVHM0rA3tGLh7FS7S1q9tqdrDooJq_x5HuFdDUTMNtjBxtXlhvhGu2qya6TDXgbz8unWqUg2MRuW7lnLK53SyIuRlDN4c26H26h04bXBxDHsKriEoJrzaoXBd6J8uFSf6zWIrFl9B2YSrP0TCOD2rkDZiezt1iysGNn5oAbboA7SvFjlx1mFwDPZGI4',
-                },
-            ];
+            // 2. Get GPS Location to find requests
+            this._getCurrentLocation();
         } catch (error) {
-            console.error('Failed to load dashboard data:', error);
-            this.error = error.message || 'خطا در بارگذاری اطلاعات';
+            console.error('Dashboard load failed:', error);
+            this.error = 'خطا در بارگذاری اطلاعات';
+            this.loading = false; // Stop loading if profile fails
+        }
+    }
+
+    _getCurrentLocation() {
+        if (!navigator.geolocation) {
+            this.error = 'مرورگر شما از موقعیت مکانی پشتیبانی نمی‌کند';
+            this.loading = false;
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+
+                try {
+                    // Returns { nearby: [], activeRoutes: [] }
+                    const data = await DriverService.getNearbyRequests(latitude, longitude);
+
+                    this.requests = data.result.nearby.map((req) => ({
+                        id: req.id,
+                        type: req.type, // FIXED: Matches backend
+                        title: req.title,
+                        address: req.address,
+                        dist: req.dist, // FIXED: Matches backend
+                        image: req.image || 'https://via.placeholder.com/150', // Add fallback if null
+                    }));
+
+                    this.acceptedRoutes = data.activeRoutes || [];
+                } catch (err) {
+                    console.error(err);
+                } finally {
+                    this.loading = false;
+                }
+            },
+            async (err) => {
+                console.error('GPS Error', err);
+                const defaultLat = 35.6892;
+                const defaultLng = 51.389;
+
+                await this._fetchNearbyWithCoords(defaultLat, defaultLng);
+            }
+        );
+    }
+
+    async _fetchNearbyWithCoords(lat, lng) {
+        try {
+            const data = await DriverService.getNearbyRequests(lat, lng);
+
+            this.requests = data.nearby.map((req) => ({
+                id: req.id,
+                type: req.type,
+                title: req.title,
+                address: req.address,
+                dist: req.dist,
+                image: req.image || 'https://via.placeholder.com/150',
+            }));
+
+            this.acceptedRoutes = data.activeRoutes || [];
+        } catch (err) {
+            console.error(err);
+            this.error = 'خطا در ارتباط با سرور';
         } finally {
             this.loading = false;
         }
     }
 
-    toggleShift(e) {
-        this.isOnline = e.target.checked;
+    async toggleShift(e) {
+        const newStatus = e.target.checked;
+        this.isOnline = newStatus;
+
+        try {
+            await DriverService.toggleStatus(newStatus);
+        } catch {
+            this.isOnline = !newStatus;
+            alert('خطا در تغییر وضعیت شیفت');
+        }
+    }
+
+    async acceptRequest(req) {
+        try {
+            await DriverService.acceptRequest(req.id);
+
+            this.requests = this.requests.filter((r) => r.id !== req.id);
+
+            this.acceptedRoutes = [...this.acceptedRoutes, { ...req, status: 'accepted' }];
+
+            this.activeTab = 'routes';
+        } catch {
+            alert('متاسفانه این درخواست توسط راننده دیگری پذیرفته شد.');
+            this._getCurrentLocation();
+        }
     }
 
     changeTab(tab) {
         this.activeTab = tab;
-    }
-
-    acceptRequest(req) {
-        this.requests = this.requests.filter((r) => r.id !== req.id);
-        this.acceptedRoutes = [...this.acceptedRoutes, { ...req, status: 'accepted' }];
     }
 
     rejectRequest(req) {

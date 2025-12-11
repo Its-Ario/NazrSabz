@@ -24,9 +24,9 @@ router.patch('/changerole/:id', async (req, res) => {
     const newRole = req.body.role;
     if (!user) return res.status(404).json({ ok: false, message: 'User not found' });
 
-    const validRoles = ['ADMIN', 'USER', 'MANAGER, DRIVER'];
+    const validRoles = ['ADMIN', 'USER', 'MANAGER', 'DRIVER'];
     if (!validRoles.includes(newRole)) {
-        return res.status('400').json({
+        return res.status(400).json({
             ok: false,
             message: `Invalid role. Must be one of: ${validRoles.join(', ')}`,
         });
