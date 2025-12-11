@@ -81,25 +81,23 @@ export class DriverDashboard extends BaseComponent {
         this.error = null;
 
         try {
-            // 1. Load Profile & Stats (Doesn't need GPS)
             const profileData = await DriverService.getProfile();
 
             this.driverProfile = {
                 name: profileData.result.user.name,
-                vehicle: profileData.result.vehicle.model, // e.g., 'Nissan Junior'
+                vehicle: profileData.result.vehicle.model,
                 rating: profileData.result.rating,
                 image: profileData.result.user.avatar || 'default-avatar-url',
             };
 
-            this.stats = profileData.result.stats; // { todayCount, weekWeight... }
+            this.stats = profileData.result.stats;
             this.isOnline = profileData.result.status === 'ONLINE';
 
-            // 2. Get GPS Location to find requests
             this._getCurrentLocation();
         } catch (error) {
             console.error('Dashboard load failed:', error);
             this.error = 'خطا در بارگذاری اطلاعات';
-            this.loading = false; // Stop loading if profile fails
+            this.loading = false;
         }
     }
 
@@ -115,16 +113,15 @@ export class DriverDashboard extends BaseComponent {
                 const { latitude, longitude } = position.coords;
 
                 try {
-                    // Returns { nearby: [], activeRoutes: [] }
                     const data = await DriverService.getNearbyRequests(latitude, longitude);
 
                     this.requests = data.result.nearby.map((req) => ({
                         id: req.id,
-                        type: req.type, // FIXED: Matches backend
+                        type: req.type,
                         title: req.title,
                         address: req.address,
-                        dist: req.dist, // FIXED: Matches backend
-                        image: req.image || 'https://via.placeholder.com/150', // Add fallback if null
+                        dist: req.dist,
+                        image: req.image || 'https://via.placeholder.com/150',
                     }));
 
                     this.acceptedRoutes = data.activeRoutes || [];

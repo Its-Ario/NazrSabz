@@ -6,11 +6,11 @@ import {
     acceptRequest,
     completeRequest,
 } from '../controllers/driverController.js';
-import auth, { isDriver } from '../middleware/authMiddleware.js';
+import auth from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.use(isDriver, auth);
+router.use(auth);
 
 router.get('/me', getProfile);
 router.get('/requests', getRequests);

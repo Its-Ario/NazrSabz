@@ -1,6 +1,5 @@
 import { getAuthToken } from '../utils/auth.js';
 
-// Change this if your API is on a different port/url
 const API_BASE = '/api/driver';
 
 export const DriverService = {
@@ -58,6 +57,6 @@ export const DriverService = {
 
         if (!res.ok) throw new Error('Request already taken');
         const data = await res.json();
-        return data.route; // Backend sends { ok: true, route: ... }
+        return data.route;
     },
 };

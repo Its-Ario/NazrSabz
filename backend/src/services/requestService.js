@@ -18,14 +18,12 @@ export class RequestService {
                 items,
                 status = 'PENDING',
                 scheduledAt = null,
-                priority = 'NORMAL', // Changed to match schema string default if needed
+                priority = 'NORMAL',
                 metadata = null,
                 address = null,
             } = requestData;
 
-            // Execute in a transaction to ensure both creation and location update happen (or fail) together
             const result = await this.prisma.$transaction(async (tx) => {
-                // 1. Create the request WITHOUT the location field
                 const request = await tx.request.create({
                     data: {
                         requesterId,
@@ -36,12 +34,9 @@ export class RequestService {
                         priority,
                         metadata,
                         address,
-                        // location: DO NOT include this here
                     },
                 });
 
-                // 2. If coordinates exist, update the row with Raw SQL
-                // Assuming address.location.coordinates is [longitude, latitude]
                 if (address && address.location && Array.isArray(address.location.coordinates)) {
                     const [lng, lat] = address.location.coordinates;
 
@@ -370,7 +365,7 @@ export class RequestService {
             for (const { items } of requests) {
                 if (!items || typeof items !== 'object') continue;
 
-                logger.info(`Processing items: ${JSON.stringify(items)}`); // Debug log
+                logger.info(`Processing items: ${JSON.stringify(items)}`);
 
                 const itemsArray = Array.isArray(items) ? items : Object.values(items);
 
@@ -381,7 +376,7 @@ export class RequestService {
 
                         if (!isNaN(weight) && typeof weight === 'number') {
                             const type = item.type.toLowerCase();
-                            logger.info(`Adding ${weight} to ${type}`); // Debug log
+                            logger.info(`Adding ${weight} to ${type}`);
                             if (Object.prototype.hasOwnProperty.call(breakdown, type)) {
                                 breakdown[type] += weight;
                             }
